@@ -5,7 +5,7 @@
 
 ## Installation
 
-    $ npm install querystring
+    $ npm install qs
 
 ## Examples
 

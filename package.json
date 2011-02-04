@@ -1,5 +1,5 @@
 {
-  "name": "querystring",
+  "name": "qs",
   "description": "querystring parser",
   "version": "0.0.1",
   "repository": {},
