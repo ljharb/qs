@@ -3,6 +3,15 @@
 
   query string parser for node supporting nesting, as it was removed from `0.3.x`, so this library provides the previous and commonly desired behaviour. Used by [express](http://expressjs.com), [connect](http://senchalabs.github.com/connect) and otheres.
 
+## Installation
+
+    $ npm install querystring
+
+## Examples
+
+    require('querystring').parse('user[name][first]=tj&user[email]=tj');
+    // => { user: { name: { first: 'tj' }}}
+
 ## License 
 
 (The MIT License)
