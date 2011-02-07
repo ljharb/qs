@@ -8,6 +8,9 @@ var qs = require('../')
 
 module.exports = {
   'test basics': function(){
+    qs.parse('a[>=]=23')
+      .should.eql({ a: { '>=': '23' }});
+
     qs.parse('foo')
       .should.eql({ foo: '' });
 
