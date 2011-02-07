@@ -11,6 +11,9 @@ module.exports = {
     qs.parse('a[>=]=23')
       .should.eql({ a: { '>=': '23' }});
 
+    qs.parse('a[<=>]==23')
+      .should.eql({ a: { '<=>': '=23' }});
+
     qs.parse('a[==]=23')
       .should.eql({ a: { '==': '23' }});
 
