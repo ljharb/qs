@@ -48,6 +48,9 @@ module.exports = {
   },
   
   'test nesting': function(){
+    qs.parse('ops[>=]=25')
+      .should.eql({ ops: { '>=': '25' }});
+
     qs.parse('user[name]=tj')
       .should.eql({ user: { name: 'tj' }});
 
