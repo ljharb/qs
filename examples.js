@@ -5,6 +5,9 @@
 
 var qs = require('./');
 
+var obj = qs.parse('foo');
+require('inspect')(obj)
+
 var obj = qs.parse('users[]');
 require('inspect')(obj)
 
