@@ -80,6 +80,11 @@ module.exports = {
       .should.eql({ user: { names: ['tj', 'tyler'], email: 'tj@vision-media.ca' }});
   },
   
+  'test right-hand brackets': function(){
+    qs.parse('pets=["tobi"]')
+      .should.eql({ pets: '["tobi"]' });
+  },
+  
   // 'test complex': function(){
   //   qs.parse('users[][name][first]=tj&users[foo]=bar')
   //     .should.eql({
