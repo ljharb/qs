@@ -83,6 +83,15 @@ module.exports = {
   'test right-hand brackets': function(){
     qs.parse('pets=["tobi"]')
       .should.eql({ pets: '["tobi"]' });
+
+    qs.parse('operators=[">=", "<="]')
+      .should.eql({ operators: '[">=", "<="]' });
+
+    qs.parse('op[>=]=[1,2,3]')
+      .should.eql({ op: { '>=': '[1,2,3]' }});
+
+    qs.parse('op[>=]=[1,2,3]&op[=]=[[[[1]]]]')
+          .should.eql({ op: { '>=': '[1,2,3]', '=': '[[[[1]]]]' }});
   },
   
   // 'test complex': function(){
