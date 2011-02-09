@@ -8,6 +8,9 @@ var qs = require('../')
 
 module.exports = {
   'test basics': function(){
+    qs.parse('foo=c++')
+      .should.eql({ foo: 'c  ' });
+
     qs.parse('a[>=]=23')
       .should.eql({ a: { '>=': '23' }});
 
