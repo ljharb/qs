@@ -100,9 +100,6 @@ module.exports = {
   'test duplicates': function(){
     qs.parse('items=bar&items=baz&items=raz')
       .should.eql({ items: ['bar', 'baz', 'raz'] });
-    
-    qs.parse('users[tj]=tj&users[tj]=TJ')
-      .should.eql({ users: { tj: ['tj', 'TJ'] }})
   }
   
   // 'test complex': function(){
