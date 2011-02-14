@@ -97,6 +97,14 @@ module.exports = {
           .should.eql({ op: { '>=': '[1,2,3]', '=': '[[[[1]]]]' }});
   },
   
+  'test duplicates': function(){
+    qs.parse('foo=bar&foo=baz')
+      .should.eql({ foo: ['bar', 'baz'] });
+    
+    qs.parse('users[tj]=tj&users[tj]=TJ')
+      .should.eql({ users: { tj: ['tj', 'TJ'] }})
+  }
+  
   // 'test complex': function(){
   //   qs.parse('users[][name][first]=tj&users[foo]=bar')
   //     .should.eql({
