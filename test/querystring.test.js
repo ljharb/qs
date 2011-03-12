@@ -100,6 +100,14 @@ module.exports = {
   'test duplicates': function(){
     qs.parse('items=bar&items=baz&items=raz')
       .should.eql({ items: ['bar', 'baz', 'raz'] });
+  },
+
+  'test empty': function(){
+    qs.parse('')
+      .should.eql({});
+
+    qs.parse(undefined)
+      .should.eql({});
   }
   
   // 'test complex': function(){
