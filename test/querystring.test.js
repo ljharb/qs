@@ -8,6 +8,8 @@ var qs = require('../')
 
 module.exports = {
   'test basics': function(){
+    qs.parse('0=foo').should.eql({ '0': 'foo' });
+
     qs.parse('foo=c++')
       .should.eql({ foo: 'c  ' });
 
@@ -103,11 +105,9 @@ module.exports = {
   },
 
   'test empty': function(){
-    qs.parse('')
-      .should.eql({});
-
-    qs.parse(undefined)
-      .should.eql({});
+    qs.parse('').should.eql({});
+    qs.parse(undefined).should.eql({});
+    qs.parse(null).should.eql({});
   }
   
   // 'test complex': function(){
