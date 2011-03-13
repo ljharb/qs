@@ -3,6 +3,7 @@
 ==================
 
   * Fixed; handle empty string and `== null` in `qs.parse()` [dmit]
+    allows for convenient `qs.parse(url.parse(str).query)`
 
 0.0.6 / 2011-02-14 
 ==================
