@@ -87,8 +87,11 @@ module.exports = {
     qs.parse('items=a&items=b')
       .should.eql({ items: ['a', 'b'] });
 
-    qs.parse('user[names]=tj&user[names]=holowaychuk')
-      .should.eql({ user: { names: ['tj', 'holowaychuk'] }});
+    qs.parse('user[names]=tj&user[names]=holowaychuk&user[names]=TJ')
+      .should.eql({ user: { names: ['tj', 'holowaychuk', 'TJ'] }});
+
+    qs.parse('user[name][first]=tj&user[name][first]=TJ')
+      .should.eql({ user: { name: { first: ['tj', 'TJ'] }}});
   },
   
   'test right-hand brackets': function(){

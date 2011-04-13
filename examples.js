@@ -31,3 +31,9 @@ require('inspect')(obj)
 
 var obj = qs.parse('user[tj]=tj&user[tj]=TJ');
 require('inspect')(obj)
+
+var obj = qs.parse('user[names]=tj&user[names]=TJ&user[names]=Tyler');
+require('inspect')(obj)
+
+var obj = qs.parse('user[name][first]=tj&user[name][first]=TJ');
+require('inspect')(obj)
