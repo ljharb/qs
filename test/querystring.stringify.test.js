@@ -42,9 +42,26 @@ var qs = require('../')
       {query_string: 'x[y][][z]=1&x[y][][z]=2', parsed: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
       {query_string: 'x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3', parsed: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
       {query_string: 'user[name][first]=tj&user[name][last]=holowaychuk', parsed: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
+    ],
+    'errors': [
+      {parsed: 'foo=bar',     message: 'Value must be a hash'},
+      {parsed: ['foo','bar'], message: 'Value must be a hash'}
     ]
   };
   
+
+// Assert error
+function err(fn, msg){
+  var err;
+  try {
+    fn();
+  } catch (e) {
+    should.equal(e.message, msg);
+    return;
+  }
+  throw new Error('no exception thrown, expected "' + msg + '"');
+}
+
 module.exports = {
   'test basics': function() {
     var query_string, parsed;
@@ -68,6 +85,14 @@ module.exports = {
       query_string = query_string_identities['nested'][i].query_string;
       parsed       = query_string_identities['nested'][i].parsed;
       qs.stringify(parsed).should.eql(query_string);
+    }
+  },
+  'test errors': function() {
+    var parsed, message;
+    for (var i = 0; i < query_string_identities['errors'].length; i++) {
+      message      = query_string_identities['errors'][i].message;
+      parsed       = query_string_identities['errors'][i].parsed;
+      err( function() {qs.stringify(parsed)}, message );
     }
   }
 };
