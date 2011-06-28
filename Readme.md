@@ -6,10 +6,22 @@
 
     $ npm install qs
 
+
 ## Examples
 
     require('qs').parse('user[name][first]=tj&user[email]=tj');
     // => { user: { name: { first: 'tj' }, email: 'tj' } }
+
+## Testing
+
+Update git submodules:
+
+    $ git submodule init
+    $ git submodule update
+
+and execute:
+
+    $ make test
 
 ## License 
 
