@@ -62,37 +62,34 @@ function err(fn, msg){
   throw new Error('no exception thrown, expected "' + msg + '"');
 }
 
+function test(type) {
+  var str, obj;
+  for (var i = 0; i < query_string_identities[type].length; i++) {
+    str = query_string_identities[type][i].query_string;
+    obj = query_string_identities[type][i].parsed;
+    qs.stringify(obj).should.eql(str);
+  }
+}
+
 module.exports = {
   'test basics': function() {
-    var query_string, parsed;
-    for (var i = 0; i < query_string_identities['basics'].length; i++) {
-      query_string = query_string_identities['basics'][i].query_string;
-      parsed       = query_string_identities['basics'][i].parsed;
-      qs.stringify(parsed).should.eql(query_string);
-    }
+    test('basics');
   },
+
   'test escaping': function() {
-    var query_string, parsed;
-    for (var i = 0; i < query_string_identities['escaping'].length; i++) {
-      query_string = query_string_identities['escaping'][i].query_string;
-      parsed       = query_string_identities['escaping'][i].parsed;
-      qs.stringify(parsed).should.eql(query_string);
-    }
+    test('escaping');
   },
+
   'test nested': function() {
-    var query_string, parsed;
-    for (var i = 0; i < query_string_identities['nested'].length; i++) {
-      query_string = query_string_identities['nested'][i].query_string;
-      parsed       = query_string_identities['nested'][i].parsed;
-      qs.stringify(parsed).should.eql(query_string);
-    }
+    test('nested');
   },
+
   'test errors': function() {
     var parsed, message;
     for (var i = 0; i < query_string_identities['errors'].length; i++) {
       message      = query_string_identities['errors'][i].message;
       parsed       = query_string_identities['errors'][i].parsed;
-      err( function() {qs.stringify(parsed)}, message );
+      err(function(){ qs.stringify(parsed) }, message);
     }
   }
 };
