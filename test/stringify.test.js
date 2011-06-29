@@ -44,8 +44,8 @@ var qs = require('../')
       {query_string: 'user[name][first]=tj&user[name][last]=holowaychuk', parsed: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
     ],
     'errors': [
-      {parsed: 'foo=bar',     message: 'Value must be a hash'},
-      {parsed: ['foo','bar'], message: 'Value must be a hash'}
+      { parsed: 'foo=bar',     message: 'stringify expects an object' },
+      { parsed: ['foo', 'bar'], message: 'stringify expects an object' }
     ]
   };
   
