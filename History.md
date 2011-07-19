@@ -1,4 +1,9 @@
 
+0.3.0 / 2011-07-19 
+==================
+
+  * Allow `array[index]` and `object[property]` syntaxes [Aria Stewart]
+
 0.2.0 / 2011-06-29 
 ==================
 
