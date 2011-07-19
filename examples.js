@@ -37,3 +37,12 @@ console.log(obj)
 
 var obj = qs.parse('user[name][first]=tj&user[name][first]=TJ');
 console.log(obj)
+
+var obj = qs.parse('user[0]=tj&user[1]=TJ');
+console.log(obj)
+
+var obj = qs.parse('user[0]=tj&user[]=TJ');
+console.log(obj)
+
+var obj = qs.parse('user[0]=tj&user[foo]=TJ');
+console.log(obj)
