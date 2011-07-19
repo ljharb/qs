@@ -121,6 +121,7 @@ module.exports = {
 
   'test arrays with indexes': function(){
     qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ["bar","baz"] });
+    qs.parse('foo[base64]=RAWR').should.eql({ foo: { base64: 'RAWR' }});
   },
 
   'test arrays becoming objects': function(){
