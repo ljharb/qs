@@ -120,11 +120,11 @@ module.exports = {
   },
 
   'test arrays with indexes': function(){
-    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({"foo":["bar","baz"]});
+    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ["bar","baz"] });
   },
 
   'test arrays becoming objects': function(){
-    qs.parse('foo[0]=bar&foo[bad]=baz').should.eql({"foo":{"0":"bar","bad":"baz"}});
+    qs.parse('foo[0]=bar&foo[bad]=baz').should.eql({ foo: { 0: "bar", bad: "baz" }});
   }
   
   // 'test complex': function(){
