@@ -120,7 +120,8 @@ module.exports = {
   },
 
   'test arrays with indexes': function(){
-    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ["bar","baz"] });
+    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ['bar', 'baz'] });
+    qs.parse('foo[1]=bar&foo[0]=baz').should.eql({ foo: ['baz', 'bar'] });
     qs.parse('foo[base64]=RAWR').should.eql({ foo: { base64: 'RAWR' }});
     qs.parse('foo[64base]=RAWR').should.eql({ foo: { '64base': 'RAWR' }});
   },
