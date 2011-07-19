@@ -1,32 +1,17 @@
 
-var old = require('querystring')
-  , qs = require('./')
-  , times = 100000;
+var qs = require('./');
 
-var start = new Date
+var times = 100000
+  , start = new Date
   , n = times;
 
-while (n--) old.parse('foo=bar');
-console.log('old simple: %dms', new Date - start);
-
-var start = new Date
-  , n = times;
-
-while (n--) old.parse('user[name][first]=tj&user[name][last]=holowaychuk');
-console.log('old nested: %dms', new Date - start);
-
-
-console.log();
-
-
-var start = new Date
-  , n = times;
+console.log('times: %d', times);
 
 while (n--) qs.parse('foo=bar');
-console.log('new simple: %dms', new Date - start);
+console.log('simple: %dms', new Date - start);
 
 var start = new Date
   , n = times;
 
 while (n--) qs.parse('user[name][first]=tj&user[name][last]=holowaychuk');
-console.log('new nested: %dms', new Date - start);
+console.log('nested: %dms', new Date - start);
