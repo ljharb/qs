@@ -129,6 +129,11 @@ module.exports = {
   'test arrays becoming objects': function(){
     qs.parse('foo[0]=bar&foo[bad]=baz').should.eql({ foo: { 0: "bar", bad: "baz" }});
     qs.parse('foo[bad]=baz&foo[0]=bar').should.eql({ foo: { 0: "bar", bad: "baz" }});
+  },
+
+  'test bleed-through of Array native methods': function(){
+    Array.prototype.testFunction = function () {};
+    qs.parse('foo=bar').should.eql({ foo: 'bar' });
   }
   
   // 'test complex': function(){
