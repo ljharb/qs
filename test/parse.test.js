@@ -131,8 +131,9 @@ module.exports = {
     qs.parse('foo[bad]=baz&foo[0]=bar').should.eql({ foo: { 0: "bar", bad: "baz" }});
   },
 
-  'test bleed-through of Array native methods': function(){
-    Array.prototype.testFunction = function () {};
+  'test bleed-through of Array native properties/methods': function(){
+    Array.prototype.protoProperty = true;
+    Array.prototype.protoFunction = function () {};
     qs.parse('foo=bar').should.eql({ foo: 'bar' });
   }
   
