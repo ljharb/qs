@@ -1,4 +1,10 @@
 
+0.3.1 / 2011-08-17 
+==================
+
+  * Added `try/catch` around malformed uri components
+  * Add test coverage for Array native method bleed-though
+
 0.3.0 / 2011-07-19 
 ==================
 

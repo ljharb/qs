@@ -1,7 +1,7 @@
 {
   "name": "qs",
   "description": "querystring parser",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "repository": {},
   "author": "TJ Holowaychuk <tj@vision-media.ca> (http://tjholowaychuk.com)",
   "main": "index",
