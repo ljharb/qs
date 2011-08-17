@@ -135,6 +135,11 @@ module.exports = {
     Array.prototype.protoProperty = true;
     Array.prototype.protoFunction = function () {};
     qs.parse('foo=bar').should.eql({ foo: 'bar' });
+  },
+
+  'test malformed uri': function(){
+    qs.parse('{%:%}').should.eql({ '{%:%}': '' });
+    qs.parse('foo=%:%}').should.eql({ 'foo': '%:%}' });
   }
   
   // 'test complex': function(){
