@@ -2,8 +2,12 @@
   "name": "qs",
   "description": "querystring parser",
   "version": "0.3.1",
-  "repository": {},
+  "repository": {
+    "type" : "git",
+    "url" : "git://github.com/visionmedia/node-querystring.git"
+    },
   "author": "TJ Holowaychuk <tj@vision-media.ca> (http://tjholowaychuk.com)",
   "main": "index",
-  "engines": { "node": "*" }
+  "engines": { "node": "*" },
+  }
 }
