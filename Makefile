@@ -1,6 +1,6 @@
 
 test:
-	@./support/expresso/bin/expresso \
+	@./node_modules/.bin/expresso \
 		-I support \
 		-I lib
 

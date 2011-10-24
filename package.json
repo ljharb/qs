@@ -6,6 +6,10 @@
     "type" : "git",
     "url" : "git://github.com/visionmedia/node-querystring.git"
   },
+  "devDependencies": {
+      "expresso": "0.9.2"
+    , "should": "*"
+  },
   "author": "TJ Holowaychuk <tj@vision-media.ca> (http://tjholowaychuk.com)",
   "main": "index",
   "engines": { "node": "*" }
