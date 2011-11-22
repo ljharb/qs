@@ -3,8 +3,7 @@
  * Module dependencies.
  */
 
-var qs = require('../')
-  , should = require('should');
+var qs = require('../');
 
 module.exports = {
   'test basics': function(){

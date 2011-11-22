@@ -1,7 +1,5 @@
 
 test:
-	@./node_modules/.bin/expresso \
-		-I support \
-		-I lib
+	@./node_modules/.bin/mocha
 
 .PHONY: test
