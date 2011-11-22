@@ -1,4 +1,10 @@
 
+0.4.0 / 2011-11-21 
+==================
+
+  * Allow parsing of an existing object (for `bodyParser()`) [jackyz]
+  * Replaced expresso with mocha
+
 0.3.2 / 2011-11-08 
 ==================
 
