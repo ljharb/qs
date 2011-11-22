@@ -6,7 +6,6 @@
 
     $ npm install qs
 
-
 ## Examples
 
     require('qs').parse('user[name][first]=tj&user[email]=tj');
@@ -14,10 +13,9 @@
 
 ## Testing
 
-Update git submodules:
+Install dev dependencies:
 
-    $ git submodule init
-    $ git submodule update
+    $ npm install -d
 
 and execute:
 
