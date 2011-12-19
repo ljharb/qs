@@ -139,6 +139,14 @@ module.exports = {
   'test malformed uri': function(){
     qs.parse('{%:%}').should.eql({ '{%:%}': '' });
     qs.parse('foo=%:%}').should.eql({ 'foo': '%:%}' });
+  },
+
+  'test semi-parsed': function(){
+    qs.parse({ 'user[name]': 'tobi' })
+      .should.eql({ user: { name: 'tobi' }});
+
+    qs.parse({ 'user[name]': 'tobi', 'user[email][main]': 'tobi@lb.com' })
+      .should.eql({ user: { name: 'tobi', email: { main: 'tobi@lb.com' } }});
   }
   
   // 'test complex': function(){
