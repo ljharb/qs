@@ -1,7 +1,7 @@
 {
   "name": "qs",
   "description": "querystring parser",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "repository": {
     "type" : "git",
     "url" : "git://github.com/visionmedia/node-querystring.git"
