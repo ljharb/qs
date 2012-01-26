@@ -5,19 +5,19 @@
 
 var qs = require('../')
   , should = require('should')
-  , query_string_identities = {
+  , str_identities = {
     'basics': [
-      {query_string: 'foo=bar', parsed: {'foo' : 'bar'}},
-      {query_string: 'foo=%22bar%22', parsed: {'foo' : '\"bar\"'}},
-      {query_string: 'foo=', parsed: {'foo': ''}},
-      {query_string: 'foo=1&bar=2', parsed: {'foo' : '1', 'bar' : '2'}},
-      {query_string: 'my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F', parsed: {'my weird field': "q1!2\"'w$5&7/z8)?"}},
-      {query_string: 'foo%3Dbaz=bar', parsed: {'foo=baz': 'bar'}},
-      {query_string: 'foo=bar&bar=baz', parsed: {foo: 'bar', bar: 'baz'}}
+      { str: 'foo=bar', obj: {'foo' : 'bar'}},
+      { str: 'foo=%22bar%22', obj: {'foo' : '\"bar\"'}},
+      { str: 'foo=', obj: {'foo': ''}},
+      { str: 'foo=1&bar=2', obj: {'foo' : '1', 'bar' : '2'}},
+      { str: 'my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F', obj: {'my weird field': "q1!2\"'w$5&7/z8)?"}},
+      { str: 'foo%3Dbaz=bar', obj: {'foo=baz': 'bar'}},
+      { str: 'foo=bar&bar=baz', obj: {foo: 'bar', bar: 'baz'}}
     ],
     'escaping': [
-      {query_string: 'foo=foo%20bar', parsed: {foo: 'foo bar'}},
-      {query_string: 'cht=p3&chd=t%3A60%2C40&chs=250x100&chl=Hello%7CWorld', parsed: {
+      { str: 'foo=foo%20bar', obj: {foo: 'foo bar'}},
+      { str: 'cht=p3&chd=t%3A60%2C40&chs=250x100&chl=Hello%7CWorld', obj: {
           cht: 'p3'
         , chd: 't:60,40'
         , chs: '250x100'
@@ -25,31 +25,31 @@ var qs = require('../')
       }}
     ],
     'nested': [
-      {query_string: 'foo[]=bar&foo[]=quux', parsed: {'foo' : ['bar', 'quux']}},
-      {query_string: 'foo[]=bar', parsed: {foo: ['bar']}},
-      {query_string: 'foo[]=1&foo[]=2', parsed: {'foo' : ['1', '2']}},
-      {query_string: 'foo=bar&baz[]=1&baz[]=2&baz[]=3', parsed: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
-      {query_string: 'foo[]=bar&baz[]=1&baz[]=2&baz[]=3', parsed: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
-      {query_string: 'x[y][z]=1', parsed: {'x' : {'y' : {'z' : '1'}}}},
-      {query_string: 'x[y][z][]=1', parsed: {'x' : {'y' : {'z' : ['1']}}}},
-      {query_string: 'x[y][z]=2', parsed: {'x' : {'y' : {'z' : '2'}}}},
-      {query_string: 'x[y][z][]=1&x[y][z][]=2', parsed: {'x' : {'y' : {'z' : ['1', '2']}}}},
-      {query_string: 'x[y][][z]=1', parsed: {'x' : {'y' : [{'z' : '1'}]}}},
-      {query_string: 'x[y][][z][]=1', parsed: {'x' : {'y' : [{'z' : ['1']}]}}},
-      {query_string: 'x[y][][z]=1&x[y][][w]=2', parsed: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
-      {query_string: 'x[y][][v][w]=1', parsed: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
-      {query_string: 'x[y][][z]=1&x[y][][v][w]=2', parsed: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
-      {query_string: 'x[y][][z]=1&x[y][][z]=2', parsed: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
-      {query_string: 'x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3', parsed: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
-      {query_string: 'user[name][first]=tj&user[name][last]=holowaychuk', parsed: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
+      { str: 'foo[]=bar&foo[]=quux', obj: {'foo' : ['bar', 'quux']}},
+      { str: 'foo[]=bar', obj: {foo: ['bar']}},
+      { str: 'foo[]=1&foo[]=2', obj: {'foo' : ['1', '2']}},
+      { str: 'foo=bar&baz[]=1&baz[]=2&baz[]=3', obj: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
+      { str: 'foo[]=bar&baz[]=1&baz[]=2&baz[]=3', obj: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
+      { str: 'x[y][z]=1', obj: {'x' : {'y' : {'z' : '1'}}}},
+      { str: 'x[y][z][]=1', obj: {'x' : {'y' : {'z' : ['1']}}}},
+      { str: 'x[y][z]=2', obj: {'x' : {'y' : {'z' : '2'}}}},
+      { str: 'x[y][z][]=1&x[y][z][]=2', obj: {'x' : {'y' : {'z' : ['1', '2']}}}},
+      { str: 'x[y][][z]=1', obj: {'x' : {'y' : [{'z' : '1'}]}}},
+      { str: 'x[y][][z][]=1', obj: {'x' : {'y' : [{'z' : ['1']}]}}},
+      { str: 'x[y][][z]=1&x[y][][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
+      { str: 'x[y][][v][w]=1', obj: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
+      { str: 'x[y][][z]=1&x[y][][v][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
+      { str: 'x[y][][z]=1&x[y][][z]=2', obj: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
+      { str: 'x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3', obj: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
+      { str: 'user[name][first]=tj&user[name][last]=holowaychuk', obj: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
     ],
     'errors': [
-      { parsed: 'foo=bar',     message: 'stringify expects an object' },
-      { parsed: ['foo', 'bar'], message: 'stringify expects an object' }
+      { obj: 'foo=bar',     message: 'stringify expects an object' },
+      { obj: ['foo', 'bar'], message: 'stringify expects an object' }
     ],
     'numbers': [
-      { query_string: 'limit[]=1&limit[]=2&limit[]=3', parsed: { limit: [1, 2, '3'] }},
-      { query_string: 'limit=1', parsed: { limit: 1 }}
+      { str: 'limit[]=1&limit[]=2&limit[]=3', obj: { limit: [1, 2, '3'] }},
+      { str: 'limit=1', obj: { limit: 1 }}
     ]
   };
   
@@ -68,9 +68,9 @@ function err(fn, msg){
 
 function test(type) {
   var str, obj;
-  for (var i = 0; i < query_string_identities[type].length; i++) {
-    str = query_string_identities[type][i].query_string;
-    obj = query_string_identities[type][i].parsed;
+  for (var i = 0; i < str_identities[type].length; i++) {
+    str = str_identities[type][i].str;
+    obj = str_identities[type][i].obj;
     qs.stringify(obj).should.eql(str);
   }
 }
@@ -93,11 +93,11 @@ module.exports = {
   },
 
   'test errors': function() {
-    var parsed, message;
-    for (var i = 0; i < query_string_identities['errors'].length; i++) {
-      message      = query_string_identities['errors'][i].message;
-      parsed       = query_string_identities['errors'][i].parsed;
-      err(function(){ qs.stringify(parsed) }, message);
+    var obj, message;
+    for (var i = 0; i < str_identities['errors'].length; i++) {
+      message = str_identities['errors'][i].message;
+      obj = str_identities['errors'][i].obj;
+      err(function(){ qs.stringify(obj) }, message);
     }
   }
 };
