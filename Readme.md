@@ -8,8 +8,15 @@
 
 ## Examples
 
-    require('qs').parse('user[name][first]=tj&user[email]=tj');
-    // => { user: { name: { first: 'tj' }, email: 'tj' } }
+```js
+var qs = require('qs');
+
+qs.parse('user[name][first]=Tobi&user[email]=tobi@learnboost.com');
+// => { user: { name: { first: 'Tobi' }, email: 'tobi@learnboost.com' } }
+
+qs.stringify({ user: { name: 'Tobi', email: 'tobi@learnboost.com' }})
+// => user[name]=Tobi&user[email]=tobi%40learnboost.com
+```
 
 ## Testing
 

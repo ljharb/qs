@@ -46,3 +46,6 @@ console.log(obj)
 
 var obj = qs.parse('user[0]=tj&user[foo]=TJ');
 console.log(obj)
+
+var str = qs.stringify({ user: { name: 'Tobi', email: 'tobi@learnboost.com' }});
+console.log(str);
