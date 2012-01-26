@@ -46,6 +46,10 @@ var qs = require('../')
     'errors': [
       { parsed: 'foo=bar',     message: 'stringify expects an object' },
       { parsed: ['foo', 'bar'], message: 'stringify expects an object' }
+    ],
+    'numbers': [
+      { query_string: 'limit[]=1&limit[]=2&limit[]=3', parsed: { limit: [1, 2, '3'] }},
+      { query_string: 'limit=1', parsed: { limit: 1 }}
     ]
   };
   
@@ -82,6 +86,10 @@ module.exports = {
 
   'test nested': function() {
     test('nested');
+  },
+  
+  'test numbers': function(){
+    test('numbers');
   },
 
   'test errors': function() {
