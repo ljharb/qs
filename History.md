@@ -1,4 +1,9 @@
 
+0.4.2 / 2012-02-08 
+==================
+
+  * Fixed: ensure objects are created when appropriate not arrays [aheckmann]
+
 0.4.1 / 2012-01-26 
 ==================
 
