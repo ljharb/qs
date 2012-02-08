@@ -91,8 +91,12 @@ module.exports = {
 
     qs.parse('user[name][first]=tj&user[name][first]=TJ')
       .should.eql({ user: { name: { first: ['tj', 'TJ'] }}});
+
+    var o = qs.parse('existing[fcbaebfecc][name][last]=tj')
+    o.should.eql({ existing: { 'fcbaebfecc': { name: { last: 'tj' }}}})
+    Array.isArray(o.existing).should.be.false;
   },
-  
+
   'test right-hand brackets': function(){
     qs.parse('pets=["tobi"]')
       .should.eql({ pets: '["tobi"]' });
