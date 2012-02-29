@@ -25,22 +25,22 @@ var qs = require('../')
       }}
     ],
     'nested': [
-      { str: 'foo[]=bar&foo[]=quux', obj: {'foo' : ['bar', 'quux']}},
-      { str: 'foo[]=bar', obj: {foo: ['bar']}},
-      { str: 'foo[]=1&foo[]=2', obj: {'foo' : ['1', '2']}},
-      { str: 'foo=bar&baz[]=1&baz[]=2&baz[]=3', obj: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
-      { str: 'foo[]=bar&baz[]=1&baz[]=2&baz[]=3', obj: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
+      { str: 'foo[0]=bar&foo[1]=quux', obj: {'foo' : ['bar', 'quux']}},
+      { str: 'foo[0]=bar', obj: {foo: ['bar']}},
+      { str: 'foo[0]=1&foo[1]=2', obj: {'foo' : ['1', '2']}},
+      { str: 'foo=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
+      { str: 'foo[0]=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
       { str: 'x[y][z]=1', obj: {'x' : {'y' : {'z' : '1'}}}},
-      { str: 'x[y][z][]=1', obj: {'x' : {'y' : {'z' : ['1']}}}},
+      { str: 'x[y][z][0]=1', obj: {'x' : {'y' : {'z' : ['1']}}}},
       { str: 'x[y][z]=2', obj: {'x' : {'y' : {'z' : '2'}}}},
-      { str: 'x[y][z][]=1&x[y][z][]=2', obj: {'x' : {'y' : {'z' : ['1', '2']}}}},
-      { str: 'x[y][][z]=1', obj: {'x' : {'y' : [{'z' : '1'}]}}},
-      { str: 'x[y][][z][]=1', obj: {'x' : {'y' : [{'z' : ['1']}]}}},
-      { str: 'x[y][][z]=1&x[y][][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
-      { str: 'x[y][][v][w]=1', obj: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
-      { str: 'x[y][][z]=1&x[y][][v][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
-      { str: 'x[y][][z]=1&x[y][][z]=2', obj: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
-      { str: 'x[y][][z]=1&x[y][][w]=a&x[y][][z]=2&x[y][][w]=3', obj: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
+      { str: 'x[y][z][0]=1&x[y][z][1]=2', obj: {'x' : {'y' : {'z' : ['1', '2']}}}},
+      { str: 'x[y][0][z]=1', obj: {'x' : {'y' : [{'z' : '1'}]}}},
+      { str: 'x[y][0][z][0]=1', obj: {'x' : {'y' : [{'z' : ['1']}]}}},
+      { str: 'x[y][0][z]=1&x[y][0][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
+      { str: 'x[y][0][v][w]=1', obj: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
+      { str: 'x[y][0][z]=1&x[y][0][v][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
+      { str: 'x[y][0][z]=1&x[y][1][z]=2', obj: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
+      { str: 'x[y][0][z]=1&x[y][0][w]=a&x[y][1][z]=2&x[y][1][w]=3', obj: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
       { str: 'user[name][first]=tj&user[name][last]=holowaychuk', obj: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
     ],
     'errors': [
@@ -48,7 +48,7 @@ var qs = require('../')
       { obj: ['foo', 'bar'], message: 'stringify expects an object' }
     ],
     'numbers': [
-      { str: 'limit[]=1&limit[]=2&limit[]=3', obj: { limit: [1, 2, '3'] }},
+      { str: 'limit[0]=1&limit[1]=2&limit[2]=3', obj: { limit: [1, 2, '3'] }},
       { str: 'limit=1', obj: { limit: 1 }}
     ]
   };
