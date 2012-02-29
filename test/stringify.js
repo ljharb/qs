@@ -1,10 +1,8 @@
 
-/**
- * Module dependencies.
- */
-
-var qs = require('../')
-  , expect = require('expect.js');
+if ('function' == typeof require) {
+  var qs = require('../')
+    , expect = require('expect.js');
+}
 
 var str_identities = {
   'basics': [

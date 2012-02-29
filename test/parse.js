@@ -1,6 +1,8 @@
 
-var qs = require('../')
-  , expect = require('expect.js');
+if ('function' == typeof require) {
+  var qs = require('../')
+    , expect = require('expect.js');
+}
 
 describe('qs.parse()', function(){
   it('should support the basics', function(){
@@ -85,8 +87,8 @@ describe('qs.parse()', function(){
       .to.eql({ user: { name: { first: ['tj', 'TJ'] }}});
 
     var o = qs.parse('existing[fcbaebfecc][name][last]=tj')
-    o.should.eql({ existing: { 'fcbaebfecc': { name: { last: 'tj' }}}})
-    Array.isArray(o.existing).should.be.false;
+    expect(o).to.eql({ existing: { 'fcbaebfecc': { name: { last: 'tj' }}}})
+    expect(Array.isArray(o.existing)).to.equal(false);
   })
 
   it('should support arrays with indexes', function(){
