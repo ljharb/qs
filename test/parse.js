@@ -5,8 +5,8 @@
 
 var qs = require('../');
 
-module.exports = {
-  'test basics': function(){
+describe('qs.parse()', function(){
+  it('should support the basics', function(){
     qs.parse('0=foo').should.eql({ '0': 'foo' });
 
     qs.parse('foo=c++')
@@ -49,9 +49,9 @@ module.exports = {
         , chs: '250x100'
         , chl: 'Hello|World'
       });
-  },
-  
-  'test nesting': function(){
+  })
+
+  it('should support nesting', function(){
     qs.parse('ops[>=]=25')
       .should.eql({ ops: { '>=': '25' }});
 
@@ -60,14 +60,9 @@ module.exports = {
 
     qs.parse('user[name][first]=tj&user[name][last]=holowaychuk')
       .should.eql({ user: { name: { first: 'tj', last: 'holowaychuk' }}});
-  },
-  
-  'test escaping': function(){
-    qs.parse('foo=foo%20bar')
-      .should.eql({ foo: 'foo bar' });
-  },
-  
-  'test arrays': function(){
+  })
+
+  it('should support array notation', function(){
     qs.parse('images[]')
       .should.eql({ images: [] });
 
@@ -95,9 +90,21 @@ module.exports = {
     var o = qs.parse('existing[fcbaebfecc][name][last]=tj')
     o.should.eql({ existing: { 'fcbaebfecc': { name: { last: 'tj' }}}})
     Array.isArray(o.existing).should.be.false;
-  },
+  })
 
-  'test right-hand brackets': function(){
+  it('should support arrays with indexes', function(){
+    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ['bar', 'baz'] });
+    qs.parse('foo[1]=bar&foo[0]=baz').should.eql({ foo: ['baz', 'bar'] });
+    qs.parse('foo[base64]=RAWR').should.eql({ foo: { base64: 'RAWR' }});
+    qs.parse('foo[64base]=RAWR').should.eql({ foo: { '64base': 'RAWR' }});
+  })
+
+  it('should expand to an array when dupliate keys are present', function(){
+    qs.parse('items=bar&items=baz&items=raz')
+      .should.eql({ items: ['bar', 'baz', 'raz'] });
+  })
+
+  it('should support right-hand side brackets', function(){
     qs.parse('pets=["tobi"]')
       .should.eql({ pets: '["tobi"]' });
 
@@ -109,59 +116,29 @@ module.exports = {
 
     qs.parse('op[>=]=[1,2,3]&op[=]=[[[[1]]]]')
           .should.eql({ op: { '>=': '[1,2,3]', '=': '[[[[1]]]]' }});
-  },
-  
-  'test duplicates': function(){
-    qs.parse('items=bar&items=baz&items=raz')
-      .should.eql({ items: ['bar', 'baz', 'raz'] });
-  },
+  })
 
-  'test empty': function(){
+  it('should support empty values', function(){
     qs.parse('').should.eql({});
     qs.parse(undefined).should.eql({});
     qs.parse(null).should.eql({});
-  },
+  })
 
-  'test arrays with indexes': function(){
-    qs.parse('foo[0]=bar&foo[1]=baz').should.eql({ foo: ['bar', 'baz'] });
-    qs.parse('foo[1]=bar&foo[0]=baz').should.eql({ foo: ['baz', 'bar'] });
-    qs.parse('foo[base64]=RAWR').should.eql({ foo: { base64: 'RAWR' }});
-    qs.parse('foo[64base]=RAWR').should.eql({ foo: { '64base': 'RAWR' }});
-  },
-
-  'test arrays becoming objects': function(){
+  it('should transform arrays to objects', function(){
     qs.parse('foo[0]=bar&foo[bad]=baz').should.eql({ foo: { 0: "bar", bad: "baz" }});
     qs.parse('foo[bad]=baz&foo[0]=bar').should.eql({ foo: { 0: "bar", bad: "baz" }});
-  },
+  })
 
-  'test bleed-through of Array native properties/methods': function(){
-    Array.prototype.protoProperty = true;
-    Array.prototype.protoFunction = function () {};
-    qs.parse('foo=bar').should.eql({ foo: 'bar' });
-  },
-
-  'test malformed uri': function(){
+  it('should support malformed uri chars', function(){
     qs.parse('{%:%}').should.eql({ '{%:%}': '' });
     qs.parse('foo=%:%}').should.eql({ 'foo': '%:%}' });
-  },
+  })
 
-  'test semi-parsed': function(){
+  it('should support semi-parsed strings', function(){
     qs.parse({ 'user[name]': 'tobi' })
       .should.eql({ user: { name: 'tobi' }});
 
     qs.parse({ 'user[name]': 'tobi', 'user[email][main]': 'tobi@lb.com' })
       .should.eql({ user: { name: 'tobi', email: { main: 'tobi@lb.com' } }});
-  }
-  
-  // 'test complex': function(){
-  //   qs.parse('users[][name][first]=tj&users[foo]=bar')
-  //     .should.eql({
-  //       users: [ { name: 'tj' }, { name: 'tobi' }, { foo: 'bar' }]
-  //     });
-  // 
-  //   qs.parse('users[][name][first]=tj&users[][name][first]=tobi')
-  //     .should.eql({
-  //       users: [ { name: 'tj' }, { name: 'tobi' }]
-  //     });
-  // }
-};
+  })
+})
