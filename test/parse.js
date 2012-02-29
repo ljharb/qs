@@ -1,8 +1,4 @@
 
-/**
- * Module dependencies.
- */
-
 var qs = require('../');
 
 describe('qs.parse()', function(){
