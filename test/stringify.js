@@ -3,8 +3,8 @@
  * Module dependencies.
  */
 
-var qs = require('../');
-
+var qs = require('../')
+  , expect = require('expect.js');
 
 var str_identities = {
   'basics': [
@@ -60,7 +60,7 @@ function test(type) {
     for (var i = 0; i < str_identities[type].length; i++) {
       str = str_identities[type][i].str;
       obj = str_identities[type][i].obj;
-      qs.stringify(obj).should.eql(str);
+      expect(qs.stringify(obj)).to.eql(str);
     }
   }
 }
