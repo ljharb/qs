@@ -28,6 +28,10 @@ and execute:
 
     $ make test
 
+browser:
+
+    $ open test/browser/index.html
+
 ## License 
 
 (The MIT License)
