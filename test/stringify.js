@@ -1,5 +1,7 @@
 
-if ('function' == typeof require) {
+if (require.register) {
+  var qs = require('querystring');
+} else {
   var qs = require('../')
     , expect = require('expect.js');
 }
