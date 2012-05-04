@@ -1,15 +1,4 @@
-(function(exports){
-/*!
- * querystring
- * Copyright(c) 2010 TJ Holowaychuk <tj@vision-media.ca>
- * MIT Licensed
- */
-
-/**
- * Library version.
- */
-
-exports.version = '0.4.2';
+;(function(){
 
 /**
  * Object#toString() ref for stringify().
@@ -262,4 +251,4 @@ function lastBraceInKey(str) {
     if ('=' == c && !brace) return i;
   }
 }
-})('undefined' == typeof exports ? qs = {} : exports);
+})();
