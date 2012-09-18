@@ -28,9 +28,6 @@ describe('qs.parse()', function(){
     expect(qs.parse('foo=bar'))
       .to.eql({ foo: 'bar' });
 
-    expect(qs.parse('foo%3Dbar=baz'))
-      .to.eql({ foo: 'bar=baz' });
-
     expect(qs.parse(' foo = bar = baz '))
       .to.eql({ ' foo ': ' bar = baz ' });
 
