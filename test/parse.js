@@ -52,6 +52,11 @@ describe('qs.parse()', function(){
       });
   })
 
+  it('should support encoded = signs', function(){
+    expect(qs.parse('he%3Dllo=th%3Dere'))
+      .to.eql({ 'he=llo': 'th=ere' });
+  })
+
   it('should support nesting', function(){
     expect(qs.parse('ops[>=]=25'))
       .to.eql({ ops: { '>=': '25' }});
