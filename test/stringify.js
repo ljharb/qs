@@ -6,6 +6,8 @@ if (require.register) {
     , expect = require('expect.js');
 }
 
+var date = new Date(0);
+
 var str_identities = {
   'basics': [
     { str: 'foo=bar', obj: {'foo' : 'bar'}},
@@ -51,6 +53,9 @@ var str_identities = {
   'numbers': [
     { str: 'limit[0]=1&limit[1]=2&limit[2]=3', obj: { limit: [1, 2, '3'] }},
     { str: 'limit=1', obj: { limit: 1 }}
+  ],
+  'others': [
+    { str: 'at=' + encodeURIComponent(date), obj: { at: date } }
   ]
 };
 
@@ -70,4 +75,5 @@ describe('qs.stringify()', function(){
   it('should support escapes', test('escaping'))
   it('should support nesting', test('nested'))
   it('should support numbers', test('numbers'))
+  it('should support others', test('others'))
 })
