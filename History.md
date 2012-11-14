@@ -1,4 +1,9 @@
 
+0.5.2 / 2012-11-14 
+==================
+
+  * fix uri encoding of non-plain object string values
+
 0.5.1 / 2012-09-18 
 ==================
 
