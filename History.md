@@ -1,4 +1,10 @@
 
+0.5.3 2012-12-09 
+==================
+
+  * add info to component.json
+  * remove regular client-side ./querystring.js, fix component.json support
+
 0.5.2 / 2012-11-14 
 ==================
 
