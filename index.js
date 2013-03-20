@@ -195,10 +195,13 @@ function stringifyObject(obj, prefix) {
 
   for (var i = 0, len = keys.length; i < len; ++i) {
     key = keys[i];
-    if (null == obj[key]) continue;
-    ret.push(stringify(obj[key], prefix
-      ? prefix + '[' + encodeURIComponent(key) + ']'
-      : encodeURIComponent(key)));
+    if (null == obj[key]) {
+      ret.push(encodeURIComponent(key) + '=');
+    } else {
+      ret.push(stringify(obj[key], prefix
+        ? prefix + '[' + encodeURIComponent(key) + ']'
+        : encodeURIComponent(key)));
+    }
   }
 
   return ret.join('&');
