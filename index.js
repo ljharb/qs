@@ -196,6 +196,7 @@ function stringifyObject(obj, prefix) {
 
   for (var i = 0, len = keys.length; i < len; ++i) {
     key = keys[i];
+    if ('' == key) continue;
     if (null == obj[key]) {
       ret.push(encodeURIComponent(key) + '=');
     } else {
