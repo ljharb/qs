@@ -107,6 +107,7 @@ function parseString(str){
 
       // ?foo
       if ('' == key) key = pair, val = '';
+      if ('' == key) return ret;
 
       return merge(ret, decode(key), decode(val));
     }, { base: {} }).base;
