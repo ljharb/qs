@@ -106,51 +106,53 @@ var toString = Object.prototype.toString;
  * Array#indexOf shim.
  */
 
-function indexOf(arr, el) {
-  if (arr.indexOf) return arr.indexOf(el);
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] === el) return i;
-  }
-  return -1;
-}
+var indexOf = typeof Array.prototype.indexOf === 'function'
+  ? function(arr, el) { return arr.indexOf(el); }
+  : function(arr, el) {
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i] === el) return i;
+      }
+      return -1;
+    };
 
 /**
  * Array.isArray shim.
  */
 
-var isArray = Array.isArray || function (arr) {
+var isArray = Array.isArray || function(arr) {
   return toString.call(arr) == '[object Array]';
-}
+};
 
 /**
  * Object.keys shim.
  */
 
-var objectKeys = Object.keys || function (obj) {
+var objectKeys = Object.keys || function(obj) {
   var ret = [];
   for (var key in obj) ret.push(key);
   return ret;
-}
+};
 
 /**
  * Array#forEach shim.
  */
 
-var forEach = function (arr, fn) {
-  if (arr.forEach) return arr.forEach(fn);
-  for (var i = 0; i < arr.length; i++) fn(arr[i]);
-}
+var forEach = typeof Array.prototype.forEach === 'function'
+  ? function(arr, fn) { return arr.forEach(fn); }
+  : function(arr, fn) {
+      for (var i = 0; i < arr.length; i++) fn(arr[i]);
+    };
 
 /**
  * Array#reduce shim.
  */
 
-var reduce = function (arr, fn, initial) {
-  if (arr.reduce) return arr.reduce(fn, initial);
+var reduce = function(arr, fn, initial) {
+  if (typeof arr.reduce === 'function') return arr.reduce(fn, initial);
   var res = initial;
   for (var i = 0; i < arr.length; i++) res = fn(res, arr[i]);
   return res;
-}
+};
 
 /**
  * Cache non-integer test regexp.
