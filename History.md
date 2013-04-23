@@ -1,4 +1,10 @@
 
+0.6.0 / 2013-04-23 
+==================
+
+  * add shims for browser compat
+  * fix empty string key in .stringify()
+
 0.5.6 / 2013-04-09 
 ==================
 

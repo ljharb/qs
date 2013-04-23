@@ -1,7 +1,7 @@
 {
   "name": "qs",
   "description": "querystring parser",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "keywords": ["query string", "parser", "component"],
   "repository": {
     "type" : "git",
