@@ -11,6 +11,9 @@
       "mocha": "*"
     , "expect.js": "*"
   },
+  "scripts": {
+    "test": "make test"
+  },
   "component": {
     "scripts": {
       "querystring": "querystring.js"
