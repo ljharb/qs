@@ -58,14 +58,24 @@ var reduce = function(arr, fn, initial) {
 };
 
 /**
+ * Create a nullary object if possible
+ */
+
+var objectCreate = function () {
+  return Object.create
+    ? Object.create(null)
+    : {};
+}
+
+/**
  * Cache non-integer test regexp.
  */
 
 var isint = /^[0-9]+$/;
 
 function promote(parent, key) {
-  if (parent[key].length == 0) return parent[key] = {};
-  var t = {};
+  if (parent[key].length == 0) return parent[key] = objectCreate();
+  var t = objectCreate();
   for (var i in parent[key]) t[i] = parent[key][i];
   parent[key] = t;
   return t;
@@ -121,7 +131,7 @@ function merge(parent, key, val){
     // optimize
   } else {
     if (!isint.test(key) && isArray(parent.base)) {
-      var t = {};
+      var t = objectCreate();
       for (var k in parent.base) t[k] = parent.base[k];
       parent.base = t;
     }
@@ -160,7 +170,7 @@ function parseString(str){
     if ('' == key) return ret;
 
     return merge(ret, decode(key), decode(val));
-  }, { base: {} }).base;
+  }, { base: objectCreate() }).base;
 }
 
 /**
