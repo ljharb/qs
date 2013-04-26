@@ -61,7 +61,7 @@ var reduce = function(arr, fn, initial) {
  * Create a nullary object if possible
  */
 
-var objectCreate = function () {
+function createObject() {
   return Object.create
     ? Object.create(null)
     : {};
@@ -74,8 +74,8 @@ var objectCreate = function () {
 var isint = /^[0-9]+$/;
 
 function promote(parent, key) {
-  if (parent[key].length == 0) return parent[key] = objectCreate();
-  var t = objectCreate();
+  if (parent[key].length == 0) return parent[key] = createObject();
+  var t = createObject();
   for (var i in parent[key]) t[i] = parent[key][i];
   parent[key] = t;
   return t;
@@ -131,7 +131,7 @@ function merge(parent, key, val){
     // optimize
   } else {
     if (!isint.test(key) && isArray(parent.base)) {
-      var t = objectCreate();
+      var t = createObject();
       for (var k in parent.base) t[k] = parent.base[k];
       parent.base = t;
     }
@@ -170,7 +170,7 @@ function parseString(str){
     if ('' == key) return ret;
 
     return merge(ret, decode(key), decode(val));
-  }, { base: objectCreate() }).base;
+  }, { base: createObject() }).base;
 }
 
 /**
