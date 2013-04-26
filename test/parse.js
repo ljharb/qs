@@ -149,4 +149,10 @@ describe('qs.parse()', function(){
     expect(qs.parse('_r=1&'))
       .to.eql({ _r: '1' })
   })
+  
+  it('should not be possible to access Object prototype', function() {
+    qs.parse('constructor[prototype][bad]=bad');  
+    qs.parse('bad[constructor][prototype][bad]=bad');
+    expect(Object.prototype.bad).to.be(undefined);
+  });
 })
