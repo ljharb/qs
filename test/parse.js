@@ -150,6 +150,12 @@ describe('qs.parse()', function(){
       .to.eql({ _r: '1' })
   })
 
+  it('should not create big arrays of null objects', function(){
+    var q = qs.parse('a[999999999]=1&a[2]=2');
+    expect(q['a'].length).to.eql(2);
+    expect(q).to.eql({ a: ['2', '1'] });
+  })
+
   if ('undefined' == typeof window) {
     it('should not be possible to access Object prototype', function() {
       qs.parse('constructor[prototype][bad]=bad');

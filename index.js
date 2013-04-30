@@ -142,6 +142,27 @@ function merge(parent, key, val){
 }
 
 /**
+ * Compact sparse arrays
+ */
+
+function compact(obj) {
+  if ('object' != typeof obj) return obj;
+
+  if (isArray(obj)) {
+    var ret = [];
+    for (var i in obj) ret.push(obj[i]);
+    return ret;
+  }
+
+  for (var key in obj) {
+    obj[key] = compact(obj[key]);
+  }
+
+  return obj;
+}
+
+
+/**
  * Parse the given obj.
  */
 
@@ -150,7 +171,8 @@ function parseObject(obj){
   forEach(objectKeys(obj), function(name){
     merge(ret, name, obj[name]);
   });
-  return ret.base;
+
+  return compact(ret.base);
 }
 
 /**
@@ -158,7 +180,7 @@ function parseObject(obj){
  */
 
 function parseString(str){
-  return reduce(String(str).split('&'), function(ret, pair){
+  var ret = reduce(String(str).split('&'), function(ret, pair){
     var eql = indexOf(pair, '=')
       , brace = lastBraceInKey(pair)
       , key = pair.substr(0, brace || eql)
@@ -171,6 +193,8 @@ function parseString(str){
 
     return merge(ret, decode(key), decode(val));
   }, { base: createObject() }).base;
+
+  return compact(ret);
 }
 
 /**
