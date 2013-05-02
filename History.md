@@ -1,4 +1,9 @@
 
+0.6.2 / 2013-05-02 
+==================
+
+  * fix possibility to create huge sparse arrays.
+
 0.6.1 / 2013-04-26 
 ==================
 
