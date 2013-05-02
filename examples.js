@@ -51,3 +51,5 @@ var str = qs.stringify({ user: { name: 'Tobi', email: 'tobi@learnboost.com' }});
 console.log(str);
 
 console.log(qs.parse('constructor[prototype][hasOwnProperty]=foo'));
+
+console.log(qs.parse('foo[10]=1&foo[5]=2'));
