@@ -8,6 +8,8 @@ if (require.register) {
 
 describe('qs.parse()', function(){
   it('should support the basics', function(){
+    qs.parse('foo=bar').hasOwnProperty('foo');
+
     expect(qs.parse('0=foo')).to.eql({ '0': 'foo' });
 
     expect(qs.parse('foo=c++'))
