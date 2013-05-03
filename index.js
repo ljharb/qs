@@ -142,7 +142,7 @@ function merge(parent, key, val){
 }
 
 /**
- * Compact sparse arrays
+ * Compact sparse arrays.
  */
 
 function compact(obj) {
@@ -161,6 +161,23 @@ function compact(obj) {
   return obj;
 }
 
+/**
+ * Restore Object.prototype.
+ * see pull-request #58
+ */
+
+function restoreProto(obj) {
+  if (!Object.create) return obj;
+  if (isArray(obj)) return obj;
+  if (obj && 'object' != typeof obj) return obj;
+
+  for (var key in obj) {
+    obj[key] = restoreProto(obj[key]);
+  }
+
+  obj.__proto__ = Object.prototype;
+  return obj;
+}
 
 /**
  * Parse the given obj.
@@ -168,6 +185,7 @@ function compact(obj) {
 
 function parseObject(obj){
   var ret = { base: {} };
+
   forEach(objectKeys(obj), function(name){
     merge(ret, name, obj[name]);
   });
@@ -194,7 +212,7 @@ function parseString(str){
     return merge(ret, decode(key), decode(val));
   }, { base: createObject() }).base;
 
-  return compact(ret);
+  return restoreProto(compact(ret));
 }
 
 /**
