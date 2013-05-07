@@ -1,9 +1,14 @@
-
 /**
  * Object#toString() ref for stringify().
  */
 
 var toString = Object.prototype.toString;
+
+/**
+ * Object#hasOwnProperty ref
+ */
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * Array#indexOf shim.
@@ -172,7 +177,9 @@ function restoreProto(obj) {
   if (obj && 'object' != typeof obj) return obj;
 
   for (var key in obj) {
-    obj[key] = restoreProto(obj[key]);
+    if (hasOwnProperty.call(obj, key)) {
+      obj[key] = restoreProto(obj[key]);
+    }
   }
 
   obj.__proto__ = Object.prototype;
