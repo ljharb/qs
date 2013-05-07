@@ -1,4 +1,3 @@
-
 if (require.register) {
   var qs = require('querystring');
 } else {
@@ -165,5 +164,10 @@ describe('qs.parse()', function(){
       qs.parse('bad[constructor][prototype][bad]=bad');
       expect(Object.prototype.bad).to.be(undefined);
     });
+    
+    it('should not throw when a native prototype has an enumerable property', function() {
+      Object.prototype.crash = '';
+      expect(qs.parse.bind(null, 'test')).to.not.throwException();
+    })
   }
 })
