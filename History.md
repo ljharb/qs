@@ -1,4 +1,10 @@
 
+0.6.4 / 2013-05-07 
+==================
+
+  * Don't throw when native prototype has enumerable properties
+  * check hasOwnProperty before restoring proto
+
 0.6.3 / 2013-05-03 
 ==================
 
