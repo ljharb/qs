@@ -1,4 +1,9 @@
 
+0.6.5 / 2013-05-13 
+==================
+
+  * Use hasOwnProperty when iterating over Array
+
 0.6.4 / 2013-05-07 
 ==================
 
