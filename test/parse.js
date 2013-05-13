@@ -5,6 +5,8 @@ if (require.register) {
     , expect = require('expect.js');
 }
 
+Array.prototype.dummy = function () {}; // is should not be affected by Array.prototype
+
 describe('qs.parse()', function(){
   it('should support the basics', function(){
     qs.parse('foo=bar').hasOwnProperty('foo');
