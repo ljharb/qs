@@ -11,6 +11,20 @@ var toString = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
+ * see issue #70
+ */
+var isRestorableProto = (function () {
+  var o;
+
+  if (!Object.create) return false;
+
+  o = Object.create(null);
+  o.__proto__ = Object.prototype;
+
+  return o.hasOwnProperty === hasOwnProperty;
+})();
+
+/**
  * Array#indexOf shim.
  */
 
@@ -67,7 +81,7 @@ var reduce = function(arr, fn, initial) {
  */
 
 function createObject() {
-  return Object.create
+  return isRestorableProto
     ? Object.create(null)
     : {};
 }
@@ -182,7 +196,7 @@ function compact(obj) {
  */
 
 function restoreProto(obj) {
-  if (!Object.create) return obj;
+  if (!isRestorableProto) return obj;
   if (isArray(obj)) return obj;
   if (obj && 'object' != typeof obj) return obj;
 
