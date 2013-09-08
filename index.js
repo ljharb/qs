@@ -51,7 +51,11 @@ var isArray = Array.isArray || function(arr) {
 
 var objectKeys = Object.keys || function(obj) {
   var ret = [];
-  for (var key in obj) ret.push(key);
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      ret.push(key);
+    }
+  }
   return ret;
 };
 
