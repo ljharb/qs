@@ -22,6 +22,10 @@ describe('qs.stringify() - new ', function(){
   it('should paarse numeric values to strings', function() {
     expect(qs.parse('foo=1&bar=2')).to.eql({'foo' : '1', 'bar' : '2'});
   });
+  it('should parse that weird field', function(){
+    expect(qs.parse('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F')).to.eql({'my weird field': "q1!2\"'w$5&7/z8)?"});
+  });
+
 });
 var date = new Date(0);
 
