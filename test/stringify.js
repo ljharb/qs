@@ -6,6 +6,23 @@ if (require.register) {
     , expect = require('expect.js');
 }
 
+
+describe('qs.stringify() - new ', function(){
+  it('should parse a basic parameter', function(){
+    expect(qs.parse('foo=bar')).to.eql({ 'foo': 'bar' }); 
+  });
+
+  it('should parse and excaped char', function(){
+    expect(qs.parse('foo=%22bar%22')).to.eql({'foo' : '\"bar\"'});
+  });
+
+  it('should parse to empty string if a value is missing', function() {
+    expect(qs.parse('foo=')).to.eql({foo:''});
+  }); 
+  it('should paarse numeric values to strings', function() {
+    expect(qs.parse('foo=1&bar=2')).to.eql({'foo' : '1', 'bar' : '2'});
+  });
+});
 var date = new Date(0);
 
 var str_identities = {
@@ -18,7 +35,9 @@ var str_identities = {
     { str: 'foo%3Dbaz=bar', obj: {'foo=baz': 'bar'}},
     { str: 'foo=bar&bar=baz', obj: {foo: 'bar', bar: 'baz'}},
     { str: 'foo=bar&baz=&raz=', obj: { foo: 'bar', baz: null, raz: undefined }},
-    { str: 'foo=bar', obj: { foo: 'bar', '':'' }}
+    { str: 'foo=bar', obj: { foo: 'bar', '':'' }},
+    { str: 'this=bar', obj: { 'this': 'bar', '':'' }},
+    { str: 'null=bar', obj: { 'null': 'bar', '':'' }}
   ],
   'escaping': [
     { str: 'foo=foo%20bar', obj: {foo: 'foo bar'}},
@@ -49,6 +68,8 @@ var str_identities = {
     { str: 'user[name][first]=tj&user[name][last]=holowaychuk', obj: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
   ],
   'errors': [
+    { obj: {},     message: 'stringify expects an object' },
+    { obj: null,     message: 'stringify expects an object' },
     { obj: 'foo=bar',     message: 'stringify expects an object' },
     { obj: ['foo', 'bar'], message: 'stringify expects an object' }
   ],
