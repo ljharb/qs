@@ -12,6 +12,10 @@ describe('qs.stringify() - new ', function(){
     expect(qs.parse('foo=bar')).to.eql({ 'foo': 'bar' }); 
   });
 
+  it('should parse a pair of string parameters delimited by &', function() {
+    expect(qs.parse('foo=bar&bar=baz')).to.eql({'foo' : 'bar', 'bar' : 'baz'});
+  });
+
   it('should parse and excaped char', function(){
     expect(qs.parse('foo=%22bar%22')).to.eql({'foo' : '\"bar\"'});
   });
@@ -19,11 +23,15 @@ describe('qs.stringify() - new ', function(){
   it('should parse to empty string if a value is missing', function() {
     expect(qs.parse('foo=')).to.eql({foo:''});
   }); 
-  it('should paarse numeric values to strings', function() {
+  it('should parse numeric values to strings', function() {
     expect(qs.parse('foo=1&bar=2')).to.eql({'foo' : '1', 'bar' : '2'});
   });
   it('should parse that weird field', function(){
     expect(qs.parse('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F')).to.eql({'my weird field': "q1!2\"'w$5&7/z8)?"});
+  });
+
+  it('should parse a = coded as html entity in the key', function() {
+    expect(qs.parse('foo%3Dbaz=bar')).to.eql({'foo=baz': 'bar'}); 
   });
 
 });
