@@ -40,9 +40,8 @@ describe('qs.stringify() - basic', function(){
 
   it('should parse two empty values to not undefined', function() {
     expect(qs.parse('foo=bar&baz=&raz=')).to.eql({ foo: 'bar', baz: '', raz: '' }); 
-  });  
+  });
 });
-
 
 describe('qs.stringify() - escaping', function(){
   it('should work with escaping html entities in the value', function(){
@@ -78,7 +77,7 @@ describe('qs.stringify() - nested', function(){
      expect(qs.parse(str)).to.eql(compare); 
   });
   
-  it('should work with a array and a object ', function(){
+  it('should work with a array and a object', function(){
      var str = 'foo=bar&baz[0]=1&baz[1]=2&baz[2]=3';
      var compare =  {'foo' : 'bar', 'baz' : ['1', '2', '3']};
      expect(qs.parse(str)).to.eql(compare); 
@@ -90,6 +89,35 @@ describe('qs.stringify() - nested', function(){
      expect(qs.parse(str)).to.eql(compare); 
   });
   
+  it('should work with a double nested array with string keys and a third level with a numeric key', function(){
+     var str = 'x[y][z][0]=1';
+     var compare =  {'x' : {'y' : {'z' : ['1']}}};
+     expect(qs.parse(str)).to.eql(compare); 
+  });  
+  
+  it('should work with a nested array in string with string keys and a numeric value of 1', function(){
+     var str = 'x[y][z]=1';
+     var compare =  {'x' : {'y' : {'z' : '1'}}};
+     expect(qs.parse(str)).to.eql(compare); 
+  });  
+  
+  it('should work with a nested array in string with string keys and a numeric value of 2', function(){
+    var str = 'x[y][z]=2';
+    var compare =  {'x' : {'y' : {'z' : '2'}}};
+    expect(qs.parse(str)).to.eql(compare); 
+  });
+  
+  it('should work with array in double nesting', function(){
+     var str = 'x[y][z][0]=1&x[y][z][1]=2';
+     var compare =  {'x' : {'y' : {'z' : ['1', '2']}}};
+     expect(qs.parse(str)).to.eql(compare); 
+  }); 
+  
+  it('should work with object in array', function(){
+     var str = 'x[y][0][z]=1';
+     var compare =  {'x' : {'y' : [{'z' : '1'}]}};
+     expect(qs.parse(str)).to.eql(compare); 
+  }); 
   
   
   
