@@ -7,49 +7,49 @@ if (require.register) {
 }
 
 describe('qs.stringify() - basic', function(){
-  it('should parse a basic parameter', function(){
-    expect(qs.parse('foo=bar')).to.eql({ 'foo': 'bar' }); 
+  it('should stringify a basic parameter', function(){
+    expect(qs.stringify({ 'foo': 'bar' })).to.eql('foo=bar'); 
   });
 
   it('should parse a pair of string parameters delimited by &', function() {
-    expect(qs.parse('foo=bar&bar=baz')).to.eql({'foo' : 'bar', 'bar' : 'baz'});
+    expect(qs.stringify('foo=bar&bar=baz')).to.eql({'foo' : 'bar', 'bar' : 'baz'});
   });
 
   it('should parse and excaped char', function(){
-    expect(qs.parse('foo=%22bar%22')).to.eql({'foo' : '\"bar\"'});
+    expect(qs.stringify('foo=%22bar%22')).to.eql({'foo' : '\"bar\"'});
   });
 
   it('should parse to empty string if a value is missing', function() {
-    expect(qs.parse('foo=')).to.eql({foo:''});
+    expect(qs.stringify('foo=')).to.eql({foo:''});
   }); 
   it('should parse numeric values to strings', function() {
-    expect(qs.parse('foo=1&bar=2')).to.eql({'foo' : '1', 'bar' : '2'});
+    expect(qs.stringify('foo=1&bar=2')).to.eql({'foo' : '1', 'bar' : '2'});
   });
   
   it('should parse that weird field', function(){
-    expect(qs.parse('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F')).to.eql({'my weird field': "q1!2\"'w$5&7/z8)?"});
+    expect(qs.stringify('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F')).to.eql({'my weird field': "q1!2\"'w$5&7/z8)?"});
   });
 
   it('should parse a = coded as html entity in the key', function() {
-    expect(qs.parse('foo%3Dbaz=bar')).to.eql({'foo=baz': 'bar'}); 
+    expect(qs.stringify('foo%3Dbaz=bar')).to.eql({'foo=baz': 'bar'}); 
   });
   
   it('should parse two normal key value combinations to a object', function() {
-    expect(qs.parse('foo=bar&bar=baz')).to.eql({foo: 'bar', bar: 'baz'}); 
+    expect(qs.stringify('foo=bar&bar=baz')).to.eql({foo: 'bar', bar: 'baz'}); 
   });
 
   it('should parse two empty values to not undefined', function() {
-    expect(qs.parse('foo=bar&baz=&raz=')).to.eql({ foo: 'bar', baz: '', raz: '' }); 
+    expect(qs.stringify('foo=bar&baz=&raz=')).to.eql({ foo: 'bar', baz: '', raz: '' }); 
   });
 });
 
 describe('qs.stringify() - escaping', function(){
   it('should work with escaping html entities in the value', function(){
-     expect(qs.parse('foo=foo%20bar')).to.eql({foo: 'foo bar'}); 
+     expect(qs.stringify('foo=foo%20bar')).to.eql({foo: 'foo bar'}); 
   }); 
   
   it('should work with different forms of escaping html entities', function(){
-     expect(qs.parse('cht=p3&chd=t%3A60%2C40&chs=250x100&chl=Hello%7CWorld')).to.eql({
+     expect(qs.stringify('cht=p3&chd=t%3A60%2C40&chs=250x100&chl=Hello%7CWorld')).to.eql({
         cht: 'p3'
       , chd: 't:60,40'
       , chs: '250x100'
@@ -59,46 +59,47 @@ describe('qs.stringify() - escaping', function(){
 });
 
 describe('qs.stringify() - nested', function(){
+    
   it('should work with a simple array with one value', function(){
      var str = 'foo[0]=bar';
      var compare = {'foo' : ['bar']};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });
 
   it('should work with a simple array with two values', function(){
      var str = 'foo[0]=bar&foo[1]=quux';
      var compare = {'foo' : ['bar', 'quux']};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });
   
   it('should work with a simple array with two numeric values', function(){
      var str = 'foo[0]=0&foo[1]=1';
      var compare = {'foo' : ['0', '1']};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });
   
   it('should work with a array and a object', function(){
      var str = 'foo=bar&baz[0]=1&baz[1]=2&baz[2]=3';
      var compare =  {'foo' : 'bar', 'baz' : ['1', '2', '3']};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });
   
   it('should work with a array containing string values and a array containing numeric values', function(){
      var str = 'foo[0]=bar&baz[0]=1&baz[1]=2&baz[2]=3';
      var compare =  {'foo' : ['bar'], 'baz' : ['1', '2', '3']};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });
   
   it('should work with a double nested array with string keys and a third level with a numeric key', function(){
      var str = 'x[y][z][0]=1';
      var compare =  {'x' : {'y' : {'z' : ['1']}}};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });  
   
   it('should work with a nested array in string with string keys and a numeric value of 1', function(){
      var str = 'x[y][z]=1';
      var compare =  {'x' : {'y' : {'z' : '1'}}};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   });  
   
   it('should work with a nested array in string with string keys and a numeric value of 2', function(){
@@ -110,41 +111,97 @@ describe('qs.stringify() - nested', function(){
   it('should work with array in double nesting', function(){
      var str = 'x[y][z][0]=1&x[y][z][1]=2';
      var compare =  {'x' : {'y' : {'z' : ['1', '2']}}};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
   }); 
   
-  it('should work with object in array', function(){
+  it('should work with object, array, object nesting', function(){
      var str = 'x[y][0][z]=1';
      var compare =  {'x' : {'y' : [{'z' : '1'}]}};
-     expect(qs.parse(str)).to.eql(compare); 
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
+  
+   it('should work with object, array, object, array nesting', function(){
+     var str = 'x[y][0][z][0]=1';
+     var compare =  {'x' : {'y' : [{'z' : ['1']}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
   }); 
   
+  it('should work with object, array, object, array nesting', function(){
+     var str = 'x[y][0][z][0]=1';
+     var compare =  {'x' : {'y' : [{'z' : ['1']}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  }); 
+  
+  it('should work with object, array, object, array nesting', function(){
+     var str = 'x[y][0][z][0]=1';
+     var compare =  {'x' : {'y' : [{'z' : ['1']}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  }); 
+  
+  it('should work for 2 objects nested with an array', function(){
+     var str = 'x[y][0][z]=1&x[y][0][w]=2';
+     var compare =  {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
   
   
+  it('should work for object, array, object nesting', function(){
+     var str = 'x[y][0][v][w]=1';
+     var compare =  {'x' : {'y' : [{'v' : {'w' : '1'}}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
+  
+  it('should work for --', function(){
+     var str = 'x[y][0][z]=1&x[y][0][v][w]=2';
+     var compare =  {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
+  
+  it('should work for ---', function(){
+     var str = 'x[y][0][z]=1&x[y][1][z]=2';
+     var compare =  {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
+  
+  
+  it('should work for ----', function(){
+     var str = 'x[y][0][z]=1&x[y][0][w]=a&x[y][1][z]=2&x[y][1][w]=3';
+     var compare =  {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
+  
+  it('should work for first and lastname of a user', function(){
+     var str = 'user[name][first]=tj&user[name][last]=holowaychuk';
+     var compare =  { user: { name: { first: 'tj', last: 'holowaychuk' }}};
+     expect(qs.stringify(str)).to.eql(compare); 
+  });
 });
+
+
+describe('qs.stringify() - errors', function(){
+    it('should get a error for null', function(){
+     var input = null;
+     var compare =  {};
+     expect(qs.stringify(input)).to.eql(compare); 
+  }); 
+});
+
+
+describe('qs.stringify() - numbers', function(){
+   
+});
+
+describe('qs.stringify() - others', function(){
+   
+});
+
+
+
 
 var date = new Date(0);
 
 var str_identities = {
-  'nested': [
-    { str: 'foo[0]=bar&foo[1]=quux', obj: {'foo' : ['bar', 'quux']}},
-    { str: 'foo[0]=bar', obj: {foo: ['bar']}},
-    { str: 'foo[0]=1&foo[1]=2', obj: {'foo' : ['1', '2']}},
-    { str: 'foo=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
-    { str: 'foo[0]=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
-    { str: 'x[y][z]=1', obj: {'x' : {'y' : {'z' : '1'}}}},
-    { str: 'x[y][z][0]=1', obj: {'x' : {'y' : {'z' : ['1']}}}},
-    { str: 'x[y][z]=2', obj: {'x' : {'y' : {'z' : '2'}}}},
-    { str: 'x[y][z][0]=1&x[y][z][1]=2', obj: {'x' : {'y' : {'z' : ['1', '2']}}}},
-    { str: 'x[y][0][z]=1', obj: {'x' : {'y' : [{'z' : '1'}]}}},
-    { str: 'x[y][0][z][0]=1', obj: {'x' : {'y' : [{'z' : ['1']}]}}},
-    { str: 'x[y][0][z]=1&x[y][0][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
-    { str: 'x[y][0][v][w]=1', obj: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
-    { str: 'x[y][0][z]=1&x[y][0][v][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
-    { str: 'x[y][0][z]=1&x[y][1][z]=2', obj: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
-    { str: 'x[y][0][z]=1&x[y][0][w]=a&x[y][1][z]=2&x[y][1][w]=3', obj: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
-    { str: 'user[name][first]=tj&user[name][last]=holowaychuk', obj: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
-  ],
+  
   'errors': [
     { obj: {},     message: 'stringify expects an object' },
     { obj: null,     message: 'stringify expects an object' },
@@ -178,7 +235,27 @@ var str_identities = {
       , chs: '250x100'
       , chl: 'Hello|World'
     }}
-  ],*/
+  ],
+  'nested': [
+    { str: 'foo[0]=bar&foo[1]=quux', obj: {'foo' : ['bar', 'quux']}},
+    { str: 'foo[0]=bar', obj: {foo: ['bar']}},
+    { str: 'foo[0]=1&foo[1]=2', obj: {'foo' : ['1', '2']}},
+    { str: 'foo=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : 'bar', 'baz' : ['1', '2', '3']}},
+    { str: 'foo[0]=bar&baz[0]=1&baz[1]=2&baz[2]=3', obj: {'foo' : ['bar'], 'baz' : ['1', '2', '3']}},
+    { str: 'x[y][z]=1', obj: {'x' : {'y' : {'z' : '1'}}}},
+    { str: 'x[y][z][0]=1', obj: {'x' : {'y' : {'z' : ['1']}}}},
+    { str: 'x[y][z]=2', obj: {'x' : {'y' : {'z' : '2'}}}},
+    { str: 'x[y][z][0]=1&x[y][z][1]=2', obj: {'x' : {'y' : {'z' : ['1', '2']}}}},
+    { str: 'x[y][0][z]=1', obj: {'x' : {'y' : [{'z' : '1'}]}}},
+    { str: 'x[y][0][z][0]=1', obj: {'x' : {'y' : [{'z' : ['1']}]}}},
+    { str: 'x[y][0][z]=1&x[y][0][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'w' : '2'}]}}},
+    { str: 'x[y][0][v][w]=1', obj: {'x' : {'y' : [{'v' : {'w' : '1'}}]}}},
+    { str: 'x[y][0][z]=1&x[y][0][v][w]=2', obj: {'x' : {'y' : [{'z' : '1', 'v' : {'w' : '2'}}]}}},
+    { str: 'x[y][0][z]=1&x[y][1][z]=2', obj: {'x' : {'y' : [{'z' : '1'}, {'z' : '2'}]}}},
+    { str: 'x[y][0][z]=1&x[y][0][w]=a&x[y][1][z]=2&x[y][1][w]=3', obj: {'x' : {'y' : [{'z' : '1', 'w' : 'a'}, {'z' : '2', 'w' : '3'}]}}},
+    { str: 'user[name][first]=tj&user[name][last]=holowaychuk', obj: { user: { name: { first: 'tj', last: 'holowaychuk' }}}}
+  ],
+  */
 
 
 
@@ -196,7 +273,7 @@ function test(type) {
 describe('qs.stringify()', function(){
   // it('should support the basics', test('basics'))
   // it('should support escapes', test('escaping'))
-  it('should support nesting', test('nested'))
+  // it('should support nesting', test('nested'))
   it('should support numbers', test('numbers'))
   it('should support others', test('others'))
 })
