@@ -159,17 +159,22 @@ describe('qs.parse()', function(){
     expect(q['a'].length).to.eql(2);
     expect(q).to.eql({ a: ['2', '1'] });
   })
-
-  if ('undefined' == typeof window) {
-    it('should not be possible to access Object prototype', function() {
-      qs.parse('constructor[prototype][bad]=bad');
-      qs.parse('bad[constructor][prototype][bad]=bad');
-      expect(Object.prototype.bad).to.be(undefined);
-    });
+  
+  it('should not be able to override prototypes', function(){
+    var obj = qs.parse('toString=bad&bad[toString]=bad&constructor=bad');
+    expect(obj.toString).to.be.a(Function);
+    expect(obj.bad.toString).to.be.a(Function);
+    expect(obj.constructor).to.be.a(Function);
+  })
+  
+  it('should not be possible to access Object prototype', function() {
+    qs.parse('constructor[prototype][bad]=bad');
+    qs.parse('bad[constructor][prototype][bad]=bad');
+    expect(Object.prototype.bad).to.be(undefined);
+  });
     
-    it('should not throw when a native prototype has an enumerable property', function() {
-      Object.prototype.crash = '';
-      expect(qs.parse.bind(null, 'test')).to.not.throwException();
-    })
-  }
+  it('should not throw when a native prototype has an enumerable property', function() {
+    Object.prototype.crash = '';
+    expect(qs.parse.bind(null, 'test')).to.not.throwException();
+  })
 })

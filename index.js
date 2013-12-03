@@ -11,20 +11,6 @@ var toString = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
- * see issue #70
- */
-var isRestorableProto = (function () {
-  var o;
-
-  if (!Object.create) return false;
-
-  o = Object.create(null);
-  o.__proto__ = Object.prototype;
-
-  return o.hasOwnProperty === hasOwnProperty;
-})();
-
-/**
  * Array#indexOf shim.
  */
 
@@ -81,24 +67,14 @@ var reduce = function(arr, fn, initial) {
 };
 
 /**
- * Create a nullary object if possible
- */
-
-function createObject() {
-  return isRestorableProto
-    ? Object.create(null)
-    : {};
-}
-
-/**
  * Cache non-integer test regexp.
  */
 
 var isint = /^[0-9]+$/;
 
 function promote(parent, key) {
-  if (parent[key].length == 0) return parent[key] = createObject();
-  var t = createObject();
+  if (parent[key].length == 0) return parent[key] = {}
+  var t = {};
   for (var i in parent[key]) {
     if (hasOwnProperty.call(parent[key], i)) {
       t[i] = parent[key][i];
@@ -110,6 +86,10 @@ function promote(parent, key) {
 
 function parse(parts, parent, key, val) {
   var part = parts.shift();
+  
+  // illegal
+  if (Object.getOwnPropertyDescriptor(Object.prototype, key)) return;
+  
   // end
   if (!part) {
     if (isArray(parent[key])) {
@@ -158,7 +138,7 @@ function merge(parent, key, val){
     // optimize
   } else {
     if (!isint.test(key) && isArray(parent.base)) {
-      var t = createObject();
+      var t = {};
       for (var k in parent.base) t[k] = parent.base[k];
       parent.base = t;
     }
@@ -195,26 +175,6 @@ function compact(obj) {
 }
 
 /**
- * Restore Object.prototype.
- * see pull-request #58
- */
-
-function restoreProto(obj) {
-  if (!isRestorableProto) return obj;
-  if (isArray(obj)) return obj;
-  if (obj && 'object' != typeof obj) return obj;
-
-  for (var key in obj) {
-    if (hasOwnProperty.call(obj, key)) {
-      obj[key] = restoreProto(obj[key]);
-    }
-  }
-
-  obj.__proto__ = Object.prototype;
-  return obj;
-}
-
-/**
  * Parse the given obj.
  */
 
@@ -245,9 +205,9 @@ function parseString(str){
     if ('' == key) return ret;
 
     return merge(ret, decode(key), decode(val));
-  }, { base: createObject() }).base;
+  }, { base: {} }).base;
 
-  return restoreProto(compact(ret));
+  return compact(ret);
 }
 
 /**
@@ -359,6 +319,7 @@ function stringifyObject(obj, prefix) {
 
 function set(obj, key, val) {
   var v = obj[key];
+  if (Object.getOwnPropertyDescriptor(Object.prototype, key)) return;
   if (undefined === v) {
     obj[key] = val;
   } else if (isArray(v)) {
