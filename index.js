@@ -1,14 +1,45 @@
 var Querystring = require('querystring');
-var Hoek = require('hoek');
 
 var internals = {};
 
-internals.parseNest = function (key, val, depth) {
+internals.setKey = function (obj, chain, val) {
+
+    var root = chain.shift();
+
+    if (chain.length > 1) {
+        obj[root] = {};
+        internals.setKey(obj[root], chain, val);
+    }
+    else if (chain.length === 1) {
+        var index = /\[(\d+)?\]/.exec(chain[0]);
+
+        if (!index) {
+            obj[root] = {};
+            internals.setKey(obj[root], chain, val);
+        }
+        else {
+            if (!index[1]) {
+                obj[root] = [].concat(val);
+            }
+            else {
+                if (!(obj[root] instanceof Array)) {
+                    obj[root] = [];
+                }
+                obj[root][index[1]] = val;
+            }
+        }
+    }
+    else {
+        obj[root] = val;
+    }
+};
+
+internals.parseNest = function (key, val, depth, result) {
 
     depth = typeof depth === 'undefined' ? 5 : depth; // default to 5
 
     var parent = '^([^\\[\\]]+)';
-    var child = '(?:\\[([^\\[\\]]+)\\])?';
+    var child = '(?:\\[([^\\[\\]0-9]+)\\])?';
     var rest = '(.*)$';
 
     var ar = new Array(depth + 1);
@@ -16,28 +47,10 @@ internals.parseNest = function (key, val, depth) {
     var matcher = new RegExp(re);
 
     var parts = matcher.exec(key);
-    var res = {};
     var keys = parts.filter(function (part) { return typeof part !== 'undefined' && part !== '' }).slice(1);
+    internals.setKey(result, keys, val);
 
-    var current = res;
-    var parent = res;
-    for (var i = 0, l = keys.length; i < l; i++) {
-        if (i === l - 1) {
-            if (keys[i] === '[]') {
-                parent[keys[i - 1]] = val instanceof Array ? val : [val];
-            }
-            else {
-                current[keys[i]] = val;
-            }
-        }
-        else {
-            current[keys[i]] = {};
-        }
-        parent = current;
-        current = current[keys[i]];
-    }
-
-    return res;
+    return result;
 };
 
 exports.parse = function (str, depth) {
@@ -47,7 +60,7 @@ exports.parse = function (str, depth) {
 
     Object.keys(tempObj).forEach(function (key) {
 
-        obj = Hoek.merge(obj, internals.parseNest(key, tempObj[key], depth));
+        internals.parseNest(key, tempObj[key], depth, obj);
     });
 
     return obj;

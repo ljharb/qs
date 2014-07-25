@@ -13,12 +13,6 @@ describe('Riddler', function () {
         done();
     });
 
-    it('parses a simple array', function (done) {
-
-        expect(Riddler.parse('a=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
-        done();
-    });
-
     it('parses a single nested string', function (done) {
 
         expect(Riddler.parse('a[b]=c')).to.deep.equal({ a: { b: 'c' } });
@@ -44,7 +38,13 @@ describe('Riddler', function () {
         done();
     });
 
-    it('parses a top level array', function (done) {
+    it('parses a simple array', function (done) {
+
+        expect(Riddler.parse('a=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
+        done();
+    });
+
+    it('parses an explicit array', function (done) {
 
         expect(Riddler.parse('a[]=b')).to.deep.equal({ a: ['b'] });
         expect(Riddler.parse('a[]=b&a[]=c')).to.deep.equal({ a: ['b', 'c'] });
@@ -54,6 +54,12 @@ describe('Riddler', function () {
     it('parses a nested array', function (done) {
 
         expect(Riddler.parse('a[b][]=c&a[b][]=d')).to.deep.equal({ a: { b: ['c', 'd'] } });
+        done();
+    });
+
+    it('allows to specify array indices', function (done) {
+
+        expect(Riddler.parse('a[1]=c&a[0]=b')).to.deep.equal({ a: ['b', 'c'] });
         done();
     });
 
