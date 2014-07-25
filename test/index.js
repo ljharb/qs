@@ -13,6 +13,12 @@ describe('Riddler', function () {
         done();
     });
 
+    it('parses a simple array', function (done) {
+
+        expect(Riddler.parse('a=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
+        done();
+    });
+
     it('parses a single nested string', function (done) {
 
         expect(Riddler.parse('a[b]=c')).to.deep.equal({ a: { b: 'c' } });
