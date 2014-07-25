@@ -6,9 +6,7 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "hoek": "^2.3.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "lab": "^3.2.1"
   },
