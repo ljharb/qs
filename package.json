@@ -1,0 +1,32 @@
+{
+  "name": "riddler",
+  "version": "0.0.0",
+  "description": "a querystring parser that supports nesting and arrays, with a depth limit",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "hoek": "^2.3.0"
+  },
+  "devDependencies": {
+    "lab": "^3.2.1"
+  },
+  "scripts": {
+    "test": "lab -t 100"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nlf/riddler.git"
+  },
+  "keywords": [
+    "querystring",
+    "qs"
+  ],
+  "author": "Nathan LaFreniere <quitlahok@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nlf/riddler/issues"
+  },
+  "homepage": "https://github.com/nlf/riddler"
+}

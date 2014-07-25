@@ -16,24 +16,24 @@ internals.parseNest = function (key, val, depth) {
     var matcher = new RegExp(re);
 
     var parts = matcher.exec(key);
-
     var res = {};
-
-    if (!parts) {
-        res[key] = val;
-        return res;
-    }
-
     var keys = parts.filter(function (part) { return typeof part !== 'undefined' && part !== '' }).slice(1);
 
     var current = res;
+    var parent = res;
     for (var i = 0, l = keys.length; i < l; i++) {
         if (i === l - 1) {
-            current[keys[i]] = val;
+            if (keys[i] === '[]') {
+                parent[keys[i - 1]] = val instanceof Array ? val : [val];
+            }
+            else {
+                current[keys[i]] = val;
+            }
         }
         else {
             current[keys[i]] = {};
         }
+        parent = current;
         current = current[keys[i]];
     }
 
@@ -47,7 +47,7 @@ exports.parse = function (str, depth) {
 
     Object.keys(tempObj).forEach(function (key) {
 
-        obj = Hoek.applyToDefaults(obj, internals.parseNest(key, tempObj[key], depth));
+        obj = Hoek.merge(obj, internals.parseNest(key, tempObj[key], depth));
     });
 
     return obj;
