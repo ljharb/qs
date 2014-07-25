@@ -44,4 +44,11 @@ describe('Riddler', function () {
         expect(Riddler.parse('a[b][]=c&a[b][]=d')).to.deep.equal({ a: { b: ['c', 'd'] } });
         done();
     });
+
+    it('is ok with url encoded strings', function (done) {
+
+        expect(Riddler.parse('a[b%20c]=d')).to.deep.equal({ a: { 'b c': 'd' } });
+        expect(Riddler.parse('a[b]=c%20d')).to.deep.equal({ a: { b: 'c d' } });
+        done();
+    });
 });
