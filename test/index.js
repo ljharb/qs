@@ -25,6 +25,12 @@ describe('Riddler', function () {
         done();
     });
 
+    it('defaults to a depth of 5', function (done) {
+
+        expect(Riddler.parse('a[b][c][d][e][f][g][h]=i')).to.deep.equal({ a: { b: { c: { d: { e: { f: { '[g][h]': 'i' } } } } } } });
+        done();
+    });
+
     it('only parses one level when depth = 1', function (done) {
 
         expect(Riddler.parse('a[b][c]=d', 1)).to.deep.equal({ a: { b: { '[c]': 'd' } } });
