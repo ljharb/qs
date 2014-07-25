@@ -47,7 +47,7 @@ exports.parse = function (str, depth) {
 
     Object.keys(tempObj).forEach(function (key) {
 
-        obj = Hoek.applyToDefaults(obj, internals.parseNest(key, tempObj[key]));
+        obj = Hoek.applyToDefaults(obj, internals.parseNest(key, tempObj[key], depth));
     });
 
     return obj;
