@@ -60,6 +60,7 @@ describe('Riddler', function () {
     it('allows to specify array indices', function (done) {
 
         expect(Riddler.parse('a[1]=c&a[0]=b')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Riddler.parse('a[1]=c')).to.deep.equal({ a: [, 'c'] });
         done();
     });
 
