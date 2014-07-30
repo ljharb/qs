@@ -102,6 +102,12 @@ describe('Riddler', function () {
             done();
         });
 
+        it('can stringify an object inside an array', function (done) {
+
+            expect(Riddler.stringify({ a: [{ b: 'c' }] })).to.equal('a[0][b]=c');
+            done();
+        });
+
         it('can stringify a complicated object', function (done) {
 
             expect(Riddler.stringify({ a: { b: 'c', d: 'e' } })).to.equal('a[b]=c&a[d]=e');
