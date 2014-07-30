@@ -2,6 +2,70 @@ var Querystring = require('querystring');
 
 var internals = {};
 
+internals.decode = function (str) {
+
+    var response;
+    try {
+        response = decodeURIComponent(str.replace(/\+/g, ' '));
+    } catch (e) {
+        response = str;
+    }
+
+    return response;
+};
+
+internals.basicParse = function (str) {
+
+    var obj = {};
+    var parts = str.split('&');
+    parts.forEach(function (part) {
+
+        var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
+
+        if (pos === -1) {
+            obj[internals.decode(part)] = '';
+        }
+        else {
+            var key = internals.decode(part.slice(0, pos));
+            var val = internals.decode(part.slice(pos + 1));
+            if (!obj[key]) {
+                obj[key] = val;
+            }
+            else {
+                obj[key] = [].concat([obj[key], val]);
+            }
+        }
+    });
+
+    return obj;
+};
+
+internals.compact = function (obj) {
+
+    if (typeof obj !== 'object') {
+        return obj;
+    }
+
+    var compacted = {};
+
+    Object.keys(obj).forEach(function (key) {
+
+        if (obj[key] instanceof Array) {
+            compacted[key] = [];
+            for (var i = 0, l = obj[key].length; i < l; i++) {
+                if (obj[key].hasOwnProperty(i) && obj[key][i]) {
+                    compacted[key].push(obj[key][i]);
+                }
+            }
+        }
+        else {
+            compacted[key] = internals.compact(obj[key]);
+        }
+    });
+
+    return compacted;
+};
+
 internals.setKey = function (obj, chain, val) {
 
     var root = chain.shift();
@@ -16,17 +80,34 @@ internals.setKey = function (obj, chain, val) {
 
         // it's not, so continue as normal
         if (!index) {
-            obj[root] = {};
+            // already exists as an array, so convert it to an object
+            if (obj[root] instanceof Array) {
+                var tempObj = {};
+                Object.keys(obj[root]).forEach(function (key) {
+                    tempObj[key] = obj[root][key];
+                });
+
+                obj[root] = tempObj;
+            }
+
+            if (!obj[root]) {
+                obj[root] = {};
+            }
+
             internals.setKey(obj[root], chain, val);
         }
         else {
             // we want an array, but index is not specified
             if (!index[1]) {
-                obj[root] = [].concat(val);
+                if (!obj[root]) {
+                    obj[root] = [].concat(val);
+                }
+                else {
+                    obj[root][val] = '';
+                }
             }
             else {
-                // we want an array, and we care about index
-                if (!(obj[root] instanceof Array)) {
+                if (!obj[root]) {
                     obj[root] = [];
                 }
                 obj[root][index[1]] = val;
@@ -57,9 +138,14 @@ internals.parseNest = function (key, val, depth, result) {
     // execute the regex
     var parts = matcher.exec(key);
     // this narrows down the regex return to an array of only the desired keys
-    var keys = parts.filter(function (part) { return typeof part !== 'undefined' && part !== '' }).slice(1);
+    if (parts) {
+        var keys = parts.filter(function (part) {
 
-    internals.setKey(result, keys, val);
+            return typeof part !== 'undefined' && part !== '' && !Object.prototype.hasOwnProperty(part);
+        }).slice(1);
+
+        internals.setKey(result, keys, val);
+    }
 
     return result;
 };
@@ -68,7 +154,12 @@ exports.parse = function (str, depth) {
 
     // use node's native querystring module to do the initial parse
     // this takes care of things like url decoding, as well as the splitting
-    var tempObj = Querystring.parse(str);
+    // var tempObj = Querystring.parse(str);
+    if (str === '' || str === null || typeof str === 'undefined') {
+        return {};
+    }
+
+    var tempObj = internals.basicParse(str);
     var obj = {};
 
     // iterate over the keys and setup the new object
@@ -77,7 +168,7 @@ exports.parse = function (str, depth) {
         internals.parseNest(key, tempObj[key], depth, obj);
     });
 
-    return obj;
+    return internals.compact(obj);
 };
 
 internals.stringify = function (obj, prefix) {
