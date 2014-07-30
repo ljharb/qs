@@ -79,3 +79,36 @@ exports.parse = function (str, depth) {
 
     return obj;
 };
+
+internals.stringify = function (obj, prefix) {
+
+    if (typeof obj === 'string' || typeof obj === 'number') {
+        return [prefix + '=' + obj];
+    }
+
+    if (typeof obj === 'undefined' || obj === null) {
+        return [prefix];
+    }
+
+    var values = [];
+
+    Object.keys(obj).forEach(function (key) {
+
+        values = values.concat(internals.stringify(obj[key], prefix + '[' + key + ']'));
+    });
+
+    return values;
+};
+
+exports.stringify = function (obj, prefix) {
+
+    var keys = [];
+    var value = JSON.parse(JSON.stringify(obj));
+
+    Object.keys(obj).forEach(function (key) {
+
+        keys = keys.concat(internals.stringify(obj[key], key));
+    });
+
+    return keys.join('&');
+};
