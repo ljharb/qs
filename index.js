@@ -83,10 +83,10 @@ exports.parse = function (str, depth) {
 internals.stringify = function (obj, prefix) {
 
     if (typeof obj === 'string' || typeof obj === 'number') {
-        return [prefix + '=' + obj];
+        return [prefix + '=' + encodeURIComponent(obj)];
     }
 
-    if (typeof obj === 'undefined' || obj === null) {
+    if (obj === null) {
         return [prefix];
     }
 
@@ -105,9 +105,9 @@ exports.stringify = function (obj, prefix) {
     var keys = [];
     var value = JSON.parse(JSON.stringify(obj));
 
-    Object.keys(obj).forEach(function (key) {
+    Object.keys(value).forEach(function (key) {
 
-        keys = keys.concat(internals.stringify(obj[key], key));
+        keys = keys.concat(internals.stringify(value[key], key));
     });
 
     return keys.join('&');

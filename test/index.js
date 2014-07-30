@@ -117,9 +117,28 @@ describe('Riddler', function () {
         it('can stringify an empty value', function (done) {
 
             expect(Riddler.stringify({ a: null })).to.equal('a');
-            expect(Riddler.stringify({ a: undefined })).to.equal('a');
             expect(Riddler.stringify({ a: { b: null } })).to.equal('a[b]');
-            expect(Riddler.stringify({ a: { b: undefined } })).to.equal('a[b]');
+            done();
+        });
+
+        it('drops keys with a value of undefined', function (done) {
+
+            expect(Riddler.stringify({ a: undefined })).to.equal('');
+            expect(Riddler.stringify({ a: { b: undefined, c: null } })).to.equal('a[c]');
+            done();
+        });
+
+        it('url encodes values', function (done) {
+
+            expect(Riddler.stringify({ a: 'b c' })).to.equal('a=b%20c');
+            done();
+        });
+
+        it('can stringify a date', function (done) {
+
+            var now = new Date();
+            var str = 'a=' + encodeURIComponent(now.toISOString());
+            expect(Riddler.stringify({ a: now })).to.equal(str);
             done();
         });
     });
