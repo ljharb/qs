@@ -11,6 +11,7 @@ describe('Riddler.stringify()', function () {
 
         expect(Riddler.stringify({ a: 'b' })).to.equal('a=b');
         expect(Riddler.stringify({ a: 1 })).to.equal('a=1');
+        expect(Riddler.stringify({ a: 1, b: 2 })).to.equal('a=1&b=2');
         done();
     });
 
@@ -36,6 +37,7 @@ describe('Riddler.stringify()', function () {
     it('can stringify an object inside an array', function (done) {
 
         expect(Riddler.stringify({ a: [{ b: 'c' }] })).to.equal('a[0][b]=c');
+        expect(Riddler.stringify({ a: [{ b: { c: [1] } }] })).to.equal('a[0][b][c][0]=1');
         done();
     });
 
@@ -47,6 +49,8 @@ describe('Riddler.stringify()', function () {
 
     it('can stringify an empty value', function (done) {
 
+        expect(Riddler.stringify({ a: '' })).to.equal('a=');
+        expect(Riddler.stringify({ a: '', b: '' })).to.equal('a=&b=');
         expect(Riddler.stringify({ a: null })).to.equal('a');
         expect(Riddler.stringify({ a: { b: null } })).to.equal('a[b]');
         done();
@@ -70,6 +74,12 @@ describe('Riddler.stringify()', function () {
         var now = new Date();
         var str = 'a=' + encodeURIComponent(now.toISOString());
         expect(Riddler.stringify({ a: now })).to.equal(str);
+        done();
+    });
+
+    it('can stringify the weird object from qs', function (done) {
+
+        expect(Riddler.stringify({ 'my weird field': "q1!2\"'w$5&7/z8)?" })).to.equal('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F');
         done();
     });
 });

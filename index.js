@@ -185,7 +185,7 @@ internals.stringify = function (obj, prefix) {
 
     Object.keys(obj).forEach(function (key) {
 
-        values = values.concat(internals.stringify(obj[key], prefix + '[' + key + ']'));
+        values = values.concat(internals.stringify(obj[key], prefix + '[' + encodeURIComponent(key) + ']'));
     });
 
     return values;
@@ -198,7 +198,7 @@ exports.stringify = function (obj, prefix) {
 
     Object.keys(value).forEach(function (key) {
 
-        keys = keys.concat(internals.stringify(value[key], key));
+        keys = keys.concat(internals.stringify(value[key], encodeURIComponent(key)));
     });
 
     return keys.join('&');
