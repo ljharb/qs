@@ -1,5 +1,3 @@
-var Querystring = require('querystring');
-
 var internals = {};
 
 internals.decode = function (str) {
@@ -154,7 +152,6 @@ exports.parse = function (str, depth) {
 
     // use node's native querystring module to do the initial parse
     // this takes care of things like url decoding, as well as the splitting
-    // var tempObj = Querystring.parse(str);
     if (str === '' || str === null || typeof str === 'undefined') {
         return {};
     }
