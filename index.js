@@ -4,20 +4,18 @@ var internals = {};
 
 internals.decode = function (str) {
 
-    var response;
     try {
-        response = decodeURIComponent(str.replace(/\+/g, ' '));
+        return decodeURIComponent(str.replace(/\+/g, ' '));
     } catch (e) {
-        response = str;
+        return str;
     }
-
-    return response;
 };
 
 internals.basicParse = function (str) {
 
     var obj = {};
     var parts = str.split('&');
+
     parts.forEach(function (part) {
 
         var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
@@ -28,6 +26,7 @@ internals.basicParse = function (str) {
         else {
             var key = internals.decode(part.slice(0, pos));
             var val = internals.decode(part.slice(pos + 1));
+
             if (!obj[key]) {
                 obj[key] = val;
             }
@@ -52,6 +51,7 @@ internals.compact = function (obj) {
 
         if (obj[key] instanceof Array) {
             compacted[key] = [];
+
             for (var i = 0, l = obj[key].length; i < l; i++) {
                 if (obj[key].hasOwnProperty(i) && obj[key][i]) {
                     compacted[key].push(obj[key][i]);
