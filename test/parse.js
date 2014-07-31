@@ -64,6 +64,7 @@ describe('Riddler.parse()', function () {
 
         expect(Riddler.parse('a[]=b')).to.deep.equal({ a: ['b'] });
         expect(Riddler.parse('a[]=b&a[]=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Riddler.parse('a[]=b&a[]=c&a[]=d')).to.deep.equal({ a: ['b', 'c', 'd'] });
         done();
     });
 
@@ -188,6 +189,21 @@ describe('Riddler.parse()', function () {
 
         expect(Riddler.parse('[]&a=b')).to.deep.equal({ '0': '', a: 'b' });
         expect(Riddler.parse('[foo]=bar')).to.deep.equal({ foo: 'bar' });
+        done();
+    });
+
+    it('does not error when parsing a very long array', function (done) {
+
+        var str = 'a[]=a';
+        while (Buffer.byteLength(str) < 128 * 1024) {
+            str += '&' + str;
+        }
+
+        expect(function () {
+
+            Riddler.parse(str);
+        }).to.not.throw(Error);
+
         done();
     });
 
