@@ -79,7 +79,7 @@ describe('Riddler.stringify()', function () {
 
     it('can stringify the weird object from qs', function (done) {
 
-        expect(Riddler.stringify({ 'my weird field': "q1!2\"'w$5&7/z8)?" })).to.equal('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F');
+        expect(Riddler.stringify({ 'my weird field': 'q1!2"\'w$5&7/z8)?' })).to.equal('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F');
         done();
     });
 });

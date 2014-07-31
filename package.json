@@ -8,7 +8,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "lab": "^3.2.1"
+    "jshint": "^2.5.2",
+    "lab": "^3.2.1",
+    "precommit-hook": "^1.0.5"
   },
   "scripts": {
     "test": "lab -t 100"

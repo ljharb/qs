@@ -76,8 +76,8 @@ describe('Riddler.parse()', function () {
 
     it('allows to specify array indices', function (done) {
 
-        // expect(Riddler.parse('a[1]=c&a[0]=b&a[2]=d')).to.deep.equal({ a: ['b', 'c', 'd'] });
-        // expect(Riddler.parse('a[1]=c&a[0]=b')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Riddler.parse('a[1]=c&a[0]=b&a[2]=d')).to.deep.equal({ a: ['b', 'c', 'd'] });
+        expect(Riddler.parse('a[1]=c&a[0]=b')).to.deep.equal({ a: ['b', 'c'] });
         expect(Riddler.parse('a[1]=c')).to.deep.equal({ a: ['c'] });
         done();
     });
@@ -114,7 +114,7 @@ describe('Riddler.parse()', function () {
 
         expect(Riddler.parse('foo[0]=bar&foo[bad]=baz')).to.deep.equal({ foo: { '0': 'bar', bad: 'baz' } });
         expect(Riddler.parse('foo[bad]=baz&foo[0]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
-        expect(Riddler.parse('foo[bad]=baz&foo[]=bar')).to.deep.equal({ foo: { bad: 'baz', bar: '' } });
+        expect(Riddler.parse('foo[bad]=baz&foo[]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
         expect(Riddler.parse('foo[]=bar&foo[bad]=baz')).to.deep.equal({ foo: { '0': 'bar', bad: 'baz' } });
         done();
     });
@@ -146,6 +146,13 @@ describe('Riddler.parse()', function () {
         Riddler.parse('constructor[prototype][bad]=bad');
         Riddler.parse('bad[constructor][prototype][bad]=bad');
         expect(typeof Object.prototype.bad).to.equal('undefined');
+        done();
+    });
+
+    it('parses arrays of objects', function (done) {
+
+        expect(Riddler.parse('a[][b]=c')).to.deep.equal({ a: [{ b: 'c' }] });
+        expect(Riddler.parse('a[0][b]=c')).to.deep.equal({ a: [{ b: 'c' }] });
         done();
     });
 
