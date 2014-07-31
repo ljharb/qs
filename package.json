@@ -8,12 +8,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "jshint": "^2.5.2",
-    "lab": "^3.2.1",
-    "precommit-hook": "^1.0.5"
+    "lab": "^3.2.1"
   },
   "scripts": {
-    "test": "lab -t 100"
+    "test": "make test-cov"
   },
   "repository": {
     "type": "git",
@@ -24,7 +22,12 @@
     "qs"
   ],
   "author": "Nathan LaFreniere <quitlahok@gmail.com>",
-  "license": "BSD",
+  "licenses": [
+    {
+        "type": "BSD",
+        "url": "http://github.com/spumko/riddler/raw/master/LICENSE"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/spumko/riddler/issues"
   },
