@@ -24,7 +24,7 @@
     "qs"
   ],
   "author": "Nathan LaFreniere <quitlahok@gmail.com>",
-  "license": "MIT",
+  "license": "BSD",
   "bugs": {
     "url": "https://github.com/spumko/riddler/issues"
   },
