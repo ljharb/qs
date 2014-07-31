@@ -91,13 +91,6 @@ Riddler.parse('a[0]=b&a[b]=c');
 // { a: { '0': 'b', b: 'c' } }
 ```
 
-When mixing an object and array notation *without* an index, riddler will instead create a key and assign it an empty string value `''`:
-
-```javascript
-Riddler.parse('a[b]=c&a[]=d');
-// { a: { b: 'c', d: '' } }
-```
-
 You can also create arrays of objects:
 
 ```javascript
