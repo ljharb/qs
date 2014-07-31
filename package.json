@@ -1,6 +1,6 @@
 {
   "name": "riddler",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a querystring parser that supports nesting and arrays, with a depth limit",
   "main": "index.js",
   "directories": {
@@ -24,8 +24,8 @@
   "author": "Nathan LaFreniere <quitlahok@gmail.com>",
   "licenses": [
     {
-        "type": "BSD",
-        "url": "http://github.com/spumko/riddler/raw/master/LICENSE"
+      "type": "BSD",
+      "url": "http://github.com/spumko/riddler/raw/master/LICENSE"
     }
   ],
   "bugs": {
