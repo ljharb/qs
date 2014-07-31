@@ -91,6 +91,13 @@ Riddler.parse('a[1]=b&a[15]=c');
 // { a: ['b', 'c'] }
 ```
 
+Riddler will also limit specifying indices in an array to a maximum index of `20`. Any array members with an index of greater than `20` will instead be converted to an object with the index as the key:
+
+```javascript
+Riddler.parse('a[100]=b');
+// { a: { '100': 'b' } }
+```
+
 If you mix notations, riddler will merge the two items into an object:
 
 ```javascript
