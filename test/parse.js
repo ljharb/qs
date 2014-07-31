@@ -177,6 +177,13 @@ describe('Riddler.parse()', function () {
         done();
     });
 
+    it('continues parsing when no parent is found', function (done) {
+
+        expect(Riddler.parse('[]&a=b')).to.deep.equal({ '0': '', a: 'b' });
+        expect(Riddler.parse('[foo]=bar')).to.deep.equal({ foo: 'bar' });
+        done();
+    });
+
     it('should not throw when a native prototype has an enumerable property', function (done) {
 
         Object.prototype.crash = '';
