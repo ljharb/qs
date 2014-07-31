@@ -84,6 +84,13 @@ Riddler.parse('a[1]=c&a[0]=b');
 
 Note that the only difference between an index in an array and a key in an object is that the value between the brackets must be a number to create an array.
 
+When creating arrays with specific indices, riddler will compact a sparse array to only the existing values preserving their order:
+
+```javascript
+Riddler.parse('a[1]=b&a[15]=c');
+// { a: ['b', 'c'] }
+```
+
 If you mix notations, riddler will merge the two items into an object:
 
 ```javascript
