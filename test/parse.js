@@ -169,4 +169,11 @@ describe('Riddler.parse()', function () {
         expect(Riddler.parse('a[9999]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
         done();
     });
+
+    it('parses semi-parsed strings', function (done) {
+
+        expect(Riddler.parse({ 'a[b]': 'c' })).to.deep.equal({ a: { b: 'c' } });
+        expect(Riddler.parse({ 'a[b]': 'c', 'a[d]': 'e' })).to.deep.equal({ a: { b: 'c', d: 'e' } });
+        done();
+    });
 });
