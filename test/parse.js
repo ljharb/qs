@@ -82,6 +82,13 @@ describe('Riddler.parse()', function () {
         done();
     });
 
+    it('limits specific array indices to 20', function (done) {
+
+        expect(Riddler.parse('a[20]=a')).to.deep.equal({ a: ['a'] });
+        expect(Riddler.parse('a[21]=a')).to.deep.equal({ a: { '21': 'a' } });
+        done();
+    });
+
     it('supports encoded = signs', function (done) {
 
         expect(Riddler.parse('he%3Dllo=th%3Dere')).to.deep.equal({ 'he=llo': 'th=ere' });
@@ -159,7 +166,7 @@ describe('Riddler.parse()', function () {
 
     it('should compact sparse arrays', function (done) {
 
-        expect(Riddler.parse('a[9999]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
+        expect(Riddler.parse('a[10]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
         done();
     });
 
