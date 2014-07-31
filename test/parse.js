@@ -157,13 +157,6 @@ describe('Riddler.parse()', function () {
         done();
     });
 
-    it('should not throw when a native prototype has an enumerable property', function (done) {
-
-        Object.prototype.crash = '';
-        expect(Riddler.parse.bind(null, 'test')).to.not.throw(Error);
-        done();
-    });
-
     it('should compact sparse arrays', function (done) {
 
         expect(Riddler.parse('a[9999]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
@@ -174,6 +167,20 @@ describe('Riddler.parse()', function () {
 
         expect(Riddler.parse({ 'a[b]': 'c' })).to.deep.equal({ a: { b: 'c' } });
         expect(Riddler.parse({ 'a[b]': 'c', 'a[d]': 'e' })).to.deep.equal({ a: { b: 'c', d: 'e' } });
+        done();
+    });
+
+    it('parses buffers to strings', function (done) {
+
+        var b = new Buffer('test');
+        expect(Riddler.parse({ a: b })).to.deep.equal({ a: b.toString() });
+        done();
+    });
+
+    it('should not throw when a native prototype has an enumerable property', function (done) {
+
+        Object.prototype.crash = '';
+        expect(Riddler.parse.bind(null, 'test')).to.not.throw(Error);
         done();
     });
 });
