@@ -1,6 +1,6 @@
 {
   "name": "riddler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a querystring parser that supports nesting and arrays, with a depth limit",
   "main": "index.js",
   "directories": {
