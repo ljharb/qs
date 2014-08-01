@@ -1,4 +1,4 @@
-<a href="https://github.com/hapijs"><img src="https://raw.github.com/hapijs/hapijs/master/images/from.png" align="right" /></a>
+<a href="https://github.com/hapijs"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
 
 Riddler is a querystring parsing and stringifying library with some added security
 
