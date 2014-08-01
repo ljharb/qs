@@ -4,6 +4,8 @@ Riddler is a querystring parsing and stringifying library with some added securi
 
 [![Build Status](https://secure.travis-ci.org/hapijs/riddler.svg)](http://travis-ci.org/hapijs/riddler)
 
+Lead Maintainer: [Nathan LaFreniere](https://github.com/nlf)
+
 
 ## Usage
 
