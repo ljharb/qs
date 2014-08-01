@@ -1,8 +1,8 @@
-<a href="https://github.com/spumko"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
+<a href="https://github.com/hapijs"><img src="https://raw.github.com/hapijs/hapijs/master/images/from.png" align="right" /></a>
 
 Riddler is a querystring parsing and stringifying library with some added security
 
-[![Build Status](https://secure.travis-ci.org/spumko/riddler.svg)](http://travis-ci.org/spumko/riddler)
+[![Build Status](https://secure.travis-ci.org/hapijs/riddler.svg)](http://travis-ci.org/hapijs/riddler)
 
 
 ## Usage
