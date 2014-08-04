@@ -95,4 +95,13 @@ describe('#stringify', function () {
         expect(Qs.stringify({ 'my weird field': 'q1!2"\'w$5&7/z8)?' })).to.equal('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F');
         done();
     });
+
+    it('skips properties that are part of the object prototype', function (done) {
+
+        Object.prototype.crash = 'test';
+        expect(Qs.stringify({ a: 'b'})).to.equal('a=b');
+        expect(Qs.stringify({ a: { b: 'c' } })).to.equal('a[b]=c');
+        delete Object.prototype.crash;
+        done();
+    });
 });
