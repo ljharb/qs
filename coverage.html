@@ -1,0 +1,3158 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Coverage</title>
+    <script>
+      headings = [];
+
+      onload = function(){
+          headings = document.querySelectorAll('h2');
+      };
+
+      onscroll = function(e){
+          var heading = find(window.scrollY);
+          if (!heading) return;
+          var links = document.querySelectorAll('#menu a')
+                  , link;
+
+          for (var i = 0, len = links.length; i < len; ++i) {
+              link = links[i];
+              link.className = link.getAttribute('href') == '#' + heading.id ? 'active' : '';
+          }
+      };
+
+      function find(y) {
+          var i = headings.length
+                  , heading;
+
+          while (i--) {
+              heading = headings[i];
+              if (y >= heading.offsetTop) {
+                  return heading;
+              }
+          }
+      }
+    </script>
+    <style>
+    body {
+        font: 14px/1.6 Helvetica, Arial, sans-serif;
+        margin: 0;
+        color: #2c2c2c;
+    }
+
+    #coverage {
+        padding: 60px;
+    }
+
+    h1 a:hover {
+        text-decoration: none;
+    }
+
+    h2 {
+        width: 80%;
+        margin-top: 80px;
+        margin-bottom: 0;
+        font-weight: 100;
+        letter-spacing: 1px;
+    }
+
+    ul {
+        margin-top: 20px;
+        padding: 0 15px;
+        width: 100%;
+    }
+
+    ul li {
+        float: left;
+        width: 40%;
+        margin-top: 5px;
+        margin-right: 60px;
+        list-style: none;
+        padding: 5px 0;
+        font-size: 12px;
+    }
+
+    #menu {
+        position: fixed;
+        font-size: 12px;
+        overflow-y: auto;
+        top: 0;
+        right: 0;
+        margin: 0;
+        height: 100%;
+        padding: 15px 15px;
+        border-left: 1px solid #eee;
+        background-color: #666;
+    }
+
+    #menu::after {
+        display: block;
+        content: '';
+        padding-top: 80px;
+    }
+
+    #menu li a {
+        display: block;
+        color: white;
+        padding: 0 5px 0 35px;
+        transition: background 300ms;
+        text-decoration: none;
+    }
+
+    #menu li {
+        position: relative;
+        list-style: none;
+    }
+
+    #menu a:hover,
+    #menu a.active {
+        text-decoration: none;
+        background: rgba(255,255,255,.4);
+    }
+
+    #menu li:hover .cov {
+        opacity: 1;
+    }
+
+    #menu li .dirname {
+        opacity: .60;
+        padding-right: 2px;
+    }
+
+    #menu li .basename {
+        opacity: 1;
+    }
+
+    #menu .cov {
+        background: rgba(0,0,0,.3);
+        position: absolute;
+        top: 0;
+        font-size: 9px;
+        text-align: center;
+        opacity: .8;
+        width: 22px;
+        border-radius: 10px;
+        padding: 2px 3px;
+    }
+
+    .stats:nth-child(2n) {
+        display: inline-block;
+        margin-top: 15px;
+        border: 1px solid #eee;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .stats div {
+        float: left;
+        padding: 0 5px;
+    }
+
+    .stats::after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+
+    .stats .sloc::after {
+        content: ' SLOC';
+        color: #b6b6b6;
+    }
+
+    .stats .percentage::after {
+        content: ' coverage';
+        color: #b6b6b6;
+    }
+
+    .stats .hits,
+    .stats .misses {
+        display: none;
+    }
+
+    .high {
+        color: #00d4b4;
+    }
+    .medium {
+        color: #e87d0d;
+    }
+    .low {
+        color: #d4081a;
+    }
+    .terrible {
+        color: #d4081a;
+        font-weight: bold;
+    }
+
+    table {
+        width: 80%;
+        margin-top: 10px;
+        border-collapse: collapse;
+        border: 1px solid #cbcbcb;
+        color: #363636;
+        border-radius: 3px;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table td.line,
+    table td.hits {
+        width: 20px;
+        background: #eaeaea;
+        text-align: center;
+        font-size: 11px;
+        padding: 0 10px;
+        color: #949494;
+    }
+
+    table td.hits {
+        width: 10px;
+        padding: 2px 5px;
+        color: rgba(0,0,0,.2);
+        background: #f0f0f0;
+    }
+
+    tr.miss td.line,
+    tr.miss td.hits {
+        background: #e6c3c7;
+    }
+
+    tr.miss td {
+        background: #f8d5d8;
+    }
+
+    td.source {
+        padding-left: 15px;
+        line-height: 15px;
+        white-space: pre;
+        font: 12px monaco, monospace;
+    }
+
+    td.source div {
+        display: inline-block;
+    }
+
+    td.source div.true {
+        background: #bae8bf;
+    }
+
+    td.source div.false {
+        background: #e8e5ba;
+    }
+
+    td.source div.never {
+        background: #f8d5d8;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="coverage">
+        <h1 id="overview">Code Coverage Report</h1>
+        <div id="menu">
+            <li><a href="#overview">overview</a></li>
+            
+            <li>
+                <span class="cov high">100</span>
+                <a href="#index.js"><span class="basename">index.js</span></a>
+            </li>
+            
+            <li>
+                <span class="cov high">100</span>
+                <a href="#lib/index.js"><span class="dirname">lib/</span><span class="basename">index.js</span></a>
+            </li>
+            
+            <li>
+                <span class="cov high">100</span>
+                <a href="#lib/parse.js"><span class="dirname">lib/</span><span class="basename">parse.js</span></a>
+            </li>
+            
+            <li>
+                <span class="cov high">93.10</span>
+                <a href="#lib/stringify.js"><span class="dirname">lib/</span><span class="basename">stringify.js</span></a>
+            </li>
+            
+            <li>
+                <span class="cov high">100</span>
+                <a href="#lib/utils.js"><span class="dirname">lib/</span><span class="basename">utils.js</span></a>
+            </li>
+            
+        </div>
+        <div class="stats high">
+            <div class="percentage">99.15%</div>
+            <div class="sloc">235</div>
+            <div class="hits">233</div>
+            <div class="misses">2</div>
+        </div>
+        <div id="files">
+            
+            <div class="file">
+                <h2 id="index.js">index.js</h2>
+                <div class="stats high">
+                    <div class="percentage">100%</div>
+                    <div class="sloc">1</div>
+                    <div class="hits">1</div>
+                    <div class="misses">0</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Hits</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    
+                        <tr class="hit">
+                            <td class="line">1</td>
+                            <td class="hits">1</td>
+                            <td class="source">module.exports = require(&#x27;./lib&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">2</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="file">
+                <h2 id="lib/index.js">lib/index.js</h2>
+                <div class="stats high">
+                    <div class="percentage">100%</div>
+                    <div class="sloc">9</div>
+                    <div class="hits">9</div>
+                    <div class="misses">0</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Hits</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    
+                        <tr class="hit">
+                            <td class="line">1</td>
+                            <td class="hits"></td>
+                            <td class="source">// Load modules</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">2</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">3</td>
+                            <td class="hits">1</td>
+                            <td class="source">var Stringify = require(&#x27;./stringify&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">4</td>
+                            <td class="hits">1</td>
+                            <td class="source">var Parse = require(&#x27;./parse&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">5</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">6</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">7</td>
+                            <td class="hits"></td>
+                            <td class="source">// Declare internals</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">8</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">9</td>
+                            <td class="hits">1</td>
+                            <td class="source">var internals = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">10</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">11</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">12</td>
+                            <td class="hits">1</td>
+                            <td class="source">module.exports = {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">13</td>
+                            <td class="hits"></td>
+                            <td class="source">    stringify: Stringify,</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">14</td>
+                            <td class="hits"></td>
+                            <td class="source">    parse: Parse</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">15</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">16</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="file">
+                <h2 id="lib/parse.js">lib/parse.js</h2>
+                <div class="stats high">
+                    <div class="percentage">100%</div>
+                    <div class="sloc">105</div>
+                    <div class="hits">105</div>
+                    <div class="misses">0</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Hits</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    
+                        <tr class="hit">
+                            <td class="line">1</td>
+                            <td class="hits"></td>
+                            <td class="source">// Load modules</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">2</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">3</td>
+                            <td class="hits">1</td>
+                            <td class="source">var Utils = require(&#x27;./utils&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">4</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">5</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">6</td>
+                            <td class="hits"></td>
+                            <td class="source">// Declare internals</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">7</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">8</td>
+                            <td class="hits">1</td>
+                            <td class="source">var internals = {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">9</td>
+                            <td class="hits"></td>
+                            <td class="source">    depth: 5,</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">10</td>
+                            <td class="hits"></td>
+                            <td class="source">    arrayLimit: 20,</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">11</td>
+                            <td class="hits"></td>
+                            <td class="source">    parametersLimit: 1000</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">12</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">13</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">14</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">15</td>
+                            <td class="hits">1</td>
+                            <td class="source">internals.parseValues = function (str) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">16</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">17</td>
+                            <td class="hits">51</td>
+                            <td class="source">    var obj = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">18</td>
+                            <td class="hits">51</td>
+                            <td class="source">    var parts = str.split(&#x27;&amp;&#x27;).slice(0, internals.parametersLimit);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">19</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">20</td>
+                            <td class="hits">51</td>
+                            <td class="source">    for (var i = 0, il = parts.length; i &lt; il; ++i) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">21</td>
+                            <td class="hits">1074</td>
+                            <td class="source">        var part = parts[i];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">22</td>
+                            <td class="hits">1074</td>
+                            <td class="source">        var pos = part.indexOf(&#x27;]=&#x27;) === -1 ? part.indexOf(&#x27;=&#x27;) : part.indexOf(&#x27;]=&#x27;) + 1;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">23</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">24</td>
+                            <td class="hits">1074</td>
+                            <td class="source">        if (pos === -1) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">25</td>
+                            <td class="hits">6</td>
+                            <td class="source">            obj[Utils.decode(part)] = &#x27;&#x27;;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">26</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">27</td>
+                            <td class="hits"></td>
+                            <td class="source">        else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">28</td>
+                            <td class="hits">1068</td>
+                            <td class="source">            var key = Utils.decode(part.slice(0, pos));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">29</td>
+                            <td class="hits">1068</td>
+                            <td class="source">            var val = Utils.decode(part.slice(pos + 1));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">30</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">31</td>
+                            <td class="hits">1068</td>
+                            <td class="source">            if (!obj[key]) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">32</td>
+                            <td class="hits">61</td>
+                            <td class="source">                obj[key] = val;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">33</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">34</td>
+                            <td class="hits"></td>
+                            <td class="source">            else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">35</td>
+                            <td class="hits">1007</td>
+                            <td class="source">                obj[key] = [].concat(obj[key]).concat(val);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">36</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">37</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">38</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">39</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">40</td>
+                            <td class="hits">51</td>
+                            <td class="source">    return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">41</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">42</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">43</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">44</td>
+                            <td class="hits">1</td>
+                            <td class="source">internals.parseObject = function (chain, val) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">45</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">46</td>
+                            <td class="hits">192</td>
+                            <td class="source">    if (!chain.length) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">47</td>
+                            <td class="hits">69</td>
+                            <td class="source">        return val;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">48</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">49</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">50</td>
+                            <td class="hits">123</td>
+                            <td class="source">    var root = chain.shift();</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">51</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">52</td>
+                            <td class="hits">123</td>
+                            <td class="source">    var obj = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">53</td>
+                            <td class="hits">123</td>
+                            <td class="source">    if (root === &#x27;[]&#x27;) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">54</td>
+                            <td class="hits">10</td>
+                            <td class="source">        obj = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">55</td>
+                            <td class="hits">10</td>
+                            <td class="source">        obj = obj.concat(internals.parseObject(chain, val));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">56</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">57</td>
+                            <td class="hits"></td>
+                            <td class="source">    else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">58</td>
+                            <td class="hits">113</td>
+                            <td class="source">        var cleanRoot = root[0] === &#x27;[&#x27; &amp;&amp; root[root.length - 1] === &#x27;]&#x27; ? root.slice(1, root.length - 1) : root;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">59</td>
+                            <td class="hits">113</td>
+                            <td class="source">        var index = parseInt(cleanRoot, 10);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">60</td>
+                            <td class="hits">113</td>
+                            <td class="source">        if (!isNaN(index) &amp;&amp;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">61</td>
+                            <td class="hits"></td>
+                            <td class="source">            root !== cleanRoot &amp;&amp;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">62</td>
+                            <td class="hits"></td>
+                            <td class="source">            index &lt;= internals.arrayLimit) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">63</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">64</td>
+                            <td class="hits">12</td>
+                            <td class="source">            obj = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">65</td>
+                            <td class="hits">12</td>
+                            <td class="source">            obj[index] = internals.parseObject(chain, val);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">66</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">67</td>
+                            <td class="hits"></td>
+                            <td class="source">        else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">68</td>
+                            <td class="hits">101</td>
+                            <td class="source">            obj[cleanRoot] = internals.parseObject(chain, val);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">69</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">70</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">71</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">72</td>
+                            <td class="hits">123</td>
+                            <td class="source">    return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">73</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">74</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">75</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">76</td>
+                            <td class="hits">1</td>
+                            <td class="source">internals.parseKeys = function (key, val, depth) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">77</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">78</td>
+                            <td class="hits">73</td>
+                            <td class="source">    if (!key) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">79</td>
+                            <td class="hits">1</td>
+                            <td class="source">        return;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">80</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">81</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">82</td>
+                            <td class="hits">72</td>
+                            <td class="source">    depth = typeof depth === &#x27;undefined&#x27; ? internals.depth : depth;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">83</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">84</td>
+                            <td class="hits"></td>
+                            <td class="source">    // The regex chunks</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">85</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">86</td>
+                            <td class="hits">72</td>
+                            <td class="source">    var parent = /^([^\[\]]*)/;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">87</td>
+                            <td class="hits">72</td>
+                            <td class="source">    var child = /(\[[^\[\]]*\])/g;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">88</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">89</td>
+                            <td class="hits"></td>
+                            <td class="source">    // Get the parent</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">90</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">91</td>
+                            <td class="hits">72</td>
+                            <td class="source">    var segment = parent.exec(key);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">92</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">93</td>
+                            <td class="hits"></td>
+                            <td class="source">    // Don&#x27;t allow them to overwrite object prototype properties</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">94</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">95</td>
+                            <td class="hits">72</td>
+                            <td class="source">    if (Object.prototype.hasOwnProperty(segment[1])) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">96</td>
+                            <td class="hits">3</td>
+                            <td class="source">        return;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">97</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">98</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">99</td>
+                            <td class="hits"></td>
+                            <td class="source">    // Stash the parent if it exists</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">100</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">101</td>
+                            <td class="hits">69</td>
+                            <td class="source">    var keys = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">102</td>
+                            <td class="hits">69</td>
+                            <td class="source">    if (segment[1]) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">103</td>
+                            <td class="hits">67</td>
+                            <td class="source">        keys.push(segment[1]);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">104</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">105</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">106</td>
+                            <td class="hits"></td>
+                            <td class="source">    // Loop through children appending to the array until we hit depth</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">107</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">108</td>
+                            <td class="hits">69</td>
+                            <td class="source">    var i = 0;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">109</td>
+                            <td class="hits">69</td>
+                            <td class="source">    while ((segment = child.exec(key)) !== null &amp;&amp; i &lt; depth) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">110</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">111</td>
+                            <td class="hits">55</td>
+                            <td class="source">        ++i;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">112</td>
+                            <td class="hits">55</td>
+                            <td class="source">        if (!Object.prototype.hasOwnProperty(segment[1].replace(/\[|\]/g, &#x27;&#x27;))) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">113</td>
+                            <td class="hits">53</td>
+                            <td class="source">            keys.push(segment[1]);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">114</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">115</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">116</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">117</td>
+                            <td class="hits"></td>
+                            <td class="source">    // If there&#x27;s a remainder, just add whatever is left</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">118</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">119</td>
+                            <td class="hits">69</td>
+                            <td class="source">    if (segment) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">120</td>
+                            <td class="hits">3</td>
+                            <td class="source">        keys.push(&#x27;[&#x27; + key.slice(segment.index) + &#x27;]&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">121</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">122</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">123</td>
+                            <td class="hits">69</td>
+                            <td class="source">    return internals.parseObject(keys, val);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">124</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">125</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">126</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">127</td>
+                            <td class="hits">1</td>
+                            <td class="source">module.exports = function (str, depth) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">128</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">129</td>
+                            <td class="hits">57</td>
+                            <td class="source">    if (str === &#x27;&#x27; ||</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">130</td>
+                            <td class="hits"></td>
+                            <td class="source">        str === null ||</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">131</td>
+                            <td class="hits"></td>
+                            <td class="source">        typeof str === &#x27;undefined&#x27;) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">132</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">133</td>
+                            <td class="hits">3</td>
+                            <td class="source">        return {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">134</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">135</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">136</td>
+                            <td class="hits">54</td>
+                            <td class="source">    var tempObj = typeof str === &#x27;string&#x27; ? internals.parseValues(str) : Utils.clone(str);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">137</td>
+                            <td class="hits">54</td>
+                            <td class="source">    var obj = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">138</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">139</td>
+                            <td class="hits"></td>
+                            <td class="source">    // Iterate over the keys and setup the new object</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">140</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">141</td>
+                            <td class="hits">54</td>
+                            <td class="source">    for (var key in tempObj) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">142</td>
+                            <td class="hits">74</td>
+                            <td class="source">        if (tempObj.hasOwnProperty(key)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">143</td>
+                            <td class="hits">73</td>
+                            <td class="source">            var newObj = internals.parseKeys(key, tempObj[key], depth);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">144</td>
+                            <td class="hits">73</td>
+                            <td class="source">            obj = Utils.merge(obj, newObj);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">145</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">146</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">147</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">148</td>
+                            <td class="hits">54</td>
+                            <td class="source">    return Utils.compact(obj);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">149</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">150</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">151</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">152</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="file">
+                <h2 id="lib/stringify.js">lib/stringify.js</h2>
+                <div class="stats high">
+                    <div class="percentage">93.10%</div>
+                    <div class="sloc">29</div>
+                    <div class="hits">27</div>
+                    <div class="misses">2</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Hits</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    
+                        <tr class="hit">
+                            <td class="line">1</td>
+                            <td class="hits"></td>
+                            <td class="source">// Load modules</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">2</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">3</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">4</td>
+                            <td class="hits"></td>
+                            <td class="source">// Declare internals</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">5</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">6</td>
+                            <td class="hits">1</td>
+                            <td class="source">var internals = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">7</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">8</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">9</td>
+                            <td class="hits">1</td>
+                            <td class="source">internals.stringify = function (obj, prefix) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">10</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">11</td>
+                            <td class="hits">40</td>
+                            <td class="source">    if (typeof obj === &#x27;string&#x27; ||</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">12</td>
+                            <td class="hits"></td>
+                            <td class="source">        typeof obj === &#x27;number&#x27;) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">13</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">14</td>
+                            <td class="hits">21</td>
+                            <td class="source">        return [prefix + &#x27;=&#x27; + encodeURIComponent(obj)];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">15</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">16</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">17</td>
+                            <td class="hits">19</td>
+                            <td class="source">    if (obj === null) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">18</td>
+                            <td class="hits">3</td>
+                            <td class="source">        return [prefix];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">19</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">20</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">21</td>
+                            <td class="hits">16</td>
+                            <td class="source">    var values = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">22</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">23</td>
+                            <td class="hits">16</td>
+                            <td class="source">    for (var key in obj) {</td>
+                        </tr>
+                    
+                
+                    
+                        
+                            <tr class="chunks">
+                                <td class="line">24</td>
+                                <td class="hits"></td>
+                                <td class="source"><div>        if (</div><div class="miss true">obj.hasOwnProperty(key)</div><div>) {</div></td>
+                            </tr>
+                        
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">25</td>
+                            <td class="hits">20</td>
+                            <td class="source">            values = values.concat(internals.stringify(obj[key], prefix + &#x27;[&#x27; + encodeURIComponent(key) + &#x27;]&#x27;));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">26</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">27</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">28</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">29</td>
+                            <td class="hits">16</td>
+                            <td class="source">    return values;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">30</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">31</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">32</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">33</td>
+                            <td class="hits">1</td>
+                            <td class="source">module.exports = function (obj) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">34</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">35</td>
+                            <td class="hits">19</td>
+                            <td class="source">    var keys = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">36</td>
+                            <td class="hits">19</td>
+                            <td class="source">    var value = JSON.parse(JSON.stringify(obj));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">37</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">38</td>
+                            <td class="hits">19</td>
+                            <td class="source">    for (var key in value) {</td>
+                        </tr>
+                    
+                
+                    
+                        
+                            <tr class="chunks">
+                                <td class="line">39</td>
+                                <td class="hits"></td>
+                                <td class="source"><div>        if (</div><div class="miss true">value.hasOwnProperty(key)</div><div>) {</div></td>
+                            </tr>
+                        
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">40</td>
+                            <td class="hits">20</td>
+                            <td class="source">            keys = keys.concat(internals.stringify(value[key], encodeURIComponent(key)));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">41</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">42</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">43</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">44</td>
+                            <td class="hits">19</td>
+                            <td class="source">    return keys.join(&#x27;&amp;&#x27;);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">45</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">46</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="file">
+                <h2 id="lib/utils.js">lib/utils.js</h2>
+                <div class="stats high">
+                    <div class="percentage">100%</div>
+                    <div class="sloc">91</div>
+                    <div class="hits">91</div>
+                    <div class="misses">0</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Hits</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    
+                        <tr class="hit">
+                            <td class="line">1</td>
+                            <td class="hits"></td>
+                            <td class="source">// Load modules</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">2</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">3</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">4</td>
+                            <td class="hits"></td>
+                            <td class="source">// Declare internals</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">5</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">6</td>
+                            <td class="hits">1</td>
+                            <td class="source">var internals = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">7</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">8</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">9</td>
+                            <td class="hits">1</td>
+                            <td class="source">exports.arrayToObject = function (source) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">10</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">11</td>
+                            <td class="hits">2</td>
+                            <td class="source">    var obj = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">12</td>
+                            <td class="hits">2</td>
+                            <td class="source">    for (var i = 0, il = source.length; i &lt; il; ++i) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">13</td>
+                            <td class="hits">2</td>
+                            <td class="source">        obj[i] = source[i];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">14</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">15</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">16</td>
+                            <td class="hits">2</td>
+                            <td class="source">    return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">17</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">18</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">19</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">20</td>
+                            <td class="hits">1</td>
+                            <td class="source">exports.clone = function (source) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">21</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">22</td>
+                            <td class="hits">1209</td>
+                            <td class="source">    if (typeof source !== &#x27;object&#x27; ||</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">23</td>
+                            <td class="hits"></td>
+                            <td class="source">        source === null) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">24</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">25</td>
+                            <td class="hits">1071</td>
+                            <td class="source">        return source;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">26</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">27</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">28</td>
+                            <td class="hits">138</td>
+                            <td class="source">    if (Buffer.isBuffer(source)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">29</td>
+                            <td class="hits">1</td>
+                            <td class="source">        return source.toString();</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">30</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">31</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">32</td>
+                            <td class="hits">137</td>
+                            <td class="source">    var obj = Array.isArray(source) ? [] : {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">33</td>
+                            <td class="hits">137</td>
+                            <td class="source">    for (var i in source) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">34</td>
+                            <td class="hits">1095</td>
+                            <td class="source">        if (source.hasOwnProperty(i)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">35</td>
+                            <td class="hits">1094</td>
+                            <td class="source">            obj[i] = exports.clone(source[i]);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">36</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">37</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">38</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">39</td>
+                            <td class="hits">137</td>
+                            <td class="source">    return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">40</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">41</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">42</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">43</td>
+                            <td class="hits">1</td>
+                            <td class="source">exports.merge = function (target, source) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">44</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">45</td>
+                            <td class="hits">83</td>
+                            <td class="source">    if (!source) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">46</td>
+                            <td class="hits">4</td>
+                            <td class="source">        return target;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">47</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">48</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">49</td>
+                            <td class="hits">79</td>
+                            <td class="source">    var obj = exports.clone(target);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">50</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">51</td>
+                            <td class="hits">79</td>
+                            <td class="source">    if (Array.isArray(source)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">52</td>
+                            <td class="hits">8</td>
+                            <td class="source">        for (var i = 0, il = source.length; i &lt; il; ++i) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">53</td>
+                            <td class="hits">13</td>
+                            <td class="source">            if (source[i] !== undefined) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">54</td>
+                            <td class="hits">9</td>
+                            <td class="source">                obj[i] = source[i];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">55</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">56</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">57</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">58</td>
+                            <td class="hits">8</td>
+                            <td class="source">        return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">59</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">60</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">61</td>
+                            <td class="hits">71</td>
+                            <td class="source">    if (Array.isArray(obj)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">62</td>
+                            <td class="hits">2</td>
+                            <td class="source">        obj = exports.arrayToObject(obj);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">63</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">64</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">65</td>
+                            <td class="hits">71</td>
+                            <td class="source">    var keys = Object.keys(source);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">66</td>
+                            <td class="hits">71</td>
+                            <td class="source">    for (var k = 0, kl = keys.length; k &lt; kl; ++k) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">67</td>
+                            <td class="hits">71</td>
+                            <td class="source">        var key = keys[k];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">68</td>
+                            <td class="hits">71</td>
+                            <td class="source">        var value = source[key];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">69</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">70</td>
+                            <td class="hits">71</td>
+                            <td class="source">        if (value &amp;&amp;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">71</td>
+                            <td class="hits"></td>
+                            <td class="source">            typeof value === &#x27;object&#x27;) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">72</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">73</td>
+                            <td class="hits">43</td>
+                            <td class="source">            if (!obj[key]) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">74</td>
+                            <td class="hits">33</td>
+                            <td class="source">                obj[key] = exports.clone(value);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">75</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">76</td>
+                            <td class="hits"></td>
+                            <td class="source">            else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">77</td>
+                            <td class="hits">10</td>
+                            <td class="source">                obj[key] = exports.merge(obj[key], value);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">78</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">79</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">80</td>
+                            <td class="hits"></td>
+                            <td class="source">        else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">81</td>
+                            <td class="hits">28</td>
+                            <td class="source">            obj[key] = value;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">82</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">83</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">84</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">85</td>
+                            <td class="hits">71</td>
+                            <td class="source">    return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">86</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">87</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">88</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">89</td>
+                            <td class="hits">1</td>
+                            <td class="source">exports.decode = function (str) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">90</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">91</td>
+                            <td class="hits">2142</td>
+                            <td class="source">    try {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">92</td>
+                            <td class="hits">2142</td>
+                            <td class="source">        return decodeURIComponent(str.replace(/\+/g, &#x27; &#x27;));</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">93</td>
+                            <td class="hits"></td>
+                            <td class="source">    } catch (e) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">94</td>
+                            <td class="hits">2</td>
+                            <td class="source">        return str;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">95</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">96</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">97</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">98</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">99</td>
+                            <td class="hits">1</td>
+                            <td class="source">exports.compact = function (obj) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">100</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">101</td>
+                            <td class="hits">137</td>
+                            <td class="source">    if (typeof obj !== &#x27;object&#x27;) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">102</td>
+                            <td class="hits">53</td>
+                            <td class="source">        return obj;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">103</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">104</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">105</td>
+                            <td class="hits">84</td>
+                            <td class="source">    var compacted = {};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">106</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">107</td>
+                            <td class="hits">84</td>
+                            <td class="source">    for (var key in obj) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">108</td>
+                            <td class="hits">97</td>
+                            <td class="source">        if (obj.hasOwnProperty(key)) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">109</td>
+                            <td class="hits">96</td>
+                            <td class="source">            if (Array.isArray(obj[key])) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">110</td>
+                            <td class="hits">13</td>
+                            <td class="source">                compacted[key] = [];</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">111</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">112</td>
+                            <td class="hits">13</td>
+                            <td class="source">                for (var i = 0, l = obj[key].length; i &lt; l; i++) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">113</td>
+                            <td class="hits">1051</td>
+                            <td class="source">                    if (obj[key].hasOwnProperty(i) &amp;&amp;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">114</td>
+                            <td class="hits"></td>
+                            <td class="source">                        obj[key][i]) {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">115</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">116</td>
+                            <td class="hits">1021</td>
+                            <td class="source">                        compacted[key].push(obj[key][i]);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">117</td>
+                            <td class="hits"></td>
+                            <td class="source">                    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">118</td>
+                            <td class="hits"></td>
+                            <td class="source">                }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">119</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">120</td>
+                            <td class="hits"></td>
+                            <td class="source">            else {</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">121</td>
+                            <td class="hits">83</td>
+                            <td class="source">                compacted[key] = exports.compact(obj[key]);</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">122</td>
+                            <td class="hits"></td>
+                            <td class="source">            }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">123</td>
+                            <td class="hits"></td>
+                            <td class="source">        }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">124</td>
+                            <td class="hits"></td>
+                            <td class="source">    }</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">125</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">126</td>
+                            <td class="hits">84</td>
+                            <td class="source">    return compacted;</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">127</td>
+                            <td class="hits"></td>
+                            <td class="source">};</td>
+                        </tr>
+                    
+                
+                    
+                        <tr class="hit">
+                            <td class="line">128</td>
+                            <td class="hits"></td>
+                            <td class="source"></td>
+                        </tr>
+                    
+                
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+  </body>
+</html>
