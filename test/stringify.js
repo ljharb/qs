@@ -104,4 +104,20 @@ describe('#stringify', function () {
         delete Object.prototype.crash;
         done();
     });
+
+    it('stringifies boolean values', function (done) {
+
+        expect(Qs.stringify({ a: true })).to.equal('a=true');
+        expect(Qs.stringify({ a: { b: true } })).to.equal('a[b]=true');
+        expect(Qs.stringify({ b: false })).to.equal('b=false');
+        expect(Qs.stringify({ b: { c: false } })).to.equal('b[c]=false');
+        done();
+    });
+
+    it('stringifies buffer values', function (done) {
+
+        expect(Qs.stringify({ a: new Buffer('test') })).to.equal('a=test');
+        expect(Qs.stringify({ a: { b: new Buffer('test') } })).to.equal('a[b]=test');
+        done();
+    });
 });
