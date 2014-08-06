@@ -141,6 +141,12 @@ describe('#parse', function () {
         done();
     });
 
+    it('correctly prunes undefined values when converting an array to an object', function (done) {
+
+        expect(Qs.parse('a[2]=b&a[99999999]=c')).to.deep.equal({ a: { '2': 'b', '99999999': 'c' } });
+        done();
+    });
+
     it('supports malformed uri characters', function (done) {
 
         expect(Qs.parse('{%:%}')).to.deep.equal({ '{%:%}': '' });
