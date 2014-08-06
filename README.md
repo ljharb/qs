@@ -17,7 +17,7 @@ var obj = Qs.parse('a=c');    // { a: 'c' }
 var str = Qs.stringify(obj);  // 'a=c'
 ```
 
-### Objects
+### Parsing Objects
 
 **qs** allows you to create nested objects within your query strings, by surrounding the name of sub-keys with square brackets `[]`.
 For example, the string `'foo[bar]=baz'` converts to:
@@ -28,6 +28,13 @@ For example, the string `'foo[bar]=baz'` converts to:
     bar: 'baz'
   }
 }
+```
+
+URI encoded strings work too:
+
+```javascript
+Qs.parse('a%5Bb%5D=c');
+// { a: { b: 'c' } }
 ```
 
 You can also nest your objects, like `'foo[bar][baz]=foobarbaz'`:
@@ -72,7 +79,7 @@ Qs.parse('a[b][c][d][e][f][g][h][i]=j', 1);
 
 The depth limit mitigate abuse when **qs** is used to parse user input, and it is recommended to keep it a reasonably small number.
 
-### Arrays
+### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
 
@@ -126,4 +133,38 @@ You can also create arrays of objects:
 ```javascript
 Qs.parse('a[][b]=c');
 // { a: [{ b: 'c' }] }
+```
+
+### Stringifying
+
+When stringifying, **qs** always URI encodes output. Objects are stringified as you would expect:
+
+```javascript
+Qs.stringify({ a: 'b' });
+// 'a=b'
+Qs.stringify({ a: { b: 'c' } });
+// 'a%5Bb%5D=c'
+```
+
+Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
+
+When arrays are stringified, they are always given explicit indices:
+
+```javascript
+Qs.stringify({ a: ['b', 'c', 'd'] });
+// 'a[0]=b&a[1]=c&a[2]=d'
+```
+
+Empty strings and null values will omit the value, but the equals sign (=) remains in place:
+
+```javascript
+Qs.stringify({ a: '' });
+// 'a='
+```
+
+Properties that are set to `undefined` will be omitted entirely:
+
+```javascript
+Qs.stringify({ a: null, b: undefined });
+// 'a='
 ```
