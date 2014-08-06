@@ -97,6 +97,15 @@ Qs.parse('a[1]=b&a[15]=c');
 // { a: ['b', 'c'] }
 ```
 
+Note that an empty string is also a value, and will be preserved:
+
+```javascript
+Qs.parse('a[]=&a[]=b');
+// { a: ['', 'b'] }
+Qs.parse('a[0]=b&a[1]=&a[2]=c');
+// { a: ['b', '', 'c'] }
+```
+
 **qs** will also limit specifying indices in an array to a maximum index of `20`. Any array members with an index of greater than `20` will
 instead be converted to an object with the index as the key:
 

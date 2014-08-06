@@ -184,6 +184,13 @@ describe('#parse', function () {
         done();
     });
 
+    it('allows for empty strings in arrays', function (done) {
+
+        expect(Qs.parse('a[]=b&a[]=&a[]=c')).to.deep.equal({ a: ['b', '', 'c'] });
+        expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]=')).to.deep.equal({ a: ['b', '', 'c', ''] });
+        done();
+    });
+
     it('should compact sparse arrays', function (done) {
 
         expect(Qs.parse('a[10]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
