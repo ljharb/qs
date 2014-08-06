@@ -6,7 +6,7 @@ A querystring parsing and stringifying library with some added security.
 
 Lead Maintainer: [Nathan LaFreniere](https://github.com/nlf)
 
-The **qs** module was original created and maintained by [TJ Holowaychuk](https://github.com/visionmedia/node-querystring).
+The **qs** module was originally created and maintained by [TJ Holowaychuk](https://github.com/visionmedia/node-querystring).
 
 ## Usage
 
