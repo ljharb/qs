@@ -88,7 +88,7 @@ An optional delimiter can also be passed:
 ```javascript
 Qs.parse('a=b;c=d', ';');
 // { a: 'b', c: 'd' }
-```javascript
+```
 
 ### Parsing Arrays
 
