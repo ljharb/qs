@@ -240,4 +240,10 @@ describe('#parse', function () {
         delete Object.prototype.crash;
         done();
     });
+
+    it('parses a string with an alternative delimiter', function (done) {
+
+        expect(Qs.parse('a=b;c=d', ';')).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
 });

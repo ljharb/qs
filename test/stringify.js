@@ -120,4 +120,10 @@ describe('#stringify', function () {
         expect(Qs.stringify({ a: { b: new Buffer('test') } })).to.equal('a%5Bb%5D=test');
         done();
     });
+
+    it('stringifies an object using an alternative delimiter', function (done) {
+
+        expect(Qs.stringify({ a: 'b', c: 'd' }, ';')).to.equal('a=b;c=d');
+        done();
+    });
 });
