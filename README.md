@@ -19,6 +19,10 @@ var str = Qs.stringify(obj);  // 'a=c'
 
 ### Parsing Objects
 
+```javascript
+Qs.parse(string, [depth], [delimiter]);
+```
+
 **qs** allows you to create nested objects within your query strings, by surrounding the name of sub-keys with square brackets `[]`.
 For example, the string `'foo[bar]=baz'` converts to:
 
@@ -79,6 +83,13 @@ Qs.parse('a[b][c][d][e][f][g][h][i]=j', 1);
 
 The depth limit mitigate abuse when **qs** is used to parse user input, and it is recommended to keep it a reasonably small number.
 
+An optional delimiter can also be passed:
+
+```javascript
+Qs.parse('a=b;c=d', ';');
+// { a: 'b', c: 'd' }
+```javascript
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
@@ -137,6 +148,10 @@ Qs.parse('a[][b]=c');
 
 ### Stringifying
 
+```javascript
+Qs.stringify(object, [delimiter]);
+```
+
 When stringifying, **qs** always URI encodes output. Objects are stringified as you would expect:
 
 ```javascript
@@ -168,3 +183,9 @@ Properties that are set to `undefined` will be omitted entirely:
 Qs.stringify({ a: null, b: undefined });
 // 'a='
 ```
+
+The delimiter may be overridden with stringify as well:
+
+```javascript
+Qs.stringify({ a: 'b', c: 'd' }, ';');
+// 'a=b;c=d'
