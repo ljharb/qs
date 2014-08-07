@@ -237,8 +237,13 @@ describe('#parse', function () {
     it('should not throw when a native prototype has an enumerable property', { parallel: false }, function (done) {
 
         Object.prototype.crash = '';
-        expect(Qs.parse.bind(null, 'test')).to.not.throw();
+        Array.prototype.crash = '';
+        expect(Qs.parse.bind(null, 'a=b')).to.not.throw();
+        expect(Qs.parse('a=b')).to.deep.equal({ a: 'b' });
+        expect(Qs.parse.bind(null, 'a[][b]=c')).to.not.throw();
+        expect(Qs.parse('a[][b]=c')).to.deep.equal({ a: [{ b: 'c' }] });
         delete Object.prototype.crash;
+        delete Array.prototype.crash;
         done();
     });
 
