@@ -252,4 +252,10 @@ describe('#parse', function () {
         expect(Qs.parse('a=b;c=d', ';')).to.deep.equal({ a: 'b', c: 'd' });
         done();
     });
+
+    it('should not use non-string objects as delimiters', function (done) {
+
+        expect(Qs.parse('a=b&c=d', {})).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
 });
