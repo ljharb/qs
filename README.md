@@ -189,3 +189,4 @@ The delimiter may be overridden with stringify as well:
 ```javascript
 Qs.stringify({ a: 'b', c: 'd' }, ';');
 // 'a=b;c=d'
+```
