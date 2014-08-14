@@ -278,4 +278,24 @@ describe('#parse', function () {
         expect(result).to.deep.equal(expected);
         done();
     });
+
+    it('parses an object and not child values', function (done) {
+
+        var input = {
+            "user[name]": {"pop[bob]": { "test": 3 }},
+            "user[email]": null
+        };
+
+        var expected = {
+            "user": {
+                "name": {"pop[bob]": { "test": 3 }},
+                "email": null
+            }
+        };
+
+        var result = Qs.parse(input);
+
+        expect(result).to.deep.equal(expected);
+        done();
+    });
 });
