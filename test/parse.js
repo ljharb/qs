@@ -192,7 +192,7 @@ describe('#parse', function () {
         done();
     });
 
-    it('should compact sparse arrays', function (done) {
+    it('compacts sparse arrays', function (done) {
 
         expect(Qs.parse('a[10]=1&a[2]=2')).to.deep.equal({ a: ['2', '1'] });
         done();
@@ -253,9 +253,49 @@ describe('#parse', function () {
         done();
     });
 
-    it('should not use non-string objects as delimiters', function (done) {
+    it('does not use non-string objects as delimiters', function (done) {
 
         expect(Qs.parse('a=b&c=d', {})).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
+
+    it('parses an object', function (done) {
+
+        var input = {
+            "user[name]": {"pop[bob]": 3},
+            "user[email]": null
+        };
+
+        var expected = {
+            "user": {
+                "name": {"pop[bob]": 3},
+                "email": null
+            }
+        };
+
+        var result = Qs.parse(input);
+
+        expect(result).to.deep.equal(expected);
+        done();
+    });
+
+    it('parses an object and not child values', function (done) {
+
+        var input = {
+            "user[name]": {"pop[bob]": { "test": 3 }},
+            "user[email]": null
+        };
+
+        var expected = {
+            "user": {
+                "name": {"pop[bob]": { "test": 3 }},
+                "email": null
+            }
+        };
+
+        var result = Qs.parse(input);
+
+        expect(result).to.deep.equal(expected);
         done();
     });
 });
