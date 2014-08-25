@@ -20,7 +20,7 @@ var str = Qs.stringify(obj);  // 'a=c'
 ### Parsing Objects
 
 ```javascript
-Qs.parse(string, [depth], [delimiter]);
+Qs.parse(string, [options]);
 ```
 
 **qs** allows you to create nested objects within your query strings, by surrounding the name of sub-keys with square brackets `[]`.
@@ -74,19 +74,26 @@ By default, when nesting objects **qs** will only parse up to 5 children deep. T
 }
 ```
 
-This depth can be overridden by passing a `depth` option to `Qs.parse(string, depth)`:
+This depth can be overridden by passing a `depth` option to `Qs.parse(string, [options])`:
 
 ```javascript
-Qs.parse('a[b][c][d][e][f][g][h][i]=j', 1);
+Qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1 });
 // { a: { b: { '[c][d][e][f][g][h][i]': 'j' } } }
 ```
 
-The depth limit mitigate abuse when **qs** is used to parse user input, and it is recommended to keep it a reasonably small number.
+The depth limit helps mitigate abuse when **qs** is used to parse user input, and it is recommended to keep it a reasonably small number.
+
+For similar reasons, by default **qs** will only parse up to 1000 parameters. This can be overridden by passing a `parameterLimit` option:
+
+```javascript
+Qs.parse('a=b&c=d', { parameterLimit: 1 });
+// { a: 'b' }
+```
 
 An optional delimiter can also be passed:
 
 ```javascript
-Qs.parse('a=b;c=d', ';');
+Qs.parse('a=b;c=d', { delimiter: ';' });
 // { a: 'b', c: 'd' }
 ```
 
@@ -132,6 +139,13 @@ Qs.parse('a[100]=b');
 // { a: { '100': 'b' } }
 ```
 
+This limit can be overridden by passing an `arrayLimit` option:
+
+```javascript
+Qs.parse('a[1]=b', { arrayLimit: 0 });
+// { a: { '1': 'b' } }
+```
+
 If you mix notations, **qs** will merge the two items into an object:
 
 ```javascript
@@ -149,7 +163,7 @@ Qs.parse('a[][b]=c');
 ### Stringifying
 
 ```javascript
-Qs.stringify(object, [delimiter]);
+Qs.stringify(object, [options]);
 ```
 
 When stringifying, **qs** always URI encodes output. Objects are stringified as you would expect:
@@ -187,6 +201,6 @@ Qs.stringify({ a: null, b: undefined });
 The delimiter may be overridden with stringify as well:
 
 ```javascript
-Qs.stringify({ a: 'b', c: 'd' }, ';');
+Qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' });
 // 'a=b;c=d'
 ```

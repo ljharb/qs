@@ -123,7 +123,7 @@ describe('#stringify', function () {
 
     it('stringifies an object using an alternative delimiter', function (done) {
 
-        expect(Qs.stringify({ a: 'b', c: 'd' }, ';')).to.equal('a=b;c=d');
+        expect(Qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' })).to.equal('a=b;c=d');
         done();
     });
 });

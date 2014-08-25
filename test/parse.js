@@ -62,8 +62,8 @@ describe('#parse', function () {
 
     it('only parses one level when depth = 1', function (done) {
 
-        expect(Qs.parse('a[b][c]=d', 1)).to.deep.equal({ a: { b: { '[c]': 'd' } } });
-        expect(Qs.parse('a[b][c][d]=e', 1)).to.deep.equal({ a: { b: { '[c][d]': 'e' } } });
+        expect(Qs.parse('a[b][c]=d', { depth: 1 })).to.deep.equal({ a: { b: { '[c]': 'd' } } });
+        expect(Qs.parse('a[b][c][d]=e', { depth: 1 })).to.deep.equal({ a: { b: { '[c][d]': 'e' } } });
         done();
     });
 
@@ -249,13 +249,25 @@ describe('#parse', function () {
 
     it('parses a string with an alternative delimiter', function (done) {
 
-        expect(Qs.parse('a=b;c=d', ';')).to.deep.equal({ a: 'b', c: 'd' });
+        expect(Qs.parse('a=b;c=d', { delimiter: ';' })).to.deep.equal({ a: 'b', c: 'd' });
         done();
     });
 
     it('should not use non-string objects as delimiters', function (done) {
 
-        expect(Qs.parse('a=b&c=d', {})).to.deep.equal({ a: 'b', c: 'd' });
+        expect(Qs.parse('a=b&c=d', { delimiter: true })).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
+
+    it('allows overriding parameter limit', function (done) {
+
+        expect(Qs.parse('a=b&c=d', { parameterLimit: 1 })).to.deep.equal({ a: 'b' });
+        done();
+    });
+
+    it('allows overriding array limit', function (done) {
+
+        expect(Qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 })).to.deep.equal({ a: { '0': 'b', '1': 'c' } });
         done();
     });
 });
