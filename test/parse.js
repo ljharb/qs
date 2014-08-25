@@ -247,13 +247,19 @@ describe('#parse', function () {
         done();
     });
 
-    it('parses a string with an alternative delimiter', function (done) {
+    it('parses a string with an alternative string delimiter', function (done) {
 
         expect(Qs.parse('a=b;c=d', { delimiter: ';' })).to.deep.equal({ a: 'b', c: 'd' });
         done();
     });
 
-    it('does not use non-string objects as delimiters', function (done) {
+    it('parses a string with an alternative RegExp delimiter', function (done) {
+
+        expect(Qs.parse('a=b; c=d', { delimiter: /[;,] */ })).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
+
+    it('does not use non-splittable objects as delimiters', function (done) {
 
         expect(Qs.parse('a=b&c=d', { delimiter: true })).to.deep.equal({ a: 'b', c: 'd' });
         done();
