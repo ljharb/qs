@@ -97,6 +97,13 @@ Qs.parse('a=b;c=d', { delimiter: ';' });
 // { a: 'b', c: 'd' }
 ```
 
+Delimiters can be a regular expression too:
+
+```javascript
+Qs.parse('a=b;c=d,e=f', { delimiter: /[;,]/ });
+// { a: 'b', c: 'd', e: 'f' }
+```
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
