@@ -271,6 +271,12 @@ describe('#parse', function () {
         done();
     });
 
+    it('allows setting the parameter limit to Infinity', function (done) {
+
+        expect(Qs.parse('a=b&c=d', { parameterLimit: Infinity })).to.deep.equal({ a: 'b', c: 'd' });
+        done();
+    });
+
     it('allows overriding array limit', function (done) {
 
         expect(Qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 })).to.deep.equal({ a: { '0': 'b', '1': 'c' } });
