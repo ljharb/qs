@@ -322,4 +322,13 @@ describe('#parse', function () {
         expect(result).to.deep.equal(expected);
         done();
     });
+
+    it('does not blow up when Buffer global is missing', function (done) {
+
+        var tempBuffer = global.Buffer;
+        delete global.Buffer;
+        expect(Qs.parse('a=b&c=d')).to.deep.equal({ a: 'b', c: 'd' });
+        global.Buffer = tempBuffer;
+        done();
+    });
 });
