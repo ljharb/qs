@@ -126,4 +126,13 @@ describe('#stringify', function () {
         expect(Qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' })).to.equal('a=b;c=d');
         done();
     });
+
+    it('doesn\'t blow up when Buffer global is missing', function (done) {
+
+        var tempBuffer = global.Buffer;
+        delete global.Buffer;
+        expect(Qs.stringify({ a: 'b', c: 'd' })).to.equal('a=b&c=d');
+        global.Buffer = tempBuffer;
+        done();
+    });
 });
