@@ -331,4 +331,10 @@ describe('#parse', function () {
         global.Buffer = tempBuffer;
         done();
     });
+
+    it('does not crash when using invalid dot notation', function (done) {
+
+        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].numberOfAdults=2')).to.deep.equal({ roomInfoList: [['15', '2']] });
+        done();
+    });
 });
