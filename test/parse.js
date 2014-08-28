@@ -342,10 +342,18 @@ describe('#parse', function () {
 
         var a = {};
         a.b = a;
+
+        var parsed;
+
         expect(function () {
 
-            Qs.parse({ 'foo[bar]': 'baz', 'foo[baz]': a });
+            parsed = Qs.parse({ 'foo[bar]': 'baz', 'foo[baz]': a });
         }).to.not.throw(Error);
+
+        expect(parsed).to.have.key('foo');
+        expect(parsed.foo).to.have.keys('bar', 'baz');
+        expect(parsed.foo.bar).to.equal('baz');
+        expect(parsed.foo.baz).to.deep.equal(a);
         done();
     });
 });
