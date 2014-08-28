@@ -337,4 +337,15 @@ describe('#parse', function () {
         expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].numberOfAdults=2')).to.deep.equal({ roomInfoList: [['15', '2']] });
         done();
     });
+
+    it('does not crash when parsing circular references', function (done) {
+
+        var a = {};
+        a.b = a;
+        expect(function () {
+
+            Qs.parse({ 'foo[bar]': 'baz', 'foo[baz]': a });
+        }).to.not.throw(Error);
+        done();
+    });
 });
