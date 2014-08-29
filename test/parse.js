@@ -205,10 +205,10 @@ describe('#parse', function () {
         done();
     });
 
-    it('parses buffers to strings', function (done) {
+    it('parses buffers correctly', function (done) {
 
         var b = new Buffer('test');
-        expect(Qs.parse({ a: b })).to.deep.equal({ a: b.toString() });
+        expect(Qs.parse({ a: b })).to.deep.equal({ a: b });
         done();
     });
 
@@ -363,6 +363,20 @@ describe('#parse', function () {
         a.b = 'c';
         
         expect(Qs.parse({ a: a })).to.deep.equal({ a: { b: 'c' } });
+        done();
+    });
+
+    it('parses dates correctly', function (done) {
+
+        var now = new Date();
+        expect(Qs.parse({ a: now })).to.deep.equal({ a: now });
+        done();
+    });
+
+    it('parses regular expressions correctly', function (done) {
+
+        var re = /^test$/;
+        expect(Qs.parse({ a: re })).to.deep.equal({ a: re });
         done();
     });
 });
