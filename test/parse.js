@@ -362,6 +362,7 @@ describe('#parse', function () {
         var a = Object.create(null);
         a.b = 'c';
         
+        expect(Qs.parse(a)).to.deep.equal({ b: 'c' });
         expect(Qs.parse({ a: a })).to.deep.equal({ a: { b: 'c' } });
         done();
     });
