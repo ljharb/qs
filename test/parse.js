@@ -356,4 +356,13 @@ describe('#parse', function () {
         expect(parsed.foo.baz).to.deep.equal(a);
         done();
     });
+
+    it('parses plain objects correctly', function (done) {
+
+        var a = Object.create(null);
+        a.b = 'c';
+        
+        expect(Qs.parse({ a: a })).to.deep.equal({ a: { b: 'c' } });
+        done();
+    });
 });
