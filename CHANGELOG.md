@@ -1,3 +1,11 @@
+
+## [**2.2.2**](https://github.com/hapijs/qs/issues?milestone=11&state=open)
+- [**#34**](https://github.com/hapijs/qs/issues/34) use Object.prototype.hasOwnProperty.call instead of obj.hasOwnProperty
+- [**#24**](https://github.com/hapijs/qs/issues/24) Changelog? Semver?
+
+---
+
+
 # 2014-08-28
 95 commits against 24 issues, over a month [`32edf33`](https://github.com/hapijs/qs/commit/32edf33)⎆[`b1e7b53`](https://github.com/hapijs/qs/commit/b1e7b53)
 
