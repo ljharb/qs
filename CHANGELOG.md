@@ -1,4 +1,13 @@
 
+## [**2.2.2**](https://github.com/hapijs/qs/issues?milestone=11&state=closed)
+- [**#33**](https://github.com/hapijs/qs/issues/33) Error when plain object in a value
+- [**#34**](https://github.com/hapijs/qs/issues/34) use Object.prototype.hasOwnProperty.call instead of obj.hasOwnProperty
+- [**#24**](https://github.com/hapijs/qs/issues/24) Changelog? Semver?
+
+---
+
+
+
 ## [**2.2.2**](https://github.com/hapijs/qs/issues?milestone=11&state=open)
 - [**#34**](https://github.com/hapijs/qs/issues/34) use Object.prototype.hasOwnProperty.call instead of obj.hasOwnProperty
 - [**#24**](https://github.com/hapijs/qs/issues/24) Changelog? Semver?
