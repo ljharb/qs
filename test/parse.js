@@ -190,6 +190,7 @@ describe('#parse', function () {
 
         expect(Qs.parse('a[]=b&a[]=&a[]=c')).to.deep.equal({ a: ['b', '', 'c'] });
         expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]=')).to.deep.equal({ a: ['b', '', 'c', ''] });
+        expect(Qs.parse('a[]=&a[]=b&a[]=c')).to.deep.equal({ a: ['', 'b', 'c'] });
         done();
     });
 
