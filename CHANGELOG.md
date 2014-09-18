@@ -1,4 +1,7 @@
 
+## [**2.2.4**](https://github.com/hapijs/qs/issues?milestone=13&state=closed)
+- [**#38**](https://github.com/hapijs/qs/issues/38) how to handle object keys beginning with a number
+
 ## [**2.2.3**](https://github.com/hapijs/qs/issues?milestone=12&state=closed)
 - [**#37**](https://github.com/hapijs/qs/issues/37) parser discards first empty value in array
 - [**#36**](https://github.com/hapijs/qs/issues/36) Update to lab 4.x
