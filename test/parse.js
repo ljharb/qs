@@ -104,6 +104,12 @@ describe('#parse', function () {
         done();
     });
 
+    it('supports keys that begin with a number', function (done) {
+
+        expect(Qs.parse('a[12b]=c')).to.deep.equal({ a: { '12b': 'c' } });
+        done();
+    });
+
     it('supports encoded = signs', function (done) {
 
         expect(Qs.parse('he%3Dllo=th%3Dere')).to.deep.equal({ 'he=llo': 'th=ere' });
