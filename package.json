@@ -19,7 +19,6 @@
     "querystring",
     "qs"
   ],
-  "author": "Nathan LaFreniere <quitlahok@gmail.com>",
   "licenses": [
     {
       "type": "BSD",
