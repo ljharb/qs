@@ -13,13 +13,11 @@ var internals = {};
 
 var lab = exports.lab = Lab.script();
 var expect = Lab.expect;
-var before = lab.before;
-var after = lab.after;
 var describe = lab.experiment;
 var it = lab.test;
 
 
-describe('#parse', function () {
+describe('parse()', function () {
 
     it('parses a simple string', function (done) {
 
