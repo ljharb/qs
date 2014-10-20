@@ -68,6 +68,25 @@ describe('stringify()', function () {
         done();
     });
 
+    it('stringifies an empty object', function (done) {
+
+        var obj = Object.create(null);
+        obj.a = 'b';
+        expect(Qs.stringify(obj)).to.equal('a=b');
+        done();
+    });
+
+    it('stringifies an object with an empty object as a child', function (done) {
+
+        var obj = {
+            a: Object.create(null)
+        };
+
+        obj.a.b = 'c';
+        expect(Qs.stringify(obj)).to.equal('a%5Bb%5D=c');
+        done();
+    });
+
     it('drops keys with a value of undefined', function (done) {
 
         expect(Qs.stringify({ a: undefined })).to.equal('');
