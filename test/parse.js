@@ -80,6 +80,17 @@ describe('parse()', function () {
         done();
     });
 
+    it('parses a mix of simple and explicit arrays', function (done) {
+
+        expect(Qs.parse('a=b&a[]=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Qs.parse('a[]=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Qs.parse('a[0]=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Qs.parse('a=b&a[0]=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Qs.parse('a[1]=b&a=c')).to.deep.equal({ a: ['b', 'c'] });
+        expect(Qs.parse('a=b&a[1]=c')).to.deep.equal({ a: ['b', 'c'] });
+        done();
+    });
+
     it('parses a nested array', function (done) {
 
         expect(Qs.parse('a[b][]=c&a[b][]=d')).to.deep.equal({ a: { b: ['c', 'd'] } });
