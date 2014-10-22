@@ -40,6 +40,12 @@ describe('stringify()', function () {
         done();
     });
 
+    it('omits array indices when asked', function (done) {
+
+        expect(Qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false })).to.equal('a=b&a=c&a=d');
+        done();
+    });
+
     it('stringifies a nested array value', function (done) {
 
         expect(Qs.stringify({ a: { b: ['c', 'd'] } })).to.equal('a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
@@ -50,6 +56,12 @@ describe('stringify()', function () {
 
         expect(Qs.stringify({ a: [{ b: 'c' }] })).to.equal('a%5B0%5D%5Bb%5D=c');
         expect(Qs.stringify({ a: [{ b: { c: [1] } }] })).to.equal('a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1');
+        done();
+    });
+
+    it('does not omit object keys when indices = false', function (done) {
+
+        expect(Qs.stringify({ a: [{ b: 'c' }] }, { indices: false })).to.equal('a%5Bb%5D=c');
         done();
     });
 
