@@ -184,11 +184,18 @@ Qs.stringify({ a: { b: 'c' } });
 
 Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
 
-When arrays are stringified, they are always given explicit indices:
+When arrays are stringified, by default they are given explicit indices:
 
 ```javascript
 Qs.stringify({ a: ['b', 'c', 'd'] });
 // 'a[0]=b&a[1]=c&a[2]=d'
+```
+
+You may override this by setting the `indices` option to `false`:
+
+```javascript
+Qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false });
+// 'a=b&a=c&a=d'
 ```
 
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
