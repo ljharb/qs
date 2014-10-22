@@ -1,4 +1,12 @@
 
+## [**2.3.0**](https://github.com/hapijs/qs/issues?milestone=15&state=open)
+- [**#50**](https://github.com/hapijs/qs/issues/50) add option to omit array indices, closes #46
+
+## [**2.2.5**](https://github.com/hapijs/qs/issues?milestone=14&state=closed)
+- [**#49**](https://github.com/hapijs/qs/issues/49) refactor utils.merge, fixes #45
+- [**#39**](https://github.com/hapijs/qs/issues/39) Is there an alternative to Buffer.isBuffer?
+- [**#41**](https://github.com/hapijs/qs/issues/41) avoid browserifying Buffer, for #39
+
 ## [**2.2.4**](https://github.com/hapijs/qs/issues?milestone=13&state=closed)
 - [**#38**](https://github.com/hapijs/qs/issues/38) how to handle object keys beginning with a number
 
