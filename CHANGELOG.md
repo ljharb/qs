@@ -1,10 +1,13 @@
 
-## [**2.3.0**](https://github.com/hapijs/qs/issues?milestone=15&state=open)
+## [**2.3.1**](https://github.com/hapijs/qs/issues?milestone=16&state=closed)
+- [**#52**](https://github.com/hapijs/qs/issues/52) Return &quot;undefined&quot; and &quot;false&quot; instead of throwing &quot;TypeError&quot;.
+
+## [**2.3.0**](https://github.com/hapijs/qs/issues?milestone=15&state=closed)
 - [**#50**](https://github.com/hapijs/qs/issues/50) add option to omit array indices, closes #46
 
 ## [**2.2.5**](https://github.com/hapijs/qs/issues?milestone=14&state=closed)
-- [**#49**](https://github.com/hapijs/qs/issues/49) refactor utils.merge, fixes #45
 - [**#39**](https://github.com/hapijs/qs/issues/39) Is there an alternative to Buffer.isBuffer?
+- [**#49**](https://github.com/hapijs/qs/issues/49) refactor utils.merge, fixes #45
 - [**#41**](https://github.com/hapijs/qs/issues/41) avoid browserifying Buffer, for #39
 
 ## [**2.2.4**](https://github.com/hapijs/qs/issues?milestone=13&state=closed)
