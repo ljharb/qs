@@ -6,7 +6,8 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "lab": "4.x.x"
+    "code": "^1.2.0",
+    "lab": "5.x.x"
   },
   "scripts": {
     "test": "make test-cov"

@@ -1,5 +1,7 @@
+/* eslint no-extend-native:0 */
 // Load modules
 
+var Code = require('code');
 var Lab = require('lab');
 var Qs = require('../');
 
@@ -12,7 +14,7 @@ var internals = {};
 // Test shortcuts
 
 var lab = exports.lab = Lab.script();
-var expect = Lab.expect;
+var expect = Code.expect;
 var describe = lab.experiment;
 var it = lab.test;
 
@@ -303,14 +305,14 @@ describe('parse()', function () {
     it('parses an object', function (done) {
 
         var input = {
-            "user[name]": {"pop[bob]": 3},
-            "user[email]": null
+            'user[name]': {'pop[bob]': 3},
+            'user[email]': null
         };
 
         var expected = {
-            "user": {
-                "name": {"pop[bob]": 3},
-                "email": null
+            'user': {
+                'name': {'pop[bob]': 3},
+                'email': null
             }
         };
 
@@ -323,14 +325,14 @@ describe('parse()', function () {
     it('parses an object and not child values', function (done) {
 
         var input = {
-            "user[name]": {"pop[bob]": { "test": 3 }},
-            "user[email]": null
+            'user[name]': {'pop[bob]': { 'test': 3 }},
+            'user[email]': null
         };
 
         var expected = {
-            "user": {
-                "name": {"pop[bob]": { "test": 3 }},
-                "email": null
+            'user': {
+                'name': {'pop[bob]': { 'test': 3 }},
+                'email': null
             }
         };
 
@@ -344,8 +346,9 @@ describe('parse()', function () {
 
         var tempBuffer = global.Buffer;
         delete global.Buffer;
-        expect(Qs.parse('a=b&c=d')).to.deep.equal({ a: 'b', c: 'd' });
+        var result = Qs.parse('a=b&c=d');
         global.Buffer = tempBuffer;
+        expect(result).to.deep.equal({ a: 'b', c: 'd' });
         done();
     });
 
@@ -365,10 +368,10 @@ describe('parse()', function () {
         expect(function () {
 
             parsed = Qs.parse({ 'foo[bar]': 'baz', 'foo[baz]': a });
-        }).to.not.throw(Error);
+        }).to.not.throw();
 
-        expect(parsed).to.have.key('foo');
-        expect(parsed.foo).to.have.keys('bar', 'baz');
+        expect(parsed).to.contain('foo');
+        expect(parsed.foo).to.contain('bar', 'baz');
         expect(parsed.foo.bar).to.equal('baz');
         expect(parsed.foo.baz).to.deep.equal(a);
         done();
@@ -378,9 +381,11 @@ describe('parse()', function () {
 
         var a = Object.create(null);
         a.b = 'c';
-        
+
         expect(Qs.parse(a)).to.deep.equal({ b: 'c' });
-        expect(Qs.parse({ a: a })).to.deep.equal({ a: { b: 'c' } });
+        var result = Qs.parse({ a: a });
+        expect(result).to.contain('a');
+        expect(result.a).to.deep.equal(a);
         done();
     });
 
