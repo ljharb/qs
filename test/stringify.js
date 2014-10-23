@@ -88,6 +88,20 @@ describe('stringify()', function () {
         done();
     });
 
+    it('returns undefined', function (done) {
+
+        var obj = undefined;
+        expect(Qs.stringify(obj)).to.equal(undefined);
+        done();
+    });
+
+    it('returns false', function (done) {
+
+        var obj = false;
+        expect(Qs.stringify(obj)).to.equal(false);
+        done();
+    });
+
     it('stringifies an object with an empty object as a child', function (done) {
 
         var obj = {
