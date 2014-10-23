@@ -88,17 +88,12 @@ describe('stringify()', function () {
         done();
     });
 
-    it('returns undefined', function (done) {
+    it('returns an empty string for invalid input', function (done) {
 
-        var obj = undefined;
-        expect(Qs.stringify(obj)).to.equal(undefined);
-        done();
-    });
-
-    it('returns false', function (done) {
-
-        var obj = false;
-        expect(Qs.stringify(obj)).to.equal(false);
+        expect(Qs.stringify(undefined)).to.equal('');
+        expect(Qs.stringify(false)).to.equal('');
+        expect(Qs.stringify(null)).to.equal('');
+        expect(Qs.stringify('')).to.equal('');
         done();
     });
 
