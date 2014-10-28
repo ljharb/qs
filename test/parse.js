@@ -158,6 +158,12 @@ describe('parse()', function () {
         done();
     });
 
+    it('can add keys to objects', function (done) {
+
+        expect(Qs.parse('a[b]=c&a=d')).to.deep.equal({ a: { b: 'c', d: true } });
+        done();
+    });
+
     it('correctly prunes undefined values when converting an array to an object', function (done) {
 
         expect(Qs.parse('a[2]=b&a[99999999]=c')).to.deep.equal({ a: { '2': 'b', '99999999': 'c' } });
@@ -378,7 +384,7 @@ describe('parse()', function () {
 
         var a = Object.create(null);
         a.b = 'c';
-        
+
         expect(Qs.parse(a)).to.deep.equal({ b: 'c' });
         expect(Qs.parse({ a: a })).to.deep.equal({ a: { b: 'c' } });
         done();
