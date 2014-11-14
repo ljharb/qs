@@ -304,6 +304,8 @@ describe('parse()', function () {
 
     it('allows overriding array limit', function (done) {
 
+        expect(Qs.parse('a[0]=b', { arrayLimit: -1 })).to.deep.equal({ a: { '0': 'b' } });
+        expect(Qs.parse('a[-1]=b', { arrayLimit: -1 })).to.deep.equal({ a: { '-1': 'b' } });
         expect(Qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 })).to.deep.equal({ a: { '0': 'b', '1': 'c' } });
         done();
     });
