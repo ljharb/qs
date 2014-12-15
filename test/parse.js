@@ -410,4 +410,10 @@ describe('parse()', function () {
         expect(Qs.parse({ a: re })).to.deep.equal({ a: re });
         done();
     });
+
+    it('parses an iso-8859-1 string if asked to', function (done) {
+
+        expect(Qs.parse('%A2=%BD', {charset: 'iso-8859-1'})).to.deep.equal({ '¢': '½' });
+        done();
+    });
 });
