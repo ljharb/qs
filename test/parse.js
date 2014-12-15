@@ -416,4 +416,29 @@ describe('parse()', function () {
         expect(Qs.parse('%A2=%BD', {charset: 'iso-8859-1'})).to.deep.equal({ '¢': '½' });
         done();
     });
+
+    it('prefers an utf-8 charset specified by the utf8 sentinel to a default charset of iso-8859-1', function (done) {
+        expect(Qs.parse('utf8=%E2%9C%93&%C3%B8=%C3%B8', {utf8Sentinel: true, charset: 'iso-8859-1'})).to.deep.equal({ 'ø': 'ø' });
+        done();
+    });
+
+    it('prefers an iso-8859-1 charset specified by the utf8 sentinel to a default charset of utf-8', function (done) {
+        expect(Qs.parse('utf8=%26%2310003%3B&%C3%B8=%C3%B8', {utf8Sentinel: true, charset: 'utf-8'})).to.deep.equal({ 'Ã¸': 'Ã¸' });
+        done();
+    });
+
+    it('should ignore an utf8 sentinel with an unknown value', function (done) {
+        expect(Qs.parse('utf8=foo&%C3%B8=%C3%B8', {utf8Sentinel: true, charset: 'utf-8'})).to.deep.equal({ 'ø': 'ø' });
+        done();
+    });
+
+    it('uses the utf8 sentinel to switch to utf-8 when no default charset is given', function (done) {
+        expect(Qs.parse('utf8=%E2%9C%93&%C3%B8=%C3%B8', {utf8Sentinel: true})).to.deep.equal({ 'ø': 'ø' });
+        done();
+    });
+
+    it('uses the utf8 sentinel to switch to iso-8859-1 when no default charset is given', function (done) {
+        expect(Qs.parse('utf8=%26%2310003%3B&%C3%B8=%C3%B8', {utf8Sentinel: true})).to.deep.equal({ 'Ã¸': 'Ã¸' });
+        done();
+    });
 });
