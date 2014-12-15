@@ -582,5 +582,34 @@ test('parse()', function (t) {
         st.end();
     });
 
+    var urlEncodedCheckmarkInUtf8 = '%E2%9C%93';
+    var urlEncodedOSlashInUtf8 = '%C3%B8';
+    var urlEncodedNumCheckmark = '%26%2310003%3B';
+
+    t.test('prefers an utf-8 charset specified by the utf8 sentinel to a default charset of iso-8859-1', function (st) {
+        st.deepEqual(qs.parse('utf8=' + urlEncodedCheckmarkInUtf8 + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true, charset: 'iso-8859-1' }), { ø: 'ø' });
+        st.end();
+    });
+
+    t.test('prefers an iso-8859-1 charset specified by the utf8 sentinel to a default charset of utf-8', function (st) {
+        st.deepEqual(qs.parse('utf8=' + urlEncodedNumCheckmark + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true, charset: 'utf-8' }), { 'Ã¸': 'Ã¸' });
+        st.end();
+    });
+
+    t.test('should ignore an utf8 sentinel with an unknown value', function (st) {
+        st.deepEqual(qs.parse('utf8=foo&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true, charset: 'utf-8' }), { ø: 'ø' });
+        st.end();
+    });
+
+    t.test('uses the utf8 sentinel to switch to utf-8 when no default charset is given', function (st) {
+        st.deepEqual(qs.parse('utf8=' + urlEncodedCheckmarkInUtf8 + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true }), { ø: 'ø' });
+        st.end();
+    });
+
+    t.test('uses the utf8 sentinel to switch to iso-8859-1 when no default charset is given', function (st) {
+        st.deepEqual(qs.parse('utf8=' + urlEncodedNumCheckmark + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true }), { 'Ã¸': 'Ã¸' });
+        st.end();
+    });
+
     t.end();
 });
