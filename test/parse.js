@@ -577,5 +577,10 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses an iso-8859-1 string if asked to', function (st) {
+        st.deepEqual(qs.parse('%A2=%BD', { charset: 'iso-8859-1' }), { '¢': '½' });
+        st.end();
+    });
+
     t.end();
 });
