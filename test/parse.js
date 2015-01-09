@@ -585,6 +585,7 @@ test('parse()', function (t) {
     var urlEncodedCheckmarkInUtf8 = '%E2%9C%93';
     var urlEncodedOSlashInUtf8 = '%C3%B8';
     var urlEncodedNumCheckmark = '%26%2310003%3B';
+    var urlEncodedNumSmiley = '%26%239786%3B';
 
     t.test('prefers an utf-8 charset specified by the utf8 sentinel to a default charset of iso-8859-1', function (st) {
         st.deepEqual(qs.parse('utf8=' + urlEncodedCheckmarkInUtf8 + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true, charset: 'iso-8859-1' }), { ø: 'ø' });
@@ -608,6 +609,21 @@ test('parse()', function (t) {
 
     t.test('uses the utf8 sentinel to switch to iso-8859-1 when no default charset is given', function (st) {
         st.deepEqual(qs.parse('utf8=' + urlEncodedNumCheckmark + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true }), { 'Ã¸': 'Ã¸' });
+        st.end();
+    });
+
+    t.test('interprets numeric entities in iso-8859-1 when the interpretNumericEntities option is given', function (st) {
+        st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1', interpretNumericEntities: true }), { foo: '☺' });
+        st.end();
+    });
+
+    t.test('does not interpret numeric entities in iso-8859-1 when the interpretNumericEntities option is not given', function (st) {
+        st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1' }), { foo: '&#9786;' });
+        st.end();
+    });
+
+    t.test('does not interpret numeric entities when the charset is utf-8, even when the interpretNumericEntities option is given', function (st) {
+        st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'utf-8', interpretNumericEntities: true }), { foo: '&#9786;' });
         st.end();
     });
 
