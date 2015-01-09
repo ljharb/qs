@@ -441,4 +441,19 @@ describe('parse()', function () {
         expect(Qs.parse('utf8=%26%2310003%3B&%C3%B8=%C3%B8', {utf8Sentinel: true})).to.deep.equal({ 'Ã¸': 'Ã¸' });
         done();
     });
+
+    it('interprets numeric entities in iso-8859-1 when the interpretNumericEntities option is given', function (done) {
+        expect(Qs.parse('foo=%26%239786%3B', {charset: 'iso-8859-1', interpretNumericEntities: true})).to.deep.equal({ foo: '☺' });
+        done();
+    });
+
+    it('does not interpret numeric entities in iso-8859-1 when the interpretNumericEntities option is not given', function (done) {
+        expect(Qs.parse('foo=%26%239786%3B', {charset: 'iso-8859-1'})).to.deep.equal({ foo: '&#9786;' });
+        done();
+    });
+
+    it('does not interpret numeric entities when the charset is utf-8, even when the interpretNumericEntities option is given', function (done) {
+        expect(Qs.parse('foo=%26%239786%3B', {charset: 'utf-8', interpretNumericEntities: true})).to.deep.equal({ foo: '&#9786;' });
+        done();
+    });
 });
