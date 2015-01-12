@@ -43,8 +43,7 @@ describe('stringify()', function () {
     });
 
     it('omits array indices when asked', function (done) {
-
-        expect(Qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false })).to.equal('a=b&a=c&a=d');
+        expect(Qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false })).to.equal('a%5B%5D=b&a%5B%5D=c&a%5B%5D=d');
         done();
     });
 
@@ -62,8 +61,7 @@ describe('stringify()', function () {
     });
 
     it('does not omit object keys when indices = false', function (done) {
-
-        expect(Qs.stringify({ a: [{ b: 'c' }] }, { indices: false })).to.equal('a%5Bb%5D=c');
+        expect(Qs.stringify({ a: [{ b: 'c' }] }, { indices: false })).to.equal('a%5B%5D%5Bb%5D=c');
         done();
     });
 
