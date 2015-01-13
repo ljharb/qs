@@ -163,9 +163,10 @@ describe('parse()', function () {
     it('transforms arrays to objects (dot notation)', function (done) {
 
         expect(Qs.parse('foo[0].baz=bar&fool.bad=baz')).to.deep.equal({ foo: [ { baz: 'bar'} ], fool: { bad: 'baz' } });
+        expect(Qs.parse('foo[0].baz=bar&fool.bad.boo=baz')).to.deep.equal({ foo: [ { baz: 'bar'} ], fool: { bad: { boo: 'baz' } } });
         expect(Qs.parse('foo[0][0].baz=bar&fool.bad=baz')).to.deep.equal({ foo: [[ { baz: 'bar'} ]], fool: { bad: 'baz' } });
-        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].numberOfAdults=2')).to.deep.equal({roomInfoList: [{childrenAges: ['15'],numberOfAdults: '2'}]});
-        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].childrenAges[1]=16&roomInfoList[0].numberOfAdults=2')).to.deep.equal({roomInfoList: [{childrenAges: ['15','16'],numberOfAdults: '2'}]});
+        expect(Qs.parse('foo[0].baz[0]=15&foo[0].bar=2')).to.deep.equal({foo: [{baz: ['15'],bar: '2'}]});
+        expect(Qs.parse('foo[0].baz[0]=15&foo[0].baz[1]=16&foo[0].bar=2')).to.deep.equal({foo: [{baz: ['15','16'],bar: '2'}]});
         expect(Qs.parse('foo.bad=baz&foo[0]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
         expect(Qs.parse('foo.bad=baz&foo[]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
         expect(Qs.parse('foo[]=bar&foo.bad=baz')).to.deep.equal({ foo: { '0': 'bar', bad: 'baz' } });
