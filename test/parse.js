@@ -160,6 +160,20 @@ describe('parse()', function () {
         done();
     });
 
+    it('transforms arrays to objects (dot notation)', function (done) {
+
+        expect(Qs.parse('foo[0].baz=bar&fool.bad=baz')).to.deep.equal({ foo: [ { baz: 'bar'} ], fool: { bad: 'baz' } });
+        expect(Qs.parse('foo[0][0].baz=bar&fool.bad=baz')).to.deep.equal({ foo: [[ { baz: 'bar'} ]], fool: { bad: 'baz' } });
+        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].numberOfAdults=2')).to.deep.equal({roomInfoList: [{childrenAges: ['15'],numberOfAdults: '2'}]});
+        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].childrenAges[1]=16&roomInfoList[0].numberOfAdults=2')).to.deep.equal({roomInfoList: [{childrenAges: ['15','16'],numberOfAdults: '2'}]});
+        expect(Qs.parse('foo.bad=baz&foo[0]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
+        expect(Qs.parse('foo.bad=baz&foo[]=bar')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar' } });
+        expect(Qs.parse('foo[]=bar&foo.bad=baz')).to.deep.equal({ foo: { '0': 'bar', bad: 'baz' } });
+        expect(Qs.parse('foo.bad=baz&foo[]=bar&foo[]=foo')).to.deep.equal({ foo: { bad: 'baz', '0': 'bar', '1': 'foo' } });
+        expect(Qs.parse('foo[0].a=a&foo[0].b=b&foo[1].a=aa&foo[1].b=bb')).to.deep.equal({foo: [ {a: 'a', b: 'b'}, {a: 'aa', b: 'bb'} ]});
+        done();
+    });
+
     it('can add keys to objects', function (done) {
 
         expect(Qs.parse('a[b]=c&a=d')).to.deep.equal({ a: { b: 'c', d: true } });
@@ -330,6 +344,26 @@ describe('parse()', function () {
         done();
     });
 
+    it('parses an object in dot notation', function (done) {
+
+        var input = {
+            'user.name': {'pop[bob]': 3},
+            'user.email.': null
+        };
+
+        var expected = {
+            'user': {
+                'name': {'pop[bob]': 3},
+                'email': null
+            }
+        };
+
+        var result = Qs.parse(input);
+
+        expect(result).to.deep.equal(expected);
+        done();
+    });
+
     it('parses an object and not child values', function (done) {
 
         var input = {
@@ -357,12 +391,6 @@ describe('parse()', function () {
         var result = Qs.parse('a=b&c=d');
         global.Buffer = tempBuffer;
         expect(result).to.deep.equal({ a: 'b', c: 'd' });
-        done();
-    });
-
-    it('does not crash when using invalid dot notation', function (done) {
-
-        expect(Qs.parse('roomInfoList[0].childrenAges[0]=15&roomInfoList[0].numberOfAdults=2')).to.deep.equal({ roomInfoList: [['15', '2']] });
         done();
     });
 
