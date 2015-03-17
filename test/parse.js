@@ -191,6 +191,7 @@ describe('parse()', function () {
         expect(typeof obj.toString).to.equal('function');
         expect(typeof obj.bad.toString).to.equal('function');
         expect(typeof obj.constructor).to.equal('function');
+        expect(typeof obj.hasOwnProperty).to.equal('function');
         done();
     });
 
