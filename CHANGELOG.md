@@ -1,13 +1,19 @@
 
-## [**2.3.3**](https://github.com/hapijs/qs/issues?milestone=18&state=open)
-- [**#59**](https://github.com/hapijs/qs/issues/59) make sure array indexes are &gt;= 0, closes #57
+## [**2.4.1**](https://github.com/hapijs/qs/issues?milestone=20&state=closed)
+- [**#73**](https://github.com/hapijs/qs/issues/73) Property 'hasOwnProperty' of object #<Object> is not a function
+
+## [**2.4.0**](https://github.com/hapijs/qs/issues?milestone=19&state=closed)
+- [**#70**](https://github.com/hapijs/qs/issues/70) Add arrayFormat option
+
+## [**2.3.3**](https://github.com/hapijs/qs/issues?milestone=18&state=closed)
+- [**#59**](https://github.com/hapijs/qs/issues/59) make sure array indexes are >= 0, closes #57
 - [**#58**](https://github.com/hapijs/qs/issues/58) make qs usable for browser loader
 
 ## [**2.3.2**](https://github.com/hapijs/qs/issues?milestone=17&state=closed)
 - [**#55**](https://github.com/hapijs/qs/issues/55) allow merging a string into an object
 
 ## [**2.3.1**](https://github.com/hapijs/qs/issues?milestone=16&state=closed)
-- [**#52**](https://github.com/hapijs/qs/issues/52) Return &quot;undefined&quot; and &quot;false&quot; instead of throwing &quot;TypeError&quot;.
+- [**#52**](https://github.com/hapijs/qs/issues/52) Return "undefined" and "false" instead of throwing "TypeError".
 
 ## [**2.3.0**](https://github.com/hapijs/qs/issues?milestone=15&state=closed)
 - [**#50**](https://github.com/hapijs/qs/issues/50) add option to omit array indices, closes #46
@@ -34,9 +40,9 @@
 - [**#31**](https://github.com/hapijs/qs/issues/31) qs.parse stackoverflow on circular objects
 
 ## [**2.2.0**](https://github.com/hapijs/qs/issues?milestone=9&state=closed)
-- [**#26**](https://github.com/hapijs/qs/issues/26) Don&#39;t use Buffer global if it&#39;s not present
+- [**#26**](https://github.com/hapijs/qs/issues/26) Don't use Buffer global if it's not present
 - [**#30**](https://github.com/hapijs/qs/issues/30) Bug when merging non-object values into arrays
-- [**#29**](https://github.com/hapijs/qs/issues/29) Don&#39;t call Utils.clone at the top of Utils.merge
+- [**#29**](https://github.com/hapijs/qs/issues/29) Don't call Utils.clone at the top of Utils.merge
 - [**#23**](https://github.com/hapijs/qs/issues/23) Ability to not limit parameters?
 
 ## [**2.1.0**](https://github.com/hapijs/qs/issues?milestone=8&state=closed)
@@ -48,7 +54,7 @@
 - [**#21**](https://github.com/hapijs/qs/issues/21) make all limits optional, for #18, for #20
 
 ## [**1.2.2**](https://github.com/hapijs/qs/issues?milestone=6&state=closed)
-- [**#19**](https://github.com/hapijs/qs/issues/19) Don&#39;t overwrite null values
+- [**#19**](https://github.com/hapijs/qs/issues/19) Don't overwrite null values
 
 ## [**1.2.1**](https://github.com/hapijs/qs/issues?milestone=5&state=closed)
 - [**#16**](https://github.com/hapijs/qs/issues/16) ignore non-string delimiters
@@ -65,4 +71,3 @@
 
 ## [**1.0.2**](https://github.com/hapijs/qs/issues?milestone=2&state=closed)
 - [**#5**](https://github.com/hapijs/qs/issues/5) array holes incorrectly copied into object on large index
-
