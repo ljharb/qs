@@ -3,7 +3,7 @@
   "version": "2.4.1",
   "description": "A querystring parser that supports nesting and arrays, with a depth limit",
   "homepage": "https://github.com/hapijs/qs",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "dependencies": {},
   "devDependencies": {
     "code": "1.x.x",
