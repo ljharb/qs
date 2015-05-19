@@ -28,12 +28,14 @@ describe('parse()', function () {
         expect(Qs.parse('a[>=]=23')).to.deep.equal({ a: { '>=': '23' } });
         expect(Qs.parse('a[<=>]==23')).to.deep.equal({ a: { '<=>': '=23' } });
         expect(Qs.parse('a[==]=23')).to.deep.equal({ a: { '==': '23' } });
-        expect(Qs.parse('foo')).to.deep.equal({ foo: '' });
+        expect(Qs.parse('foo')).to.deep.equal({ foo: null });
+        expect(Qs.parse('foo=')).to.deep.equal({ foo: '' });
         expect(Qs.parse('foo=bar')).to.deep.equal({ foo: 'bar' });
         expect(Qs.parse(' foo = bar = baz ')).to.deep.equal({ ' foo ': ' bar = baz ' });
         expect(Qs.parse('foo=bar=baz')).to.deep.equal({ foo: 'bar=baz' });
         expect(Qs.parse('foo=bar&bar=baz')).to.deep.equal({ foo: 'bar', bar: 'baz' });
-        expect(Qs.parse('foo=bar&baz')).to.deep.equal({ foo: 'bar', baz: '' });
+        expect(Qs.parse('foo2=bar2&baz2=')).to.deep.equal({ foo2: 'bar2', baz2: '' });
+        expect(Qs.parse('foo=bar&baz')).to.deep.equal({ foo: 'bar', baz: null });
         expect(Qs.parse('cht=p3&chd=t:60,40&chs=250x100&chl=Hello|World')).to.deep.equal({
             cht: 'p3',
             chd: 't:60,40',
@@ -174,7 +176,8 @@ describe('parse()', function () {
 
     it('supports malformed uri characters', function (done) {
 
-        expect(Qs.parse('{%:%}')).to.deep.equal({ '{%:%}': '' });
+        expect(Qs.parse('{%:%}')).to.deep.equal({ '{%:%}': null });
+        expect(Qs.parse('{%:%}=')).to.deep.equal({ '{%:%}': '' });
         expect(Qs.parse('foo=%:%}')).to.deep.equal({ foo: '%:%}' });
         done();
     });
@@ -213,7 +216,8 @@ describe('parse()', function () {
     it('allows for empty strings in arrays', function (done) {
 
         expect(Qs.parse('a[]=b&a[]=&a[]=c')).to.deep.equal({ a: ['b', '', 'c'] });
-        expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]=')).to.deep.equal({ a: ['b', '', 'c', ''] });
+        expect(Qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=')).to.deep.equal({ a: ['b', null, 'c', ''] });
+        expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]')).to.deep.equal({ a: ['b', '', 'c', null] });
         expect(Qs.parse('a[]=&a[]=b&a[]=c')).to.deep.equal({ a: ['', 'b', 'c'] });
         done();
     });
@@ -240,7 +244,8 @@ describe('parse()', function () {
 
     it('continues parsing when no parent is found', function (done) {
 
-        expect(Qs.parse('[]&a=b')).to.deep.equal({ '0': '', a: 'b' });
+        expect(Qs.parse('[]=&a=b')).to.deep.equal({ '0': '', a: 'b' });
+        expect(Qs.parse('[]&a=b')).to.deep.equal({ '0': null, a: 'b' });
         expect(Qs.parse('[foo]=bar')).to.deep.equal({ foo: 'bar' });
         done();
     });
