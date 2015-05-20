@@ -20,10 +20,5 @@
     "querystring",
     "qs"
   ],
-  "licenses": [
-    {
-      "type": "BSD",
-      "url": "http://github.com/hapijs/qs/raw/master/LICENSE"
-    }
-  ]
+  "license": "BSD-3-Clause"
 }
