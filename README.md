@@ -232,6 +232,32 @@ Qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' });
 // 'a=b;c=d'
 ```
 
+Finally, you can use the `filter` option to restrict which keys will be included in the stringified output.
+If you pass a function, it will be called for each key to obtain the replacement value. Otherwise, if you
+pass an array, it will be used to select properties and array indices for stringification:
+
+```javascript
+function filterFunc(prefix, value) {
+  if (prefix == 'b') {
+    // Return an `undefined` value to omit a property.
+    return;
+  }
+  if (prefix == 'e[f]') {
+    return value.getTime();
+  }
+  if (prefix == 'e[g][0]') {
+    return value * 2;
+  }
+  return value;
+}
+Qs.stringify({ a: 'b', c: 'd', e: { f: new Date(123), g: [2] } }, { filter: filterFunc })
+// 'a=b&c=d&e[f]=123&e[g][0]=4'
+Qs.stringify({ a: 'b', c: 'd', e: 'f' }, { filter: ['a', 'e'] })
+// 'a=b&e=f'
+Qs.stringify({ a: ['b', 'c', 'd'], e: 'f' }, { filter: ['a', 0, 2] })
+// 'a[0]=b&a[2]=d'
+```
+
 ### Handling of `null` values
 
 By default, `null` values are treated like empty strings:
