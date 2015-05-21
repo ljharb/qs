@@ -106,9 +106,15 @@ describe('stringify()', function () {
     it('stringifies an empty value', function (done) {
 
         expect(Qs.stringify({ a: '' })).to.equal('a=');
+        expect(Qs.stringify({ a: null }, {strictNullHandling: true})).to.equal('a');
+
         expect(Qs.stringify({ a: '', b: '' })).to.equal('a=&b=');
-        expect(Qs.stringify({ a: null })).to.equal('a=');
-        expect(Qs.stringify({ a: { b: null } })).to.equal('a%5Bb%5D=');
+        expect(Qs.stringify({ a: null, b: '' }, {strictNullHandling: true})).to.equal('a&b=');
+
+        expect(Qs.stringify({ a: { b: '' } })).to.equal('a%5Bb%5D=');
+        expect(Qs.stringify({ a: { b: null } }, {strictNullHandling: true})).to.equal('a%5Bb%5D');
+        expect(Qs.stringify({ a: { b: null } }, {strictNullHandling: false})).to.equal('a%5Bb%5D=');
+
         done();
     });
 
@@ -143,7 +149,10 @@ describe('stringify()', function () {
     it('drops keys with a value of undefined', function (done) {
 
         expect(Qs.stringify({ a: undefined })).to.equal('');
-        expect(Qs.stringify({ a: { b: undefined, c: null } })).to.equal('a%5Bc%5D=');
+
+        expect(Qs.stringify({ a: { b: undefined, c: null } }, {strictNullHandling: true})).to.equal('a%5Bc%5D');
+        expect(Qs.stringify({ a: { b: undefined, c: null } }, {strictNullHandling: false})).to.equal('a%5Bc%5D=');
+        expect(Qs.stringify({ a: { b: undefined, c: '' } })).to.equal('a%5Bc%5D=');
         done();
     });
 
