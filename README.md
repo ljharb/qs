@@ -231,3 +231,35 @@ The delimiter may be overridden with stringify as well:
 Qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' });
 // 'a=b;c=d'
 ```
+
+### Handling of `null` values
+
+By default, `null` values are treated like empty strings:
+
+```javascript
+Qs.stringify({ a: null, b: '' });
+// 'a=&b='
+```
+
+Parsing does not distinguish between parameters with and without equal signs. Both are converted to empty strings.
+
+```javascript
+Qs.parse('a&b=')
+// { a: '', b: '' }
+```
+
+To distinguish between `null` values and empty strings use the `strictNullHandling` flag. In the result string the `null`
+values have no `=` sign:
+
+```javascript
+Qs.stringify({ a: null, b: '' }, { strictNullHandling: true });
+// 'a&b='
+```
+
+To parse values without `=` back to `null` use the `strictNullHandling` flag:
+
+```javascript
+Qs.parse('a&b=', { strictNullHandling: true });
+// { a: null, b: '' }
+
+```
