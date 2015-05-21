@@ -215,4 +215,40 @@ describe('stringify()', function () {
         global.Buffer = tempBuffer;
         done();
     });
+
+    it('selects properties when filter=array', function (done) {
+
+        expect(Qs.stringify({ a: 'b' }, { filter: ['a'] })).to.equal('a=b');
+        expect(Qs.stringify({ a: 1}, { filter: [] })).to.equal('');
+        expect(Qs.stringify({ a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' }, { filter: ['a', 'b', 0, 2]})).to.equal('a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3');
+        done();
+
+    });
+
+    it('supports custom representations when filter=function', function (done) {
+
+        var calls = 0;
+        var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
+        var filterFunc = function (prefix, value) {
+
+            calls++;
+            if (calls === 1) {
+                expect(prefix).to.be.empty();
+                expect(value).to.equal(obj);
+            }
+            else if (prefix === 'c') {
+                return;
+            }
+            else if (value instanceof Date) {
+                expect(prefix).to.equal('e[f]');
+                return value.getTime();
+            }
+            return value;
+        };
+
+        expect(Qs.stringify(obj, { filter: filterFunc })).to.equal('a=b&e%5Bf%5D=1257894000000');
+        expect(calls).to.equal(5);
+        done();
+
+    });
 });
