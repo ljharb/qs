@@ -172,7 +172,7 @@ describe('stringify()', function () {
 
     it('stringifies the weird object from qs', function (done) {
 
-        expect(Qs.stringify({ 'my weird field': 'q1!2"\'w$5&7/z8)?' })).to.equal('my%20weird%20field=q1!2%22\'w%245%267%2Fz8)%3F');
+        expect(Qs.stringify({ 'my weird field': '~q1!2"\'w$5&7/z8)?' })).to.equal('my%20weird%20field=~q1%212%22%27w%245%267%2Fz8%29%3F');
         done();
     });
 
