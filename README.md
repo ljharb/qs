@@ -160,7 +160,12 @@ Qs.parse('a[1]=b', { arrayLimit: 0 });
 // { a: { '1': 'b' } }
 ```
 
-To disable array parsing entirely, set `arrayLimit` to `-1`.
+To disable array parsing entirely, set `parseArrays` to `false`.
+
+```javascript
+Qs.parse('a[]=b', { parseArrays: false });
+// { a: { '0': 'b' } }
+```
 
 If you mix notations, **qs** will merge the two items into an object:
 
