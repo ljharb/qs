@@ -325,6 +325,12 @@ describe('parse()', function () {
         done();
     });
 
+    it('allows disabling array parsing', function (done) {
+
+        expect(Qs.parse('a[0]=b&a[1]=c', { parseArrays: false })).to.deep.equal({ a: { '0': 'b', '1': 'c' } }, { prototype: false });
+        done();
+    });
+
     it('parses an object', function (done) {
 
         var input = {
