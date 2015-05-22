@@ -26,6 +26,11 @@ describe('stringify()', function () {
         expect(Qs.stringify({ a: 'b' })).to.equal('a=b');
         expect(Qs.stringify({ a: 1 })).to.equal('a=1');
         expect(Qs.stringify({ a: 1, b: 2 })).to.equal('a=1&b=2');
+        expect(Qs.stringify({ a: 'A_Z' })).to.equal('a=A_Z');
+        expect(Qs.stringify({ a: '€' })).to.equal('a=%E2%82%AC');
+        expect(Qs.stringify({ a: '' })).to.equal('a=%EE%80%80');
+        expect(Qs.stringify({ a: 'א' })).to.equal('a=%D7%90');
+        expect(Qs.stringify({ a: '𐐷' })).to.equal('a=%F0%90%90%B7');
         done();
     });
 
