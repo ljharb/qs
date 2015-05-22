@@ -23,7 +23,7 @@ var str = Qs.stringify(obj);  // 'a=c'
 Qs.parse(string, [options]);
 ```
 
-**qs** allows you to create nested objects within your query strings, by surrounding the name of sub-keys with square brackets `[]`.
+**qs** allows you to create nested objects within your query strings, by surrounding the name of sub-keys with square brackets `[]`, or prefixing the sub-key with a dot `.`.
 For example, the string `'foo[bar]=baz'` converts to:
 
 ```javascript
@@ -32,6 +32,13 @@ For example, the string `'foo[bar]=baz'` converts to:
     bar: 'baz'
   }
 }
+```
+
+The parsed value is returned as a plain object, created via `Object.create(null)` and as such you should be aware that prototype methods do not exist on it and a user may set those names to whatever value they like:
+
+```javascript
+Qs.parse('a.hasOwnProperty=b');
+// { a: { hasOwnProperty: 'b' } }
 ```
 
 URI encoded strings work too:
