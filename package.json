@@ -6,11 +6,13 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
+    "browserify": "^10.2.1",
     "code": "1.x.x",
     "lab": "5.x.x"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "make test-cov",
+    "dist": "browserify --standalone Qs index.js > dist/qs.js"
   },
   "repository": {
     "type": "git",
