@@ -1,6 +1,6 @@
 {
   "name": "qs",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A querystring parser that supports nesting and arrays, with a depth limit",
   "homepage": "https://github.com/hapijs/qs",
   "main": "index.js",
