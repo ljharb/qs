@@ -1,4 +1,16 @@
 
+## [**3.0.0**](https://github.com/hapijs/qs/issues?milestone=23&state=open)
+- [**#77**](https://github.com/hapijs/qs/issues/77) Perf boost
+- [**#60**](https://github.com/hapijs/qs/issues/60) Add explicit option to disable array parsing
+- [**#80**](https://github.com/hapijs/qs/issues/80) qs.parse silently drops properties
+- [**#74**](https://github.com/hapijs/qs/issues/74) Bad parse when turning array into object
+- [**#81**](https://github.com/hapijs/qs/issues/81) Add a `filter` option
+- [**#68**](https://github.com/hapijs/qs/issues/68) Fixed issue with recursion and passing strings into objects.
+- [**#66**](https://github.com/hapijs/qs/issues/66) Add mixed array and object dot notation support Closes: #47
+- [**#76**](https://github.com/hapijs/qs/issues/76) RFC 3986
+- [**#85**](https://github.com/hapijs/qs/issues/85) No equal sign
+- [**#84**](https://github.com/hapijs/qs/issues/84) update license attribute
+
 ## [**2.4.1**](https://github.com/hapijs/qs/issues?milestone=20&state=closed)
 - [**#73**](https://github.com/hapijs/qs/issues/73) Property 'hasOwnProperty' of object #<Object> is not a function
 
