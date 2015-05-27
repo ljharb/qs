@@ -47,6 +47,13 @@ describe('parse()', function () {
         done();
     });
 
+    it('allows disabling dot notation', function (done) {
+
+        expect(Qs.parse('a.b=c')).to.deep.equal({ a: { b: 'c' } }, { prototype: false });
+        expect(Qs.parse('a.b=c', { allowDots: false })).to.deep.equal({ 'a.b': 'c' }, { prototype: false });
+        done();
+    });
+
     it('parses a single nested string', function (done) {
 
         expect(Qs.parse('a[b]=c')).to.deep.equal({ a: { b: 'c' } }, { prototype: false });
