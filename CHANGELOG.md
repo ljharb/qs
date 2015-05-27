@@ -1,5 +1,8 @@
 
-## [**3.0.0**](https://github.com/hapijs/qs/issues?milestone=23&state=open)
+## [**3.1.0**](https://github.com/hapijs/qs/issues?milestone=24&state=open)
+- [**#89**](https://github.com/hapijs/qs/issues/89) Add option to disable "Transform dot notation to bracket notation"
+
+## [**3.0.0**](https://github.com/hapijs/qs/issues?milestone=23&state=closed)
 - [**#77**](https://github.com/hapijs/qs/issues/77) Perf boost
 - [**#60**](https://github.com/hapijs/qs/issues/60) Add explicit option to disable array parsing
 - [**#80**](https://github.com/hapijs/qs/issues/80) qs.parse silently drops properties
