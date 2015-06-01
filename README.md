@@ -111,6 +111,13 @@ Qs.parse('a=b;c=d,e=f', { delimiter: /[;,]/ });
 // { a: 'b', c: 'd', e: 'f' }
 ```
 
+Option `allowDots` can be used to disable dot notation:
+
+```javascript
+Qs.parse('a.b=c', { allowDots: false });
+// { 'a.b': 'c' } }
+```
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
