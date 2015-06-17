@@ -94,6 +94,9 @@ internals.parseObject = function (chain, val, options) {
             obj[index] = internals.parseObject(chain, val, options);
         }
         else {
+            if (options.parseArrays && index >= options.arrayLimit) {
+                throw new Error('Maximun array size limit exceeded.');
+            }
             obj[cleanRoot] = internals.parseObject(chain, val, options);
         }
     }
@@ -323,10 +326,7 @@ exports.arrayToObject = function (source) {
 
     var obj = Object.create(null);
     for (var i = 0, il = source.length; i < il; ++i) {
-        if (typeof source[i] !== 'undefined') {
-
-            obj[i] = source[i];
-        }
+        obj[i] = source[i];
     }
 
     return obj;
@@ -498,8 +498,5 @@ exports.isBuffer = function (obj) {
               obj.constructor.isBuffer(obj));
 };
 
-},{}],5:[function(require,module,exports){
-module.exports = require('./lib/');
-
-},{"./lib/":1}]},{},[5])(5)
+},{}]},{},[1])(1)
 });
