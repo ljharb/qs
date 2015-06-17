@@ -153,12 +153,7 @@ Qs.parse('a[0]=b&a[1]=&a[2]=c');
 ```
 
 **qs** will also limit specifying indices in an array to a maximum index of `20`. Any array members with an index of greater than `20` will
-instead be converted to an object with the index as the key:
-
-```javascript
-Qs.parse('a[100]=b');
-// { a: { '100': 'b' } }
-```
+instead throw an exception.
 
 This limit can be overridden by passing an `arrayLimit` option:
 

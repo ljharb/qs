@@ -122,8 +122,14 @@ describe('parse()', function () {
     it('limits specific array indices to 20', function (done) {
 
         expect(Qs.parse('a[20]=a')).to.deep.equal({ a: ['a'] }, { prototype: false });
-        expect(Qs.parse('a[21]=a')).to.deep.equal({ a: { '21': 'a' } }, { prototype: false });
-        done();
+
+        try {
+            Qs.parse('a[21]=a');
+        } catch(err) {
+            expect(err.message).to.equal('Maximun array size limit exceeded.');
+            return done();
+        }
+        done(new Error('No exception thrown!'));
     });
 
     it('supports keys that begin with a number', function (done) {
@@ -191,12 +197,6 @@ describe('parse()', function () {
     it('can add keys to objects', function (done) {
 
         expect(Qs.parse('a[b]=c&a=d')).to.deep.equal({ a: { b: 'c', d: true } }, { prototype: false });
-        done();
-    });
-
-    it('correctly prunes undefined values when converting an array to an object', function (done) {
-
-        expect(Qs.parse('a[2]=b&a[99999999]=c')).to.deep.equal({ a: { '2': 'b', '99999999': 'c' } }, { prototype: false });
         done();
     });
 
@@ -325,10 +325,24 @@ describe('parse()', function () {
     });
 
     it('allows overriding array limit', function (done) {
-
-        expect(Qs.parse('a[0]=b', { arrayLimit: -1 })).to.deep.equal({ a: { '0': 'b' } }, { prototype: false });
-        expect(Qs.parse('a[-1]=b', { arrayLimit: -1 })).to.deep.equal({ a: { '-1': 'b' } }, { prototype: false });
-        expect(Qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 })).to.deep.equal({ a: { '0': 'b', '1': 'c' } }, { prototype: false });
+        try {
+            Qs.parse('a[0]=b', { arrayLimit: -1 });
+            return done(new Error('No exception thrown!'));
+        } catch(err) {
+            expect(err.message).to.equal('Maximun array size limit exceeded.');
+        }
+        try {
+            Qs.parse('a[-1]=b', { arrayLimit: -1 });
+            return done(new Error('No exception thrown!'));
+        } catch(err) {
+            expect(err.message).to.equal('Maximun array size limit exceeded.');
+        }
+        try {
+            Qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 });
+            return done(new Error('No exception thrown!'));
+        } catch(err) {
+            expect(err.message).to.equal('Maximun array size limit exceeded.');
+        }
         done();
     });
 
