@@ -142,6 +142,7 @@ describe('parse()', function () {
 
         expect(Qs.parse('a[b%20c]=d')).to.deep.equal({ a: { 'b c': 'd' } }, { prototype: false });
         expect(Qs.parse('a[b]=c%20d')).to.deep.equal({ a: { b: 'c d' } }, { prototype: false });
+        expect(Qs.parse('place=urn%E4sch')).to.deep.equal({ place: 'urnäsch' }, { prototype: false });
         done();
     });
 
