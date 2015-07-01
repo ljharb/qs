@@ -34,11 +34,18 @@ For example, the string `'foo[bar]=baz'` converts to:
 }
 ```
 
-The parsed value is returned as a plain object, created via `Object.create(null)` and as such you should be aware that prototype methods do not exist on it and a user may set those names to whatever value they like:
+When using the `plainObjects` option the parsed value is returned as a plain object, created via `Object.create(null)` and as such you should be aware that prototype methods will not exist on it and a user may set those names to whatever value they like:
 
 ```javascript
-Qs.parse('a.hasOwnProperty=b');
+Qs.parse('a.hasOwnProperty=b', { plainObjects: true });
 // { a: { hasOwnProperty: 'b' } }
+```
+
+By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `prefixPrototypes` to `true` which will add an underscore `'_'` to the beginning of the key names to allow them to be returned:
+
+```javascript
+Qs.parse('a.hasOwnProperty=b', { prefixPrototypes: true });
+// { a: { _hasOwnProperty: 'b' } }
 ```
 
 URI encoded strings work too:
