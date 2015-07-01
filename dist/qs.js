@@ -28,7 +28,9 @@ var internals = {
     depth: 5,
     arrayLimit: 20,
     parameterLimit: 1000,
-    strictNullHandling: false
+    strictNullHandling: false,
+    plainObjects: false,
+    prefixPrototypes: false
 };
 
 
@@ -79,7 +81,7 @@ internals.parseObject = function (chain, val, options) {
         obj = obj.concat(internals.parseObject(chain, val, options));
     }
     else {
-        obj = Object.create(null);
+        obj = options.plainObjects ? Object.create(null) : {};
         var cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
         var index = parseInt(cleanRoot, 10);
         var indexString = '' + index;
@@ -127,6 +129,18 @@ internals.parseKeys = function (key, val, options) {
 
     var keys = [];
     if (segment[1]) {
+        // If we aren't using plain objects, optionally prefix keys
+        // that would overwrite object prototype properties
+        if (!options.plainObjects &&
+            Object.prototype.hasOwnProperty(segment[1])) {
+
+            if (!options.prefixPrototypes) {
+                return;
+            }
+
+            segment[1] = '_' + segment[1];
+        }
+
         keys.push(segment[1]);
     }
 
@@ -136,6 +150,15 @@ internals.parseKeys = function (key, val, options) {
     while ((segment = child.exec(key)) !== null && i < options.depth) {
 
         ++i;
+        if (!options.plainObjects &&
+            Object.prototype.hasOwnProperty(segment[1].replace(/\[|\]/g, ''))) {
+
+            if (!options.prefixPrototypes) {
+                continue;
+            }
+
+            segment[1] = segment[1].replace(/^\[/, '[_');
+        }
         keys.push(segment[1]);
     }
 
@@ -151,25 +174,26 @@ internals.parseKeys = function (key, val, options) {
 
 module.exports = function (str, options) {
 
-    if (str === '' ||
-        str === null ||
-        typeof str === 'undefined') {
-
-        return Object.create(null);
-    }
-
     options = options || {};
     options.delimiter = typeof options.delimiter === 'string' || Utils.isRegExp(options.delimiter) ? options.delimiter : internals.delimiter;
     options.depth = typeof options.depth === 'number' ? options.depth : internals.depth;
     options.arrayLimit = typeof options.arrayLimit === 'number' ? options.arrayLimit : internals.arrayLimit;
     options.parseArrays = options.parseArrays !== false;
     options.allowDots = options.allowDots !== false;
+    options.plainObjects = typeof options.plainObjects === 'boolean' ? options.plainObjects : internals.plainObjects;
+    options.prefixPrototypes = typeof options.prefixPrototypes === 'boolean' ? options.prefixPrototypes : internals.prefixPrototypes;
     options.parameterLimit = typeof options.parameterLimit === 'number' ? options.parameterLimit : internals.parameterLimit;
     options.strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
 
+    if (str === '' ||
+        str === null ||
+        typeof str === 'undefined') {
+
+        return options.plainObjects ? Object.create(null) : {};
+    }
 
     var tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
-    var obj = Object.create(null);
+    var obj = options.plainObjects ? Object.create(null) : {};
 
     // Iterate over the keys and setup the new object
 
@@ -177,7 +201,7 @@ module.exports = function (str, options) {
     for (var i = 0, il = keys.length; i < il; ++i) {
         var key = keys[i];
         var newObj = internals.parseKeys(key, tempObj[key], options);
-        obj = Utils.merge(obj, newObj);
+        obj = Utils.merge(obj, newObj, options);
     }
 
     return Utils.compact(obj);
@@ -314,14 +338,14 @@ module.exports = function (obj, options) {
 
 var internals = {};
 internals.hexTable = new Array(256);
-for (var i = 0; i < 256; ++i) {
-    internals.hexTable[i] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
+for (var h = 0; h < 256; ++h) {
+    internals.hexTable[h] = '%' + ((h < 16 ? '0' : '') + h.toString(16)).toUpperCase();
 }
 
 
-exports.arrayToObject = function (source) {
+exports.arrayToObject = function (source, options) {
 
-    var obj = Object.create(null);
+    var obj = options.plainObjects ? Object.create(null) : {};
     for (var i = 0, il = source.length; i < il; ++i) {
         if (typeof source[i] !== 'undefined') {
 
@@ -333,7 +357,7 @@ exports.arrayToObject = function (source) {
 };
 
 
-exports.merge = function (target, source) {
+exports.merge = function (target, source, options) {
 
     if (!source) {
         return target;
@@ -361,7 +385,7 @@ exports.merge = function (target, source) {
     if (Array.isArray(target) &&
         !Array.isArray(source)) {
 
-        target = exports.arrayToObject(target);
+        target = exports.arrayToObject(target, options);
     }
 
     var keys = Object.keys(source);
@@ -373,7 +397,7 @@ exports.merge = function (target, source) {
             target[key] = value;
         }
         else {
-            target[key] = exports.merge(target[key], value);
+            target[key] = exports.merge(target[key], value, options);
         }
     }
 
@@ -498,8 +522,5 @@ exports.isBuffer = function (obj) {
               obj.constructor.isBuffer(obj));
 };
 
-},{}],5:[function(require,module,exports){
-module.exports = require('./lib/');
-
-},{"./lib/":1}]},{},[5])(5)
+},{}]},{},[1])(1)
 });
