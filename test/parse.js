@@ -453,10 +453,10 @@ describe('parse()', function () {
         done();
     });
 
-    it('can prefix prototype properties', function (done) {
+    it('can allow overwriting prototype properties', function (done) {
 
-        expect(Qs.parse('a[hasOwnProperty]=b', { prefixPrototypes: true })).to.deep.equal({ a: { _hasOwnProperty: 'b' } });
-        expect(Qs.parse('hasOwnProperty=b', { prefixPrototypes: true })).to.deep.equal({ _hasOwnProperty: 'b' });
+        expect(Qs.parse('a[hasOwnProperty]=b', { allowPrototypes: true })).to.deep.equal({ a: { hasOwnProperty: 'b' } }, { prototype: false });
+        expect(Qs.parse('hasOwnProperty=b', { allowPrototypes: true })).to.deep.equal({ hasOwnProperty: 'b' }, { prototype: false });
         done();
     });
 

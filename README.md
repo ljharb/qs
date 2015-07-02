@@ -41,11 +41,11 @@ Qs.parse('a.hasOwnProperty=b', { plainObjects: true });
 // { a: { hasOwnProperty: 'b' } }
 ```
 
-By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `prefixPrototypes` to `true` which will add an underscore `'_'` to the beginning of the key names to allow them to be returned:
+By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties. *WARNING* It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten. Always be careful with this option.
 
 ```javascript
-Qs.parse('a.hasOwnProperty=b', { prefixPrototypes: true });
-// { a: { _hasOwnProperty: 'b' } }
+Qs.parse('a.hasOwnProperty=b', { allowPrototypes: true });
+// { a: { hasOwnProperty: 'b' } }
 ```
 
 URI encoded strings work too:
