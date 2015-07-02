@@ -30,7 +30,7 @@ var internals = {
     parameterLimit: 1000,
     strictNullHandling: false,
     plainObjects: false,
-    prefixPrototypes: false
+    allowPrototypes: false
 };
 
 
@@ -134,11 +134,9 @@ internals.parseKeys = function (key, val, options) {
         if (!options.plainObjects &&
             Object.prototype.hasOwnProperty(segment[1])) {
 
-            if (!options.prefixPrototypes) {
+            if (!options.allowPrototypes) {
                 return;
             }
-
-            segment[1] = '_' + segment[1];
         }
 
         keys.push(segment[1]);
@@ -153,11 +151,9 @@ internals.parseKeys = function (key, val, options) {
         if (!options.plainObjects &&
             Object.prototype.hasOwnProperty(segment[1].replace(/\[|\]/g, ''))) {
 
-            if (!options.prefixPrototypes) {
+            if (!options.allowPrototypes) {
                 continue;
             }
-
-            segment[1] = segment[1].replace(/^\[/, '[_');
         }
         keys.push(segment[1]);
     }
@@ -181,7 +177,7 @@ module.exports = function (str, options) {
     options.parseArrays = options.parseArrays !== false;
     options.allowDots = options.allowDots !== false;
     options.plainObjects = typeof options.plainObjects === 'boolean' ? options.plainObjects : internals.plainObjects;
-    options.prefixPrototypes = typeof options.prefixPrototypes === 'boolean' ? options.prefixPrototypes : internals.prefixPrototypes;
+    options.allowPrototypes = typeof options.allowPrototypes === 'boolean' ? options.allowPrototypes : internals.allowPrototypes;
     options.parameterLimit = typeof options.parameterLimit === 'number' ? options.parameterLimit : internals.parameterLimit;
     options.strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
 
@@ -393,7 +389,7 @@ exports.merge = function (target, source, options) {
         var key = keys[k];
         var value = source[key];
 
-        if (!target[key]) {
+        if (!Object.prototype.hasOwnProperty.call(target, key)) {
             target[key] = value;
         }
         else {
