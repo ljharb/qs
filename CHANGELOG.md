@@ -1,11 +1,17 @@
 
-## [**3.1.0**](https://github.com/hapijs/qs/issues?milestone=24&state=open)
+## [**4.0.1**](https://github.com/hapijs/qs/issues?milestone=27&state=open)
+- [**#100**](https://github.com/hapijs/qs/issues/100) include dist to npm
+
+## [**4.0.0**](https://github.com/hapijs/qs/issues?milestone=26&state=closed)
+- [**#98**](https://github.com/hapijs/qs/issues/98) make returning plain objects and allowing prototype overwriting properties optional
+
+## [**3.1.0**](https://github.com/hapijs/qs/issues?milestone=24&state=closed)
 - [**#89**](https://github.com/hapijs/qs/issues/89) Add option to disable "Transform dot notation to bracket notation"
 
 ## [**3.0.0**](https://github.com/hapijs/qs/issues?milestone=23&state=closed)
+- [**#80**](https://github.com/hapijs/qs/issues/80) qs.parse silently drops properties
 - [**#77**](https://github.com/hapijs/qs/issues/77) Perf boost
 - [**#60**](https://github.com/hapijs/qs/issues/60) Add explicit option to disable array parsing
-- [**#80**](https://github.com/hapijs/qs/issues/80) qs.parse silently drops properties
 - [**#74**](https://github.com/hapijs/qs/issues/74) Bad parse when turning array into object
 - [**#81**](https://github.com/hapijs/qs/issues/81) Add a `filter` option
 - [**#68**](https://github.com/hapijs/qs/issues/68) Fixed issue with recursion and passing strings into objects.
