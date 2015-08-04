@@ -52,6 +52,12 @@ describe('stringify()', function () {
         done();
     });
 
+
+    it('omits nested nulls when asked', function (done) {
+        expect(Qs.stringify({a: { b: 'c', d: null} }, { skipNulls: true })).to.equal('a%5Bb%5D=c');
+        done();
+    });
+
     it('omits array indices when asked', function (done) {
 
         expect(Qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false })).to.equal('a=b&a=c&a=d');
