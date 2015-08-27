@@ -216,8 +216,9 @@ describe('stringify()', function () {
 
         var tempBuffer = global.Buffer;
         delete global.Buffer;
-        expect(Qs.stringify({ a: 'b', c: 'd' })).to.equal('a=b&c=d');
+        var result = Qs.stringify({ a: 'b', c: 'd' });
         global.Buffer = tempBuffer;
+        expect(result).to.equal('a=b&c=d');
         done();
     });
 
