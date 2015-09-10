@@ -1,5 +1,6 @@
 
-## [**4.0.1**](https://github.com/hapijs/qs/issues?milestone=27&state=open)
+## [**5.0.0**](https://github.com/hapijs/qs/issues?milestone=28&state=closed)
+- [**#114**](https://github.com/hapijs/qs/issues/114) default allowDots to false
 - [**#100**](https://github.com/hapijs/qs/issues/100) include dist to npm
 
 ## [**4.0.0**](https://github.com/hapijs/qs/issues?milestone=26&state=closed)
