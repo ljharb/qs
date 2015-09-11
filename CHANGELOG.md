@@ -1,4 +1,8 @@
 
+## [**5.1.0**](https://github.com/hapijs/qs/issues?milestone=29&state=open)
+- [**#117**](https://github.com/hapijs/qs/issues/117) make URI encoding stringified results optional
+- [**#106**](https://github.com/hapijs/qs/issues/106) Add flag `skipNulls` to optionally skip null values in stringify
+
 ## [**5.0.0**](https://github.com/hapijs/qs/issues?milestone=28&state=closed)
 - [**#114**](https://github.com/hapijs/qs/issues/114) default allowDots to false
 - [**#100**](https://github.com/hapijs/qs/issues/100) include dist to npm
