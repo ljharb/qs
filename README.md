@@ -315,3 +315,10 @@ Qs.parse('a&b=', { strictNullHandling: true });
 // { a: null, b: '' }
 
 ```
+
+To completely skip rendering keys with `null` values, use the `skipNulls` flag:
+
+```javascript
+qs.stringify({ a: 'b', c: null}, { skipNulls: true })
+// 'a=b'
+```
