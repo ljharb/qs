@@ -48,13 +48,15 @@ describe('stringify()', function () {
     });
 
     it('omits nulls when asked', function (done) {
-        expect(Qs.stringify({ a: 'b', c: null}, { skipNulls: true })).to.equal('a=b');
+
+        expect(Qs.stringify({ a: 'b', c: null }, { skipNulls: true })).to.equal('a=b');
         done();
     });
 
 
     it('omits nested nulls when asked', function (done) {
-        expect(Qs.stringify({a: { b: 'c', d: null} }, { skipNulls: true })).to.equal('a%5Bb%5D=c');
+
+        expect(Qs.stringify({ a: { b: 'c', d: null } }, { skipNulls: true })).to.equal('a%5Bb%5D=c');
         done();
     });
 
