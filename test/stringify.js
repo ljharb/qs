@@ -270,4 +270,12 @@ describe('stringify()', function () {
         done();
 
     });
+
+    it('can disable uri encoding', function (done) {
+
+        expect(Qs.stringify({ a: 'b' }, { encode: false })).to.equal('a=b');
+        expect(Qs.stringify({ a: { b: 'c' } }, { encode: false })).to.equal('a[b]=c');
+        expect(Qs.stringify({ a: 'b', c: null }, { strictNullHandling: true, encode: false })).to.equal('a=b&c');
+        done();
+    });
 });
