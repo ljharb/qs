@@ -12,7 +12,9 @@
     "querystring",
     "qs"
   ],
-  "engines": ">=4.0.0",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "browserify": "^10.2.1",
