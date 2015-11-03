@@ -1,26 +1,28 @@
+'use strict';
+
 // Load modules
 
-var Code = require('code');
-var Lab = require('lab');
-var Utils = require('../lib/utils');
+const Code = require('code');
+const Lab = require('lab');
+const Utils = require('../lib/utils');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 // Test shortcuts
 
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var describe = lab.experiment;
-var it = lab.test;
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
+const describe = lab.experiment;
+const it = lab.test;
 
 
-describe('merge()', function () {
+describe('merge()', () => {
 
-    it('can merge two objects with the same key', function (done) {
+    it('can merge two objects with the same key', (done) => {
 
         expect(Utils.merge({ a: 'b' }, { a: 'c' })).to.deep.equal({ a: ['b', 'c'] });
         done();
