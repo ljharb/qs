@@ -27,4 +27,11 @@ describe('merge()', () => {
         expect(Utils.merge({ a: 'b' }, { a: 'c' })).to.deep.equal({ a: ['b', 'c'] });
         done();
     });
+
+    it('correctly prunes undefined values when converting an array to an object', (done) => {
+
+        expect(Utils.arrayToObject(['b', undefined, 'c'], {})).to.deep.equal({ '0': 'b', '2': 'c' });
+        done();
+    });
+
 });
