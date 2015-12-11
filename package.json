@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/hapijs/qs.git"
   },
-  "main": "lib/index.js",
+  "main": "dist/qs.js",
   "keywords": [
     "querystring",
     "qs"
