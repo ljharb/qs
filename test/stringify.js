@@ -1,291 +1,235 @@
 'use strict';
 
-/* eslint no-extend-native:0 */
-// Load modules
-
-var Code = require('code');
-var Lab = require('lab');
+var test = require('tape');
 var qs = require('../');
 
-
-// Declare internals
-
-var internals = {};
-
-
-// Test shortcuts
-
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var describe = lab.experiment;
-var it = lab.test;
-
-
-describe('stringify()', () => {
-
-    it('stringifies a querystring object', (done) => {
-
-        expect(qs.stringify({ a: 'b' })).to.equal('a=b');
-        expect(qs.stringify({ a: 1 })).to.equal('a=1');
-        expect(qs.stringify({ a: 1, b: 2 })).to.equal('a=1&b=2');
-        expect(qs.stringify({ a: 'A_Z' })).to.equal('a=A_Z');
-        expect(qs.stringify({ a: '€' })).to.equal('a=%E2%82%AC');
-        expect(qs.stringify({ a: '' })).to.equal('a=%EE%80%80');
-        expect(qs.stringify({ a: 'א' })).to.equal('a=%D7%90');
-        expect(qs.stringify({ a: '𐐷' })).to.equal('a=%F0%90%90%B7');
-        done();
+test('stringify()', function (t) {
+    t.test('stringifies a querystring object', function (st) {
+        st.equal(qs.stringify({ a: 'b' }), 'a=b');
+        st.equal(qs.stringify({ a: 1 }), 'a=1');
+        st.equal(qs.stringify({ a: 1, b: 2 }), 'a=1&b=2');
+        st.equal(qs.stringify({ a: 'A_Z' }), 'a=A_Z');
+        st.equal(qs.stringify({ a: '€' }), 'a=%E2%82%AC');
+        st.equal(qs.stringify({ a: '' }), 'a=%EE%80%80');
+        st.equal(qs.stringify({ a: 'א' }), 'a=%D7%90');
+        st.equal(qs.stringify({ a: '𐐷' }), 'a=%F0%90%90%B7');
+        st.end();
     });
 
-    it('stringifies a nested object', (done) => {
-
-        expect(qs.stringify({ a: { b: 'c' } })).to.equal('a%5Bb%5D=c');
-        expect(qs.stringify({ a: { b: { c: { d: 'e' } } } })).to.equal('a%5Bb%5D%5Bc%5D%5Bd%5D=e');
-        done();
+    t.test('stringifies a nested object', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
+        st.equal(qs.stringify({ a: { b: { c: { d: 'e' } } } }), 'a%5Bb%5D%5Bc%5D%5Bd%5D=e');
+        st.end();
     });
 
-    it('stringifies an array value', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c', 'd'] })).to.equal('a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d');
-        done();
+    t.test('stringifies an array value', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c', 'd'] }), 'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d');
+        st.end();
     });
 
-    it('omits nulls when asked', (done) => {
-
-        expect(qs.stringify({ a: 'b', c: null }, { skipNulls: true })).to.equal('a=b');
-        done();
+    t.test('omits nulls when asked', function (st) {
+        st.equal(qs.stringify({ a: 'b', c: null }, { skipNulls: true }), 'a=b');
+        st.end();
     });
 
 
-    it('omits nested nulls when asked', (done) => {
-
-        expect(qs.stringify({ a: { b: 'c', d: null } }, { skipNulls: true })).to.equal('a%5Bb%5D=c');
-        done();
+    t.test('omits nested nulls when asked', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: null } }, { skipNulls: true }), 'a%5Bb%5D=c');
+        st.end();
     });
 
-    it('omits array indices when asked', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false })).to.equal('a=b&a=c&a=d');
-        done();
+    t.test('omits array indices when asked', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false }), 'a=b&a=c&a=d');
+        st.end();
     });
 
-    it('stringifies a nested array value', (done) => {
-
-        expect(qs.stringify({ a: { b: ['c', 'd'] } })).to.equal('a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
-        done();
+    t.test('stringifies a nested array value', function (st) {
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
+        st.end();
     });
 
-    it('stringifies an object inside an array', (done) => {
-
-        expect(qs.stringify({ a: [{ b: 'c' }] })).to.equal('a%5B0%5D%5Bb%5D=c');
-        expect(qs.stringify({ a: [{ b: { c: [1] } }] })).to.equal('a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1');
-        done();
+    t.test('stringifies an object inside an array', function (st) {
+        st.equal(qs.stringify({ a: [{ b: 'c' }] }), 'a%5B0%5D%5Bb%5D=c');
+        st.equal(qs.stringify({ a: [{ b: { c: [1] } }] }), 'a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1');
+        st.end();
     });
 
-    it('does not omit object keys when indices = false', (done) => {
-
-        expect(qs.stringify({ a: [{ b: 'c' }] }, { indices: false })).to.equal('a%5Bb%5D=c');
-        done();
+    t.test('does not omit object keys when indices = false', function (st) {
+        st.equal(qs.stringify({ a: [{ b: 'c' }] }, { indices: false }), 'a%5Bb%5D=c');
+        st.end();
     });
 
-    it('uses indices notation for arrays when indices=true', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c'] }, { indices: true })).to.equal('a%5B0%5D=b&a%5B1%5D=c');
-        done();
+    t.test('uses indices notation for arrays when indices=true', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }, { indices: true }), 'a%5B0%5D=b&a%5B1%5D=c');
+        st.end();
     });
 
-    it('uses indices notation for arrays when no arrayFormat is specified', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c'] })).to.equal('a%5B0%5D=b&a%5B1%5D=c');
-        done();
+    t.test('uses indices notation for arrays when no arrayFormat is specified', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }), 'a%5B0%5D=b&a%5B1%5D=c');
+        st.end();
     });
 
-    it('uses indices notation for arrays when no arrayFormat=indices', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'indices' })).to.equal('a%5B0%5D=b&a%5B1%5D=c');
-        done();
+    t.test('uses indices notation for arrays when no arrayFormat=indices', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'indices' }), 'a%5B0%5D=b&a%5B1%5D=c');
+        st.end();
     });
 
-    it('uses repeat notation for arrays when no arrayFormat=repeat', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })).to.equal('a=b&a=c');
-        done();
+    t.test('uses repeat notation for arrays when no arrayFormat=repeat', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' }), 'a=b&a=c');
+        st.end();
     });
 
-    it('uses brackets notation for arrays when no arrayFormat=brackets', (done) => {
-
-        expect(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'brackets' })).to.equal('a%5B%5D=b&a%5B%5D=c');
-        done();
+    t.test('uses brackets notation for arrays when no arrayFormat=brackets', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'brackets' }), 'a%5B%5D=b&a%5B%5D=c');
+        st.end();
     });
 
-    it('stringifies a complicated object', (done) => {
-
-        expect(qs.stringify({ a: { b: 'c', d: 'e' } })).to.equal('a%5Bb%5D=c&a%5Bd%5D=e');
-        done();
+    t.test('stringifies a complicated object', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }), 'a%5Bb%5D=c&a%5Bd%5D=e');
+        st.end();
     });
 
-    it('stringifies an empty value', (done) => {
+    t.test('stringifies an empty value', function (st) {
+        st.equal(qs.stringify({ a: '' }), 'a=');
+        st.equal(qs.stringify({ a: null }, { strictNullHandling: true }), 'a');
 
-        expect(qs.stringify({ a: '' })).to.equal('a=');
-        expect(qs.stringify({ a: null }, { strictNullHandling: true })).to.equal('a');
+        st.equal(qs.stringify({ a: '', b: '' }), 'a=&b=');
+        st.equal(qs.stringify({ a: null, b: '' }, { strictNullHandling: true }), 'a&b=');
 
-        expect(qs.stringify({ a: '', b: '' })).to.equal('a=&b=');
-        expect(qs.stringify({ a: null, b: '' }, { strictNullHandling: true })).to.equal('a&b=');
+        st.equal(qs.stringify({ a: { b: '' } }), 'a%5Bb%5D=');
+        st.equal(qs.stringify({ a: { b: null } }, { strictNullHandling: true }), 'a%5Bb%5D');
+        st.equal(qs.stringify({ a: { b: null } }, { strictNullHandling: false }), 'a%5Bb%5D=');
 
-        expect(qs.stringify({ a: { b: '' } })).to.equal('a%5Bb%5D=');
-        expect(qs.stringify({ a: { b: null } }, { strictNullHandling: true })).to.equal('a%5Bb%5D');
-        expect(qs.stringify({ a: { b: null } }, { strictNullHandling: false })).to.equal('a%5Bb%5D=');
-
-        done();
+        st.end();
     });
 
-    it('stringifies an empty object', (done) => {
-
+    t.test('stringifies an empty object', function (st) {
         var obj = Object.create(null);
         obj.a = 'b';
-        expect(qs.stringify(obj)).to.equal('a=b');
-        done();
+        st.equal(qs.stringify(obj), 'a=b');
+        st.end();
     });
 
-    it('returns an empty string for invalid input', (done) => {
-
-        expect(qs.stringify(undefined)).to.equal('');
-        expect(qs.stringify(false)).to.equal('');
-        expect(qs.stringify(null)).to.equal('');
-        expect(qs.stringify('')).to.equal('');
-        done();
+    t.test('returns an empty string for invalid input', function (st) {
+        st.equal(qs.stringify(undefined), '');
+        st.equal(qs.stringify(false), '');
+        st.equal(qs.stringify(null), '');
+        st.equal(qs.stringify(''), '');
+        st.end();
     });
 
-    it('stringifies an object with an empty object as a child', (done) => {
-
+    t.test('stringifies an object with an empty object as a child', function (st) {
         var obj = {
             a: Object.create(null)
         };
 
         obj.a.b = 'c';
-        expect(qs.stringify(obj)).to.equal('a%5Bb%5D=c');
-        done();
+        st.equal(qs.stringify(obj), 'a%5Bb%5D=c');
+        st.end();
     });
 
-    it('drops keys with a value of undefined', (done) => {
+    t.test('drops keys with a value of undefined', function (st) {
+        st.equal(qs.stringify({ a: undefined }), '');
 
-        expect(qs.stringify({ a: undefined })).to.equal('');
-
-        expect(qs.stringify({ a: { b: undefined, c: null } }, { strictNullHandling: true })).to.equal('a%5Bc%5D');
-        expect(qs.stringify({ a: { b: undefined, c: null } }, { strictNullHandling: false })).to.equal('a%5Bc%5D=');
-        expect(qs.stringify({ a: { b: undefined, c: '' } })).to.equal('a%5Bc%5D=');
-        done();
+        st.equal(qs.stringify({ a: { b: undefined, c: null } }, { strictNullHandling: true }), 'a%5Bc%5D');
+        st.equal(qs.stringify({ a: { b: undefined, c: null } }, { strictNullHandling: false }), 'a%5Bc%5D=');
+        st.equal(qs.stringify({ a: { b: undefined, c: '' } }), 'a%5Bc%5D=');
+        st.end();
     });
 
-    it('url encodes values', (done) => {
-
-        expect(qs.stringify({ a: 'b c' })).to.equal('a=b%20c');
-        done();
+    t.test('url encodes values', function (st) {
+        st.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
+        st.end();
     });
 
-    it('stringifies a date', (done) => {
-
+    t.test('stringifies a date', function (st) {
         var now = new Date();
         var str = 'a=' + encodeURIComponent(now.toISOString());
-        expect(qs.stringify({ a: now })).to.equal(str);
-        done();
+        st.equal(qs.stringify({ a: now }), str);
+        st.end();
     });
 
-    it('stringifies the weird object from qs', (done) => {
-
-        expect(qs.stringify({ 'my weird field': '~q1!2"\'w$5&7/z8)?' })).to.equal('my%20weird%20field=~q1%212%22%27w%245%267%2Fz8%29%3F');
-        done();
+    t.test('stringifies the weird object from qs', function (st) {
+        st.equal(qs.stringify({ 'my weird field': '~q1!2"\'w$5&7/z8)?' }), 'my%20weird%20field=~q1%212%22%27w%245%267%2Fz8%29%3F');
+        st.end();
     });
 
-    it('skips properties that are part of the object prototype', (done) => {
-
+    t.test('skips properties that are part of the object prototype', function (st) {
         Object.prototype.crash = 'test';
-        expect(qs.stringify({ a: 'b' })).to.equal('a=b');
-        expect(qs.stringify({ a: { b: 'c' } })).to.equal('a%5Bb%5D=c');
+        st.equal(qs.stringify({ a: 'b' }), 'a=b');
+        st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
         delete Object.prototype.crash;
-        done();
+        st.end();
     });
 
-    it('stringifies boolean values', (done) => {
-
-        expect(qs.stringify({ a: true })).to.equal('a=true');
-        expect(qs.stringify({ a: { b: true } })).to.equal('a%5Bb%5D=true');
-        expect(qs.stringify({ b: false })).to.equal('b=false');
-        expect(qs.stringify({ b: { c: false } })).to.equal('b%5Bc%5D=false');
-        done();
+    t.test('stringifies boolean values', function (st) {
+        st.equal(qs.stringify({ a: true }), 'a=true');
+        st.equal(qs.stringify({ a: { b: true } }), 'a%5Bb%5D=true');
+        st.equal(qs.stringify({ b: false }), 'b=false');
+        st.equal(qs.stringify({ b: { c: false } }), 'b%5Bc%5D=false');
+        st.end();
     });
 
-    it('stringifies buffer values', (done) => {
-
-        expect(qs.stringify({ a: new Buffer('test') })).to.equal('a=test');
-        expect(qs.stringify({ a: { b: new Buffer('test') } })).to.equal('a%5Bb%5D=test');
-        done();
+    t.test('stringifies buffer values', function (st) {
+        st.equal(qs.stringify({ a: new Buffer('test') }), 'a=test');
+        st.equal(qs.stringify({ a: { b: new Buffer('test') } }), 'a%5Bb%5D=test');
+        st.end();
     });
 
-    it('stringifies an object using an alternative delimiter', (done) => {
-
-        expect(qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' })).to.equal('a=b;c=d');
-        done();
+    t.test('stringifies an object using an alternative delimiter', function (st) {
+        st.equal(qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' }), 'a=b;c=d');
+        st.end();
     });
 
-    it('doesn\'t blow up when Buffer global is missing', (done) => {
-
+    t.test('doesn\'t blow up when Buffer global is missing', function (st) {
         var tempBuffer = global.Buffer;
         delete global.Buffer;
         var result = qs.stringify({ a: 'b', c: 'd' });
         global.Buffer = tempBuffer;
-        expect(result).to.equal('a=b&c=d');
-        done();
+        st.equal(result, 'a=b&c=d');
+        st.end();
     });
 
-    it('selects properties when filter=array', (done) => {
-
-        expect(qs.stringify({ a: 'b' }, { filter: ['a'] })).to.equal('a=b');
-        expect(qs.stringify({ a: 1 }, { filter: [] })).to.equal('');
-        expect(qs.stringify({ a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' }, { filter: ['a', 'b', 0, 2] })).to.equal('a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3');
-        done();
-
+    t.test('selects properties when filter=array', function (st) {
+        st.equal(qs.stringify({ a: 'b' }, { filter: ['a'] }), 'a=b');
+        st.equal(qs.stringify({ a: 1 }, { filter: [] }), '');
+        st.equal(qs.stringify({ a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' }, { filter: ['a', 'b', 0, 2] }), 'a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3');
+        st.end();
     });
 
-    it('supports custom representations when filter=function', (done) => {
-
+    t.test('supports custom representations when filter=function', function (st) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
         var filterFunc = function (prefix, value) {
-
             calls++;
             if (calls === 1) {
-                expect(prefix).to.be.empty();
-                expect(value).to.equal(obj);
-            }
-            else if (prefix === 'c') {
+                st.equal(prefix, '', 'prefix is empty');
+                st.equal(value, obj);
+            } else if (prefix === 'c') {
                 return;
-            }
-            else if (value instanceof Date) {
-                expect(prefix).to.equal('e[f]');
+            } else if (value instanceof Date) {
+                st.equal(prefix, 'e[f]');
                 return value.getTime();
             }
             return value;
         };
 
-        expect(qs.stringify(obj, { filter: filterFunc })).to.equal('a=b&e%5Bf%5D=1257894000000');
-        expect(calls).to.equal(5);
-        done();
-
+        st.equal(qs.stringify(obj, { filter: filterFunc }), 'a=b&e%5Bf%5D=1257894000000');
+        st.equal(calls, 5);
+        st.end();
     });
 
-    it('can disable uri encoding', (done) => {
-
-        expect(qs.stringify({ a: 'b' }, { encode: false })).to.equal('a=b');
-        expect(qs.stringify({ a: { b: 'c' } }, { encode: false })).to.equal('a[b]=c');
-        expect(qs.stringify({ a: 'b', c: null }, { strictNullHandling: true, encode: false })).to.equal('a=b&c');
-        done();
+    t.test('can disable uri encoding', function (st) {
+        st.equal(qs.stringify({ a: 'b' }, { encode: false }), 'a=b');
+        st.equal(qs.stringify({ a: { b: 'c' } }, { encode: false }), 'a[b]=c');
+        st.equal(qs.stringify({ a: 'b', c: null }, { strictNullHandling: true, encode: false }), 'a=b&c');
+        st.end();
     });
 
-    it('can sort the keys', (done) => {
-
-        var sort = (a, b) => a.localeCompare(b);
-        expect(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort })).to.equal('a=c&b=f&z=y');
-        expect(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort })).to.equal('a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
-        done();
+    t.test('can sort the keys', function (st) {
+        var sort = function (a, b) { return a.localeCompare(b); };
+        st.equal(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort }), 'a=c&b=f&z=y');
+        st.equal(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort }), 'a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
+        st.end();
     });
 });
