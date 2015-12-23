@@ -8,6 +8,13 @@
     "url": "https://github.com/ljharb/qs.git"
   },
   "main": "lib/index.js",
+  "contributors": [
+    {
+      "name": "Jordan Harband",
+      "email": "ljharb@gmail.com",
+      "url": "http://ljharb.codes"
+    }
+  ],
   "keywords": [
     "querystring",
     "qs"
