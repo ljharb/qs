@@ -2,22 +2,22 @@
 
 // Load modules
 
-const Code = require('code');
-const Lab = require('lab');
-const Utils = require('../lib/utils');
+var Code = require('code');
+var Lab = require('lab');
+var Utils = require('../lib/utils');
 
 
 // Declare internals
 
-const internals = {};
+var internals = {};
 
 
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
-const expect = Code.expect;
-const describe = lab.experiment;
-const it = lab.test;
+var lab = exports.lab = Lab.script();
+var expect = Code.expect;
+var describe = lab.experiment;
+var it = lab.test;
 
 
 describe('merge()', () => {

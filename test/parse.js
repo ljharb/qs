@@ -3,22 +3,22 @@
 /* eslint no-extend-native:0 */
 // Load modules
 
-const Code = require('code');
-const Lab = require('lab');
-const qs = require('../');
+var Code = require('code');
+var Lab = require('lab');
+var qs = require('../');
 
 
 // Declare internals
 
-const internals = {};
+var internals = {};
 
 
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
-const expect = Code.expect;
-const describe = lab.experiment;
-const it = lab.test;
+var lab = exports.lab = Lab.script();
+var expect = Code.expect;
+var describe = lab.experiment;
+var it = lab.test;
 
 
 describe('parse()', () => {
@@ -255,7 +255,7 @@ describe('parse()', () => {
 
     it('parses buffers correctly', (done) => {
 
-        const b = new Buffer('test');
+        var b = new Buffer('test');
         expect(qs.parse({ a: b })).to.deep.equal({ a: b });
         done();
     });
@@ -270,7 +270,7 @@ describe('parse()', () => {
 
     it('does not error when parsing a very long array', (done) => {
 
-        let str = 'a[]=a';
+        var str = 'a[]=a';
         while (Buffer.byteLength(str) < 128 * 1024) {
             str = str + '&' + str;
         }
@@ -342,19 +342,19 @@ describe('parse()', () => {
 
     it('parses an object', (done) => {
 
-        const input = {
+        var input = {
             'user[name]': { 'pop[bob]': 3 },
             'user[email]': null
         };
 
-        const expected = {
+        var expected = {
             'user': {
                 'name': { 'pop[bob]': 3 },
                 'email': null
             }
         };
 
-        const result = qs.parse(input);
+        var result = qs.parse(input);
 
         expect(result).to.deep.equal(expected);
         done();
@@ -362,19 +362,19 @@ describe('parse()', () => {
 
     it('parses an object in dot notation', (done) => {
 
-        const input = {
+        var input = {
             'user.name': { 'pop[bob]': 3 },
             'user.email.': null
         };
 
-        const expected = {
+        var expected = {
             'user': {
                 'name': { 'pop[bob]': 3 },
                 'email': null
             }
         };
 
-        const result = qs.parse(input, { allowDots: true });
+        var result = qs.parse(input, { allowDots: true });
 
         expect(result).to.deep.equal(expected);
         done();
@@ -382,19 +382,19 @@ describe('parse()', () => {
 
     it('parses an object and not child values', (done) => {
 
-        const input = {
+        var input = {
             'user[name]': { 'pop[bob]': { 'test': 3 } },
             'user[email]': null
         };
 
-        const expected = {
+        var expected = {
             'user': {
                 'name': { 'pop[bob]': { 'test': 3 } },
                 'email': null
             }
         };
 
-        const result = qs.parse(input);
+        var result = qs.parse(input);
 
         expect(result).to.deep.equal(expected);
         done();
@@ -402,9 +402,9 @@ describe('parse()', () => {
 
     it('does not blow up when Buffer global is missing', (done) => {
 
-        const tempBuffer = global.Buffer;
+        var tempBuffer = global.Buffer;
         delete global.Buffer;
-        const result = qs.parse('a=b&c=d');
+        var result = qs.parse('a=b&c=d');
         global.Buffer = tempBuffer;
         expect(result).to.deep.equal({ a: 'b', c: 'd' });
         done();
@@ -412,10 +412,10 @@ describe('parse()', () => {
 
     it('does not crash when parsing circular references', (done) => {
 
-        const a = {};
+        var a = {};
         a.b = a;
 
-        let parsed;
+        var parsed;
 
         expect(() => {
 
@@ -431,11 +431,11 @@ describe('parse()', () => {
 
     it('parses plain objects correctly', (done) => {
 
-        const a = Object.create(null);
+        var a = Object.create(null);
         a.b = 'c';
 
         expect(qs.parse(a)).to.deep.equal({ b: 'c' });
-        const result = qs.parse({ a: a });
+        var result = qs.parse({ a: a });
         expect(result).to.contain('a');
         expect(result.a).to.deep.equal(a);
         done();
@@ -443,14 +443,14 @@ describe('parse()', () => {
 
     it('parses dates correctly', (done) => {
 
-        const now = new Date();
+        var now = new Date();
         expect(qs.parse({ a: now })).to.deep.equal({ a: now });
         done();
     });
 
     it('parses regular expressions correctly', (done) => {
 
-        const re = /^test$/;
+        var re = /^test$/;
         expect(qs.parse({ a: re })).to.deep.equal({ a: re });
         done();
     });
@@ -464,13 +464,13 @@ describe('parse()', () => {
 
     it('can return plain objects', (done) => {
 
-        const expected = Object.create(null);
+        var expected = Object.create(null);
         expected.a = Object.create(null);
         expected.a.b = 'c';
         expected.a.hasOwnProperty = 'd';
         expect(qs.parse('a[b]=c&a[hasOwnProperty]=d', { plainObjects: true })).to.deep.equal(expected);
         expect(qs.parse(null, { plainObjects: true })).to.deep.equal(Object.create(null));
-        const expectedArray = Object.create(null);
+        var expectedArray = Object.create(null);
         expectedArray.a = Object.create(null);
         expectedArray.a['0'] = 'b';
         expectedArray.a.c = 'd';

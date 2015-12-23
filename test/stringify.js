@@ -3,22 +3,22 @@
 /* eslint no-extend-native:0 */
 // Load modules
 
-const Code = require('code');
-const Lab = require('lab');
-const qs = require('../');
+var Code = require('code');
+var Lab = require('lab');
+var qs = require('../');
 
 
 // Declare internals
 
-const internals = {};
+var internals = {};
 
 
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
-const expect = Code.expect;
-const describe = lab.experiment;
-const it = lab.test;
+var lab = exports.lab = Lab.script();
+var expect = Code.expect;
+var describe = lab.experiment;
+var it = lab.test;
 
 
 describe('stringify()', () => {
@@ -140,7 +140,7 @@ describe('stringify()', () => {
 
     it('stringifies an empty object', (done) => {
 
-        const obj = Object.create(null);
+        var obj = Object.create(null);
         obj.a = 'b';
         expect(qs.stringify(obj)).to.equal('a=b');
         done();
@@ -157,7 +157,7 @@ describe('stringify()', () => {
 
     it('stringifies an object with an empty object as a child', (done) => {
 
-        const obj = {
+        var obj = {
             a: Object.create(null)
         };
 
@@ -184,8 +184,8 @@ describe('stringify()', () => {
 
     it('stringifies a date', (done) => {
 
-        const now = new Date();
-        const str = 'a=' + encodeURIComponent(now.toISOString());
+        var now = new Date();
+        var str = 'a=' + encodeURIComponent(now.toISOString());
         expect(qs.stringify({ a: now })).to.equal(str);
         done();
     });
@@ -229,9 +229,9 @@ describe('stringify()', () => {
 
     it('doesn\'t blow up when Buffer global is missing', (done) => {
 
-        const tempBuffer = global.Buffer;
+        var tempBuffer = global.Buffer;
         delete global.Buffer;
-        const result = qs.stringify({ a: 'b', c: 'd' });
+        var result = qs.stringify({ a: 'b', c: 'd' });
         global.Buffer = tempBuffer;
         expect(result).to.equal('a=b&c=d');
         done();
@@ -248,9 +248,9 @@ describe('stringify()', () => {
 
     it('supports custom representations when filter=function', (done) => {
 
-        let calls = 0;
-        const obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
-        const filterFunc = function (prefix, value) {
+        var calls = 0;
+        var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
+        var filterFunc = function (prefix, value) {
 
             calls++;
             if (calls === 1) {
@@ -283,7 +283,7 @@ describe('stringify()', () => {
 
     it('can sort the keys', (done) => {
 
-        const sort = (a, b) => a.localeCompare(b);
+        var sort = (a, b) => a.localeCompare(b);
         expect(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort })).to.equal('a=c&b=f&z=y');
         expect(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort })).to.equal('a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
         done();
