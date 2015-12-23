@@ -2,7 +2,7 @@
 
 A querystring parsing and stringifying library with some added security.
 
-[![Build Status](https://secure.travis-ci.org/hapijs/qs.svg)](http://travis-ci.org/hapijs/qs)
+[![Build Status](https://api.travis-ci.org/ljharb/qs.svg)](http://travis-ci.org/ljharb/qs)
 
 Lead Maintainer: [Nathan LaFreniere](https://github.com/nlf)
 
