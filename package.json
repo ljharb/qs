@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/ljharb/qs.git"
   },
-  "main": "lib/index.js",
+  "main": "dist/qs.js",
   "contributors": [
     {
       "name": "Jordan Harband",
