@@ -26,13 +26,15 @@
   "devDependencies": {
     "browserify": "^12.0.1",
     "tape": "^4.3.0",
-    "covert": "^1.1.0"
+    "covert": "^1.1.0",
+    "mkdirp": "^0.5.1"
   },
   "scripts": {
     "test": "npm run coverage",
     "tests-only": "node test",
     "coverage": "covert test",
-    "dist": "browserify --standalone Qs lib/index.js > dist/qs.js"
+    "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js",
+    "prepublish": "npm run dist"
   },
   "license": "BSD-3-Clause"
 }
