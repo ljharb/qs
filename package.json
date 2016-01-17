@@ -30,11 +30,13 @@
     "mkdirp": "^0.5.1",
     "eslint": "^1.10.3",
     "@ljharb/eslint-config": "^1.6.1",
-    "parallelshell": "^2.0.0"
+    "parallelshell": "^2.0.0",
+    "evalmd": "^0.0.16"
   },
   "scripts": {
-    "test": "parallelshell 'npm run lint' 'npm run coverage'",
-    "tests-only": "node test",
+    "test": "parallelshell 'npm run readme' 'npm run lint' 'npm run coverage'",
+    "tests-only": "parallelshell 'npm run readme' 'node test'",
+    "readme": "evalmd README.md",
     "lint": "eslint lib/*.js text/*.js",
     "coverage": "covert test",
     "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js",
