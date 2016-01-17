@@ -4,7 +4,7 @@ A querystring parsing and stringifying library with some added security.
 
 [![Build Status](https://api.travis-ci.org/ljharb/qs.svg)](http://travis-ci.org/ljharb/qs)
 
-Lead Maintainer: [Nathan LaFreniere](https://github.com/nlf)
+Lead Maintainer: [Jordan Harband](https://github.com/ljharb)
 
 The **qs** module was originally created and maintained by [TJ Holowaychuk](https://github.com/visionmedia/node-querystring).
 

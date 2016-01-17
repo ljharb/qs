@@ -1,5 +1,16 @@
+## [**6.0.2**](https://github.com/ljharb/qs/issues?milestone=33&state=closed)
+- Revert ES6 requirement and restore support for node down to v0.8.
 
-## [**5.1.0**](https://github.com/ljharb/qs/issues?milestone=29&state=open)
+## [**6.0.1**](https://github.com/ljharb/qs/issues?milestone=32&state=closed)
+- [**#127**](https://github.com/ljharb/qs/pull/127) Fix engines definition in package.json
+
+## [**6.0.0**](https://github.com/ljharb/qs/issues?milestone=31&state=closed)
+- [**#124**](https://github.com/ljharb/qs/issues/124) Use ES6 and drop support for node < v4
+
+## [**5.2.0**](https://github.com/ljharb/qs/issues?milestone=30&state=closed)
+- [**#64**](https://github.com/ljharb/qs/issues/64) Add option to sort object keys in the query string
+
+## [**5.1.0**](https://github.com/ljharb/qs/issues?milestone=29&state=closed)
 - [**#117**](https://github.com/ljharb/qs/issues/117) make URI encoding stringified results optional
 - [**#106**](https://github.com/ljharb/qs/issues/106) Add flag `skipNulls` to optionally skip null values in stringify
 
