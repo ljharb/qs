@@ -249,4 +249,11 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort }), 'a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
         st.end();
     });
+  
+    t.test('can sort the keys at depth 3 or more too', function (st) {
+        var sort = function (a, b) { return a.localeCompare(b); };
+        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: sort, encode: false }), 'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb');
+        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: null, encode: false }), 'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b');
+        st.end();
+    });
 });
