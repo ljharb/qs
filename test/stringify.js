@@ -53,10 +53,21 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.end();
     });
+  
+    t.test('stringifies a nested array value with dots notation', function (st) {
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { allowDots: true, encode: false }), 'a.b[0]=c&a.b[1]=d');
+        st.end();
+    });
 
     t.test('stringifies an object inside an array', function (st) {
         st.equal(qs.stringify({ a: [{ b: 'c' }] }), 'a%5B0%5D%5Bb%5D=c');
         st.equal(qs.stringify({ a: [{ b: { c: [1] } }] }), 'a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1');
+        st.end();
+    });
+  
+    t.test('stringifies an object inside an array with dots notation', function (st) {
+        st.equal(qs.stringify({ a: [{ b: 'c' }] }, { allowDots: true, encode: false }), 'a[0].b=c');
+        st.equal(qs.stringify({ a: [{ b: { c: [1] } }] }, { allowDots: true, encode: false }), 'a[0].b.c[0]=1');
         st.end();
     });
 
