@@ -21,6 +21,12 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: { b: { c: { d: 'e' } } } }), 'a%5Bb%5D%5Bc%5D%5Bd%5D=e');
         st.end();
     });
+  
+    t.test('stringifies a nested object with dots notation', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c' } }, { allowDots: true }), 'a.b=c');
+        st.equal(qs.stringify({ a: { b: { c: { d: 'e' } } } }, { allowDots: true }), 'a.b.c.d=e');
+        st.end();
+    });
 
     t.test('stringifies an array value', function (st) {
         st.equal(qs.stringify({ a: ['b', 'c', 'd'] }), 'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d');
