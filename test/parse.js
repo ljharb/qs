@@ -182,6 +182,7 @@ test('parse()', function (t) {
     t.test('compacts sparse arrays', function (st) {
         st.deepEqual(qs.parse('a[10]=1&a[2]=2'), { a: ['2', '1'] });
         st.deepEqual(qs.parse('a[1][b][2][c]=1'), { a: [{ b: [{ c: '1' }] }] });
+        st.deepEqual(qs.parse('a[1][2][3][c]=1'), { a: [[[{ c: '1' }]]] });
         st.end();
     });
 
