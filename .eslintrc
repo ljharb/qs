@@ -4,10 +4,10 @@
 	"extends": "@ljharb",
 
 	"rules": {
-		"complexity": [2, 18],
+		"complexity": [2, 19],
 		"consistent-return": [1],
-		"max-params": [2, 8],
-		"max-statements": [2, 32],
+		"max-params": [2, 9],
+		"max-statements": [2, 33],
 		"no-extra-parens": [1],
 		"no-continue": [1],
 		"no-magic-numbers": 0,
