@@ -535,5 +535,25 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses string/object combination', function (st) {
+
+        var expectObj = { a: { 0: 'val1', b: 'val2' } };
+        st.deepEqual(qs.parse('a=val1&a.b=val2', { allowDots: true }), expectObj);
+        st.deepEqual(qs.parse('a.b=val2&a=val1', { allowDots: true }), expectObj);
+        expectObj = { a: { 0: 'val1', b: 'val2', c: 'val3' } };
+        st.deepEqual(qs.parse('a.b=val2&a=val1&a.c=val3', { allowDots: true }), expectObj);
+        expectObj = { a: { 0: 'val1', 1: 'val3', b: 'val2' } };
+        st.deepEqual(qs.parse('a.b=val2&a=val1&a=val3', { allowDots: true }), expectObj);
+        st.deepEqual(qs.parse('a=val1&a.b=val2&a=val3', { allowDots: true }), expectObj);
+        expectObj = { a: { 0: 'val1', 1: 'val2', 2: 'val3', b: 'val4' } };
+        st.deepEqual(qs.parse('a=val1&a=val2&a=val3&a.b=val4', { allowDots: true }), expectObj);
+        expectObj = { a: { 0: 'val1', b: ['val2', 'val3'] } };
+        st.deepEqual(qs.parse('a=val1&a.b=val2&a.b=val3', { allowDots: true }), expectObj);
+        expectObj = { a: { 0: 'val1', b: { 0: 'val2', c: 'val3' } } };
+        st.deepEqual(qs.parse('a=val1&a.b=val2&a.b.c=val3', { allowDots: true }), expectObj);
+        st.deepEqual(qs.parse('a.b.c=val3&a.b=val2&a=val1', { allowDots: true }), expectObj);
+        st.end();
+    });
+
     t.end();
 });
