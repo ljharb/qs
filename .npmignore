@@ -1,7 +1,4 @@
-test/
 bower.json
 component.json
-.eslintrc
 .npmignore
 .travis.yml
-.eslintignore
