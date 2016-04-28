@@ -6,6 +6,7 @@
 	"rules": {
 		"complexity": [2, 19],
 		"consistent-return": [1],
+		"indent": [2, 4],
 		"max-params": [2, 9],
 		"max-statements": [2, 33],
 		"no-extra-parens": [1],
