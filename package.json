@@ -34,7 +34,8 @@
     "evalmd": "^0.0.17"
   },
   "scripts": {
-    "test": "parallelshell 'npm run readme' 'npm run lint' 'npm run coverage'",
+    "pretest": "parallelshell 'npm run --silent readme' 'npm run --silent lint'",
+    "test": "npm run --silent coverage",
     "tests-only": "node test",
     "readme": "evalmd README.md",
     "lint": "eslint lib/*.js text/*.js",
