@@ -31,6 +31,7 @@
     "eslint": "^2.9.0",
     "@ljharb/eslint-config": "^4.0.0",
     "parallelshell": "^2.0.0",
+    "iconv-lite": "^0.4.13",
     "evalmd": "^0.0.17"
   },
   "scripts": {

@@ -225,6 +225,17 @@ var unencoded = qs.stringify({ a: { b: 'c' } }, { encode: false });
 assert.equal(unencoded, 'a[b]=c');
 ```
 
+This encoding can also be replaced by a custom encoding method set as `encoder` option:
+
+```javascript
+var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str) {
+  // Passed in values `a`, `b`, `c`
+  return // Return encoded string
+}})
+```
+
+_(Note: the `encoder` option does not apply if `encode` is `false`)_
+
 Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
 
 When arrays are stringified, by default they are given explicit indices:
