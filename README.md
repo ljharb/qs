@@ -236,6 +236,15 @@ var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str) {
 
 _(Note: the `encoder` option does not apply if `encode` is `false`)_
 
+Analogue to the `encoder` there is a `decoder` option for `parse` to override decoding of properties and values:
+
+```javascript
+var decoded = qs.parse('x=z', { decoder: function (str) {
+  // Passed in values `x`, `z`
+  return // Return decoded string
+}})
+```
+
 Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
 
 When arrays are stringified, by default they are given explicit indices:
