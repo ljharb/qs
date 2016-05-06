@@ -288,4 +288,18 @@ test('stringify()', function (t) {
         }, new TypeError('Encoder has to be a function.'));
         st.end();
     });
+
+    t.test('can use custom encoder for a buffer object', {
+        skip: typeof Buffer === 'undefined'
+    }, function (st) {
+        st.equal(qs.stringify({ a: new Buffer([1]) }, {
+            encoder: function (buffer) {
+                if (typeof buffer === 'string') {
+                    return buffer;
+                }
+                return String.fromCharCode(buffer.readUInt8(0) + 97);
+            }
+        }), 'a=b');
+        st.end();
+    });
 });
