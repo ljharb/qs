@@ -353,3 +353,24 @@ To completely skip rendering keys with `null` values, use the `skipNulls` flag:
 var nullsSkipped = qs.stringify({ a: 'b', c: null}, { skipNulls: true });
 assert.equal(nullsSkipped, 'a=b');
 ```
+
+### Dealing with special character sets
+
+By default the encoding and decoding of characters is done in `utf-8`. If you 
+wish to encode querystrings to a different character set (i.e.
+[Shift JIS](https://en.wikipedia.org/wiki/Shift_JIS)) you can use the
+[`qs-iconv`](https://github.com/martinheidegger/qs-iconv) library:
+
+```javascript
+var encoder = require('qs-iconv/encoder')('shift_jis');
+var shiftJISEncoded = qs.stringify({ a: 'こんにちは！' }, { encoder: encoder });
+assert.equal(shiftJISEncoded, 'a=%82%B1%82%F1%82%C9%82%BF%82%CD%81I');
+```
+
+This also works for decoding of query strings:
+
+```javascript
+var decoder = require('qs-iconv/decoder')('shift_jis');
+var obj = qs.parse('a=%82%B1%82%F1%82%C9%82%BF%82%CD%81I', { decoder: decoder });
+assert.deepEqual(obj, { a: 'こんにちは！' });
+```
