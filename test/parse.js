@@ -121,8 +121,11 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('foo[]=bar&foo[bad]=baz'), { foo: { '0': 'bar', bad: 'baz' } });
         st.deepEqual(qs.parse('foo[bad]=baz&foo[]=bar&foo[]=foo'), { foo: { bad: 'baz', '0': 'bar', '1': 'foo' } });
         st.deepEqual(qs.parse('foo[0][a]=a&foo[0][b]=b&foo[1][a]=aa&foo[1][b]=bb'), { foo: [{ a: 'a', b: 'b' }, { a: 'aa', b: 'bb' }] });
-        st.deepEqual(qs.parse('a[]=b&a[t]=u&a[hasOwnProperty]=c'), { a: { '0': 'b', t: 'u', c: true } });
-        st.deepEqual(qs.parse('a[]=b&a[hasOwnProperty]=c&a[x]=y'), { a: { '0': 'b', '1': 'c', x: 'y' } });
+
+        st.deepEqual(qs.parse('a[]=b&a[t]=u&a[hasOwnProperty]=c', { allowPrototypes: false }), { a: { '0': 'b', c: true, t: 'u' } });
+        st.deepEqual(qs.parse('a[]=b&a[t]=u&a[hasOwnProperty]=c', { allowPrototypes: true }), { a: { '0': 'b', t: 'u', hasOwnProperty: 'c' } });
+        st.deepEqual(qs.parse('a[]=b&a[hasOwnProperty]=c&a[x]=y', { allowPrototypes: false }), { a: { '0': 'b', '1': 'c', x: 'y' } });
+        st.deepEqual(qs.parse('a[]=b&a[hasOwnProperty]=c&a[x]=y', { allowPrototypes: true }), { a: { '0': 'b', hasOwnProperty: 'c', x: 'y' } });
         st.end();
     });
 
