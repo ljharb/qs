@@ -126,7 +126,7 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('stringifies an empty object', function (st) {
+    t.test('stringifies a null object', { skip: !Object.create }, function (st) {
         var obj = Object.create(null);
         obj.a = 'b';
         st.equal(qs.stringify(obj), 'a=b');
@@ -141,10 +141,8 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('stringifies an object with an empty object as a child', function (st) {
-        var obj = {
-            a: Object.create(null)
-        };
+    t.test('stringifies an object with a null object as a child', { skip: !Object.create }, function (st) {
+        var obj = { a: Object.create(null) };
 
         obj.a.b = 'c';
         st.equal(qs.stringify(obj), 'a%5Bb%5D=c');

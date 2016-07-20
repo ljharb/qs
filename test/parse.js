@@ -379,7 +379,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('parses plain objects correctly', function (st) {
+    t.test('parses null objects correctly', { skip: !Object.create }, function (st) {
         var a = Object.create(null);
         a.b = 'c';
 
@@ -408,7 +408,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('can return plain objects', function (st) {
+    t.test('can return null objects', { skip: !Object.create }, function (st) {
         var expected = Object.create(null);
         expected.a = Object.create(null);
         expected.a.b = 'c';
