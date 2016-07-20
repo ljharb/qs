@@ -232,8 +232,13 @@ describe('parse()', function () {
     it('allows for empty strings in arrays', function (done) {
 
         expect(Qs.parse('a[]=b&a[]=&a[]=c')).to.deep.equal({ a: ['b', '', 'c'] });
-        expect(Qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=', { strictNullHandling: true })).to.deep.equal({ a: ['b', null, 'c', ''] });
-        expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]', { strictNullHandling: true })).to.deep.equal({ a: ['b', '', 'c', null] });
+
+        expect(Qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=', { strictNullHandling: true, arrayLimit: 20 })).to.deep.equal({ a: ['b', null, 'c', ''] });
+        expect(Qs.parse('a[]=b&a[]&a[]=c&a[]=', { strictNullHandling: true, arrayLimit: 0 })).to.deep.equal({ a: ['b', null, 'c', ''] });
+
+        expect(Qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]', { strictNullHandling: true, arrayLimit: 20 })).to.deep.equal({ a: ['b', '', 'c', null] });
+        expect(Qs.parse('a[]=b&a[]=&a[]=c&a[]', { strictNullHandling: true, arrayLimit: 0 })).to.deep.equal({ a: ['b', '', 'c', null] });
+
         expect(Qs.parse('a[]=&a[]=b&a[]=c')).to.deep.equal({ a: ['', 'b', 'c'] });
         done();
     });
