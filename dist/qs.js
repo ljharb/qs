@@ -44,23 +44,18 @@ internals.parseValues = function (str, options) {
         var part = parts[i];
         var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
 
+        var key, val;
         if (pos === -1) {
-            obj[Utils.decode(part)] = '';
-
-            if (options.strictNullHandling) {
-                obj[Utils.decode(part)] = null;
-            }
+            key = Utils.decode(part);
+            val = options.strictNullHandling ? null : '';
+        } else {
+            key = Utils.decode(part.slice(0, pos));
+            val = Utils.decode(part.slice(pos + 1));
         }
-        else {
-            var key = Utils.decode(part.slice(0, pos));
-            var val = Utils.decode(part.slice(pos + 1));
-
-            if (!Object.prototype.hasOwnProperty.call(obj, key)) {
-                obj[key] = val;
-            }
-            else {
-                obj[key] = [].concat(obj[key]).concat(val);
-            }
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            obj[key] = [].concat(obj[key]).concat(val);
+        } else {
+            obj[key] = val;
         }
     }
 
@@ -234,7 +229,7 @@ var internals = {
 };
 
 
-internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter) {
+internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort) {
 
     if (typeof filter === 'function') {
         obj = filter(prefix, obj);
@@ -269,7 +264,14 @@ internals.stringify = function (obj, prefix, generateArrayPrefix, strictNullHand
         return values;
     }
 
-    var objKeys = Array.isArray(filter) ? filter : Object.keys(obj);
+    var objKeys;
+    if (Array.isArray(filter)) {
+        objKeys = filter;
+    } else {
+        var keys = Object.keys(obj);
+        objKeys = sort ? keys.sort(sort) : keys;
+    }
+
     for (var i = 0, il = objKeys.length; i < il; ++i) {
         var key = objKeys[i];
 
@@ -298,6 +300,7 @@ module.exports = function (obj, options) {
     var strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
     var skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
     var encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
+    var sort = typeof options.sort === 'function' ? options.sort : null;
     var objKeys;
     var filter;
     if (typeof options.filter === 'function') {
@@ -333,6 +336,10 @@ module.exports = function (obj, options) {
         objKeys = Object.keys(obj);
     }
 
+    if (sort) {
+        objKeys.sort(sort);
+    }
+
     for (var i = 0, il = objKeys.length; i < il; ++i) {
         var key = objKeys[i];
 
@@ -342,7 +349,7 @@ module.exports = function (obj, options) {
             continue;
         }
 
-        keys = keys.concat(internals.stringify(obj[key], key, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter));
+        keys = keys.concat(internals.stringify(obj[key], key, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort));
     }
 
     return keys.join(delimiter);
