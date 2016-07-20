@@ -30,7 +30,21 @@ test('stringify()', function (t) {
     });
 
     t.test('stringifies an array value', function (st) {
-        st.equal(qs.stringify({ a: ['b', 'c', 'd'] }), 'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d');
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'indices' }),
+            'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'brackets' }),
+            'a%5B%5D=b&a%5B%5D=c&a%5B%5D=d',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }),
+            'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d',
+            'default => indices'
+        );
         st.end();
     });
 
@@ -38,7 +52,6 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: 'b', c: null }, { skipNulls: true }), 'a=b');
         st.end();
     });
-
 
     t.test('omits nested nulls when asked', function (st) {
         st.equal(qs.stringify({ a: { b: 'c', d: null } }, { skipNulls: true }), 'a%5Bb%5D=c');
@@ -51,29 +64,149 @@ test('stringify()', function (t) {
     });
 
     t.test('stringifies a nested array value', function (st) {
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'indices' }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'brackets' }), 'a%5Bb%5D%5B%5D=c&a%5Bb%5D%5B%5D=d');
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.end();
     });
 
     t.test('stringifies a nested array value with dots notation', function (st) {
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { allowDots: true, encode: false }), 'a.b[0]=c&a.b[1]=d');
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false, arrayFormat: 'indices' }
+            ),
+            'a.b[0]=c&a.b[1]=d',
+            'indices: stringifies with dots + indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false, arrayFormat: 'brackets' }
+            ),
+            'a.b[]=c&a.b[]=d',
+            'brackets: stringifies with dots + brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false }
+            ),
+            'a.b[0]=c&a.b[1]=d',
+            'default: stringifies with dots + indices'
+        );
         st.end();
     });
 
     t.test('stringifies an object inside an array', function (st) {
-        st.equal(qs.stringify({ a: [{ b: 'c' }] }), 'a%5B0%5D%5Bb%5D=c');
-        st.equal(qs.stringify({ a: [{ b: { c: [1] } }] }), 'a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1');
+        st.equal(
+            qs.stringify({ a: [{ b: 'c' }] }, { arrayFormat: 'indices' }),
+            'a%5B0%5D%5Bb%5D=c',
+            'indices => brackets'
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 'c' }] }, { arrayFormat: 'brackets' }),
+            'a%5B%5D%5Bb%5D=c',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 'c' }] }),
+            'a%5B0%5D%5Bb%5D=c',
+            'default => indices'
+        );
+
+        st.equal(
+            qs.stringify({ a: [{ b: { c: [1] } }] }, { arrayFormat: 'indices' }),
+            'a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1',
+            'indices => indices'
+        );
+
+        st.equal(
+            qs.stringify({ a: [{ b: { c: [1] } }] }, { arrayFormat: 'brackets' }),
+            'a%5B%5D%5Bb%5D%5Bc%5D%5B%5D=1',
+            'brackets => brackets'
+        );
+
+        st.equal(
+            qs.stringify({ a: [{ b: { c: [1] } }] }),
+            'a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1',
+            'default => indices'
+        );
+
         st.end();
     });
 
     t.test('stringifies an array with mixed objects and primitives', function (st) {
-        st.equal(qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false }), 'a[0][b]=1&a[1]=2&a[2]=3');
+        st.equal(
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false, arrayFormat: 'indices' }),
+            'a[0][b]=1&a[1]=2&a[2]=3',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false, arrayFormat: 'brackets' }),
+            'a[][b]=1&a[]=2&a[]=3',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false }),
+            'a[0][b]=1&a[1]=2&a[2]=3',
+            'default => indices'
+        );
+
         st.end();
     });
 
     t.test('stringifies an object inside an array with dots notation', function (st) {
-        st.equal(qs.stringify({ a: [{ b: 'c' }] }, { allowDots: true, encode: false }), 'a[0].b=c');
-        st.equal(qs.stringify({ a: [{ b: { c: [1] } }] }, { allowDots: true, encode: false }), 'a[0].b.c[0]=1');
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { allowDots: true, encode: false, arrayFormat: 'indices' }
+            ),
+            'a[0].b=c',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { allowDots: true, encode: false, arrayFormat: 'brackets' }
+            ),
+            'a[].b=c',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { allowDots: true, encode: false }
+            ),
+            'a[0].b=c',
+            'default => indices'
+        );
+
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { allowDots: true, encode: false, arrayFormat: 'indices' }
+            ),
+            'a[0].b.c[0]=1',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { allowDots: true, encode: false, arrayFormat: 'brackets' }
+            ),
+            'a[].b.c[]=1',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { allowDots: true, encode: false }
+            ),
+            'a[0].b.c[0]=1',
+            'default => indices'
+        );
+
         st.end();
     });
 
@@ -214,7 +347,32 @@ test('stringify()', function (t) {
     t.test('selects properties when filter=array', function (st) {
         st.equal(qs.stringify({ a: 'b' }, { filter: ['a'] }), 'a=b');
         st.equal(qs.stringify({ a: 1 }, { filter: [] }), '');
-        st.equal(qs.stringify({ a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' }, { filter: ['a', 'b', 0, 2] }), 'a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3');
+
+        st.equal(
+            qs.stringify(
+                { a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' },
+                { filter: ['a', 'b', 0, 2], arrayFormat: 'indices' }
+            ),
+            'a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' },
+                { filter: ['a', 'b', 0, 2], arrayFormat: 'brackets' }
+            ),
+            'a%5Bb%5D%5B%5D=1&a%5Bb%5D%5B%5D=3',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: [1, 2, 3, 4], c: 'd' }, c: 'f' },
+                { filter: ['a', 'b', 0, 2] }
+            ),
+            'a%5Bb%5D%5B0%5D=1&a%5Bb%5D%5B2%5D=3',
+            'default => indices'
+        );
+
         st.end();
     });
 

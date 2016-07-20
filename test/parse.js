@@ -64,8 +64,15 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('a[]=b&a=c'), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a[0]=b&a=c'), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a=b&a[0]=c'), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[1]=b&a=c'), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b&a[1]=c'), { a: ['b', 'c'] });
+
+        st.deepEqual(qs.parse('a[1]=b&a=c', { arrayLimit: 20 }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[]=b&a=c', { arrayLimit: 0 }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[]=b&a=c'), { a: ['b', 'c'] });
+
+        st.deepEqual(qs.parse('a=b&a[1]=c', { arrayLimit: 20 }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b&a[]=c', { arrayLimit: 0 }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b&a[]=c'), { a: ['b', 'c'] });
+
         st.end();
     });
 
@@ -78,13 +85,15 @@ test('parse()', function (t) {
     t.test('allows to specify array indices', function (st) {
         st.deepEqual(qs.parse('a[1]=c&a[0]=b&a[2]=d'), { a: ['b', 'c', 'd'] });
         st.deepEqual(qs.parse('a[1]=c&a[0]=b'), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[1]=c', { arrayLimit: 20 }), { a: ['c'] });
+        st.deepEqual(qs.parse('a[1]=c', { arrayLimit: 0 }), { a: { 1: 'c' } });
         st.deepEqual(qs.parse('a[1]=c'), { a: ['c'] });
         st.end();
     });
 
-    t.test('limits specific array indices to 20', function (st) {
-        st.deepEqual(qs.parse('a[20]=a'), { a: ['a'] });
-        st.deepEqual(qs.parse('a[21]=a'), { a: { '21': 'a' } });
+    t.test('limits specific array indices to arrayLimit', function (st) {
+        st.deepEqual(qs.parse('a[20]=a', { arrayLimit: 20 }), { a: ['a'] });
+        st.deepEqual(qs.parse('a[21]=a', { arrayLimit: 20 }), { a: { '21': 'a' } });
         st.end();
     });
 
@@ -209,10 +218,10 @@ test('parse()', function (t) {
     });
 
     t.test('compacts sparse arrays', function (st) {
-        st.deepEqual(qs.parse('a[10]=1&a[2]=2'), { a: ['2', '1'] });
-        st.deepEqual(qs.parse('a[1][b][2][c]=1'), { a: [{ b: [{ c: '1' }] }] });
-        st.deepEqual(qs.parse('a[1][2][3][c]=1'), { a: [[[{ c: '1' }]]] });
-        st.deepEqual(qs.parse('a[1][2][3][c][1]=1'), { a: [[[{ c: ['1'] }]]] });
+        st.deepEqual(qs.parse('a[10]=1&a[2]=2', { arrayLimit: 20 }), { a: ['2', '1'] });
+        st.deepEqual(qs.parse('a[1][b][2][c]=1', { arrayLimit: 20 }), { a: [{ b: [{ c: '1' }] }] });
+        st.deepEqual(qs.parse('a[1][2][3][c]=1', { arrayLimit: 20 }), { a: [[[{ c: '1' }]]] });
+        st.deepEqual(qs.parse('a[1][2][3][c][1]=1', { arrayLimit: 20 }), { a: [[[{ c: ['1'] }]]] });
         st.end();
     });
 
