@@ -177,9 +177,34 @@ test('parse()', function (t) {
 
     t.test('allows for empty strings in arrays', function (st) {
         st.deepEqual(qs.parse('a[]=b&a[]=&a[]=c'), { a: ['b', '', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=', { strictNullHandling: true }), { a: ['b', null, 'c', ''] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]', { strictNullHandling: true }), { a: ['b', '', 'c', null] });
-        st.deepEqual(qs.parse('a[]=&a[]=b&a[]=c'), { a: ['', 'b', 'c'] });
+
+        st.deepEqual(
+            qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=', { strictNullHandling: true, arrayLimit: 20 }),
+            { a: ['b', null, 'c', ''] },
+            'with arrayLimit 20 + array indices: null then empty string works'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[]&a[]=c&a[]=', { strictNullHandling: true, arrayLimit: 0 }),
+            { a: ['b', null, 'c', ''] },
+            'with arrayLimit 0 + array brackets: null then empty string works'
+        );
+
+        st.deepEqual(
+            qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]', { strictNullHandling: true, arrayLimit: 20 }),
+            { a: ['b', '', 'c', null] },
+            'with arrayLimit 20 + array indices: empty string then null works'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[]=&a[]=c&a[]', { strictNullHandling: true, arrayLimit: 0 }),
+            { a: ['b', '', 'c', null] },
+            'with arrayLimit 0 + array brackets: empty string then null works'
+        );
+
+        st.deepEqual(
+            qs.parse('a[]=&a[]=b&a[]=c'),
+            { a: ['', 'b', 'c'] },
+            'array brackets: empty strings work'
+        );
         st.end();
     });
 
