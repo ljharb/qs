@@ -1,3 +1,10 @@
+## **6.2.1**
+- [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
+- [Refactor] Be explicit and use `Object.prototype.hasOwnProperty.call`
+- [Tests] remove `parallelshell` since it does not reliably report failures
+- [Tests] up to `node` `v6.3`, `v5.12`
+- [Dev Deps] update `tape`, `eslint`, `@ljharb/eslint-config`, `qs-iconv`
+
 ## [**6.2.0**](https://github.com/ljharb/qs/issues?milestone=36&state=closed)
 - [New] pass Buffers to the encoder/decoder directly (#161)
 - [New] add "encoder" and "decoder" options, for custom param encoding/decoding (#160)
@@ -16,6 +23,9 @@
 
 ## [**6.0.0**](https://github.com/ljharb/qs/issues?milestone=31&state=closed)
 - [**#124**](https://github.com/ljharb/qs/issues/124) Use ES6 and drop support for node < v4
+
+## **5.2.1**
+- [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
 
 ## [**5.2.0**](https://github.com/ljharb/qs/issues?milestone=30&state=closed)
 - [**#64**](https://github.com/ljharb/qs/issues/64) Add option to sort object keys in the query string
