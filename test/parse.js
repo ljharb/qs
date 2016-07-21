@@ -457,4 +457,59 @@ test('parse()', function (t) {
         }, new TypeError('Decoder has to be a function.'));
         st.end();
     });
+
+    t.test('parses string/object combination', function (st) {
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2', { allowDots: true }),
+            { a: { 0: 'val1', b: 'val2' } },
+            'string + object'
+        );
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1', { allowDots: true }),
+            { a: { 0: 'val1', b: 'val2' } },
+            'object + string'
+        );
+
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1&a.c=val3', { allowDots: true }),
+            { a: { 0: 'val1', b: 'val2', c: 'val3' } },
+            'object + string + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1&a=val3', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val3', b: 'val2' } },
+            'object + string + string'
+        );
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2&a=val3', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val3', b: 'val2' } },
+            'string + object + string'
+        );
+
+        st.deepEqual(
+            qs.parse('a=val1&a=val2&a=val3&a.b=val4', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val2', 2: 'val3', b: 'val4' } },
+            'string + string + string + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2&a.b=val3', { allowDots: true }),
+            { a: { 0: 'val1', b: ['val2', 'val3'] } },
+            'string + object + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2&a.b.c=val3', { allowDots: true }),
+            { a: { 0: 'val1', b: { 0: 'val2', c: 'val3' } } },
+            'string + object + nested object'
+        );
+        st.deepEqual(
+            qs.parse('a.b.c=val3&a.b=val2&a=val1', { allowDots: true }),
+            { a: { 0: 'val1', b: { 0: 'val2', c: 'val3' } } },
+            'nested object + object + string'
+        );
+
+        st.end();
+    });
 });
