@@ -414,8 +414,20 @@ test('stringify()', function (t) {
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
         var sort = function (a, b) { return a.localeCompare(b); };
-        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: sort, encode: false }), 'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb');
-        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: null, encode: false }), 'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b');
+        st.equal(
+            qs.stringify(
+                { a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' },
+                { sort: sort, encode: false }
+            ),
+            'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb'
+        );
+        st.equal(
+            qs.stringify(
+                { a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' },
+                { sort: null, encode: false }
+            ),
+            'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b'
+        );
         st.end();
     });
 
@@ -438,9 +450,7 @@ test('stringify()', function (t) {
 
     t.test('throws error with wrong encoder', function (st) {
         st.throws(function () {
-            qs.stringify({}, {
-                encoder: 'string'
-            });
+            qs.stringify({}, { encoder: 'string' });
         }, new TypeError('Encoder has to be a function.'));
         st.end();
     });
@@ -456,6 +466,40 @@ test('stringify()', function (t) {
                 return String.fromCharCode(buffer.readUInt8(0) + 97);
             }
         }), 'a=b');
+        st.end();
+    });
+
+    t.test('serializeDate option', function (st) {
+        var date = new Date();
+        st.equal(
+            qs.stringify({ a: date }),
+            'a=' + date.toISOString().replace(/:/g, '%3A'),
+            'default is toISOString'
+        );
+
+        var mutatedDate = new Date();
+        mutatedDate.toISOString = function () {
+            throw new SyntaxError();
+        };
+        st.throws(function () {
+            mutatedDate.toISOString();
+        }, SyntaxError);
+        st.equal(
+            qs.stringify({ a: mutatedDate }),
+            'a=' + Date.prototype.toISOString.call(mutatedDate).replace(/:/g, '%3A'),
+            'toISOString works even when method is not locally present'
+        );
+
+        var specificDate = new Date(6);
+        st.equal(
+            qs.stringify(
+                { a: specificDate },
+                { serializeDate: function (d) { return d.getTime() * 7; } }
+            ),
+            'a=42',
+            'custom serializeDate function called'
+        );
+
         st.end();
     });
 });

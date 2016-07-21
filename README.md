@@ -290,6 +290,17 @@ The delimiter may be overridden with stringify as well:
 assert.equal(qs.stringify({ a: 'b', c: 'd' }, { delimiter: ';' }), 'a=b;c=d');
 ```
 
+If you only want to override the serialization of `Date` objects, you can provide a `serializeDate` option:
+
+```javascript
+var date = new Date(7);
+assert.equal(qs.stringify({ a: date }), 'a=1970-01-01T00:00:00.007Z'.replace(/:/g, '%3A'));
+assert.equal(
+    qs.stringify({ a: date }, { serializeDate: function (d) { return d.getTime(); } }),
+    'a=7'
+);
+```
+
 Finally, you can use the `filter` option to restrict which keys will be included in the stringified output.
 If you pass a function, it will be called for each key to obtain the replacement value. Otherwise, if you
 pass an array, it will be used to select properties and array indices for stringification:
