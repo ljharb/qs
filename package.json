@@ -24,26 +24,26 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "tape": "^4.6.0",
+    "@ljharb/eslint-config": "^7.0.0",
+    "browserify": "^13.1.0",
     "covert": "^1.1.0",
-    "mkdirp": "^0.5.1",
-    "eslint": "^3.1.1",
-    "@ljharb/eslint-config": "^6.0.0",
-    "parallelshell": "^2.0.0",
+    "eslint": "^3.3.1",
+    "evalmd": "^0.0.17",
     "iconv-lite": "^0.4.13",
+    "mkdirp": "^0.5.1",
+    "parallelshell": "^2.0.0",
     "qs-iconv": "^1.0.3",
-    "evalmd": "^0.0.17"
+    "tape": "^4.6.0"
   },
   "scripts": {
+    "prepublish": "npm run dist",
     "pretest": "npm run --silent readme && npm run --silent lint",
     "test": "npm run --silent coverage",
     "tests-only": "node test",
     "readme": "evalmd README.md",
     "lint": "eslint lib/*.js text/*.js",
     "coverage": "covert test",
-    "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js",
-    "prepublish": "npm run dist"
+    "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
   },
   "license": "BSD-3-Clause"
 }
