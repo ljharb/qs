@@ -33,10 +33,11 @@
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
     "qs-iconv": "^1.0.3",
+    "safe-publish-latest": "^1.0.1",
     "tape": "^4.6.0"
   },
   "scripts": {
-    "prepublish": "npm run dist",
+    "prepublish": "safe-publish-latest && npm run dist",
     "pretest": "npm run --silent readme && npm run --silent lint",
     "test": "npm run --silent coverage",
     "tests-only": "node test",
