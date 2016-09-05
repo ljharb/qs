@@ -24,10 +24,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@ljharb/eslint-config": "^7.0.0",
+    "@ljharb/eslint-config": "^8.0.0",
     "browserify": "^13.1.0",
     "covert": "^1.1.0",
-    "eslint": "^3.3.1",
+    "eslint": "^3.4.0",
     "evalmd": "^0.0.17",
     "iconv-lite": "^0.4.13",
     "mkdirp": "^0.5.1",
