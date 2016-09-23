@@ -33,7 +33,7 @@
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
     "qs-iconv": "^1.0.3",
-    "safe-publish-latest": "^1.0.1",
+    "safe-publish-latest": "^1.1.0",
     "tape": "^4.6.0"
   },
   "scripts": {
