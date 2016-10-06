@@ -502,4 +502,35 @@ test('stringify()', function (t) {
 
         st.end();
     });
+
+    t.test('RFC 1738 spaces serialization', function (st) {
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC1738 }), 'a=b+c');
+        st.equal(qs.stringify({ "a b": 'c d' }, { format: qs.formats.RFC1738 }), 'a+b=c+d');
+        st.end();
+    });
+
+    t.test('RFC 3986 spaces serialization', function (st) {
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC3986 }), 'a=b%20c');
+        st.equal(qs.stringify({ "a b": 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
+        st.end();
+    });
+
+    t.test('Backward compatibility to RFC 3986', function (st) {
+        st.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
+        st.end();
+    });
+
+    t.test('Edge cases and unknown formats', function (st) {
+        ['UFO1234', false, 1234, null, {}, []].forEach(
+            function (format) {
+                st.throws(
+                    function () {
+                        qs.stringify({ a: 'b c' }, { format: format });
+                    },
+                    new TypeError('Unknown format option provided.')
+                );
+            }
+        );
+        st.end();
+    });
 });

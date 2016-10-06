@@ -385,3 +385,14 @@ var decoder = require('qs-iconv/decoder')('shift_jis');
 var obj = qs.parse('a=%82%B1%82%F1%82%C9%82%BF%82%CD%81I', { decoder: decoder });
 assert.deepEqual(obj, { a: 'こんにちは！' });
 ```
+
+### RFC 3986 and RFC 1738 space encoding
+
+RFC3986 used as default option and encodes ' ' to *%20* which is backward compatible.
+In the same time, output can be stringified as per RFC1738 with ' ' equal to '+'.
+
+```
+assert.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
+assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
+assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
+```
