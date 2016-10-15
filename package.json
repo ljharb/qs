@@ -27,13 +27,13 @@
     "@ljharb/eslint-config": "^8.0.0",
     "browserify": "^13.1.0",
     "covert": "^1.1.0",
-    "eslint": "^3.7.1",
+    "eslint": "^3.8.0",
     "evalmd": "^0.0.17",
     "iconv-lite": "^0.4.13",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
     "qs-iconv": "^1.0.3",
-    "safe-publish-latest": "^1.1.0",
+    "safe-publish-latest": "^1.1.1",
     "tape": "^4.6.2"
   },
   "scripts": {
