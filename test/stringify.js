@@ -380,7 +380,7 @@ test('stringify()', function (t) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
         var filterFunc = function (prefix, value) {
-            calls++;
+            calls += 1;
             if (calls === 1) {
                 st.equal(prefix, '', 'prefix is empty');
                 st.equal(value, obj);
@@ -406,14 +406,18 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys', function (st) {
-        var sort = function (a, b) { return a.localeCompare(b); };
+        var sort = function (a, b) {
+            return a.localeCompare(b);
+        };
         st.equal(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort }), 'a=c&b=f&z=y');
         st.equal(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort }), 'a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
         st.end();
     });
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
-        var sort = function (a, b) { return a.localeCompare(b); };
+        var sort = function (a, b) {
+            return a.localeCompare(b);
+        };
         st.equal(
             qs.stringify(
                 { a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' },
@@ -432,14 +436,14 @@ test('stringify()', function (t) {
     });
 
     t.test('can stringify with custom encoding', function (st) {
-        st.equal(qs.stringify({ 県: '大阪府', '': ''}, {
+        st.equal(qs.stringify({ 県: '大阪府', '': '' }, {
             encoder: function (str) {
                 if (str.length === 0) {
                     return '';
                 }
                 var buf = iconv.encode(str, 'shiftjis');
                 var result = [];
-                for (var i=0; i < buf.length; ++i) {
+                for (var i = 0; i < buf.length; ++i) {
                     result.push(buf.readUInt8(i).toString(16));
                 }
                 return '%' + result.join('%');
@@ -455,9 +459,7 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('can use custom encoder for a buffer object', {
-        skip: typeof Buffer === 'undefined'
-    }, function (st) {
+    t.test('can use custom encoder for a buffer object', { skip: typeof Buffer === 'undefined' }, function (st) {
         st.equal(qs.stringify({ a: new Buffer([1]) }, {
             encoder: function (buffer) {
                 if (typeof buffer === 'string') {
@@ -505,13 +507,13 @@ test('stringify()', function (t) {
 
     t.test('RFC 1738 spaces serialization', function (st) {
         st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC1738 }), 'a=b+c');
-        st.equal(qs.stringify({ "a b": 'c d' }, { format: qs.formats.RFC1738 }), 'a+b=c+d');
+        st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC1738 }), 'a+b=c+d');
         st.end();
     });
 
     t.test('RFC 3986 spaces serialization', function (st) {
         st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC3986 }), 'a=b%20c');
-        st.equal(qs.stringify({ "a b": 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
+        st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
         st.end();
     });
 

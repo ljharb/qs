@@ -42,7 +42,7 @@
     "test": "npm run --silent coverage",
     "tests-only": "node test",
     "readme": "evalmd README.md",
-    "lint": "eslint lib/*.js text/*.js",
+    "lint": "eslint lib/*.js test/*.js",
     "coverage": "covert test",
     "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
   },
