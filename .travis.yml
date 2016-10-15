@@ -1,5 +1,8 @@
 language: node_js
 node_js:
+  - "6.8"
+  - "6.7"
+  - "6.6"
   - "6.5"
   - "6.4"
   - "6.3"
@@ -19,6 +22,7 @@ node_js:
   - "5.2"
   - "5.1"
   - "5.0"
+  - "4.6"
   - "4.5"
   - "4.4"
   - "4.3"
@@ -55,7 +59,7 @@ before_install:
   - 'if [ "${TRAVIS_NODE_VERSION}" != "0.9" ]; then case "$(npm --version)" in 1.*) npm install -g npm@1.4.28 ;; 2.*) npm install -g npm@2 ;; esac ; fi'
   - 'if [ "${TRAVIS_NODE_VERSION}" != "0.6" ] && [ "${TRAVIS_NODE_VERSION}" != "0.9" ]; then npm install -g npm; fi'
 script:
-  - 'if [ -n "${LINT-}" ]; then npm run pretest; fi'
+  - 'if [ -n "${LINT-}" ]; then npm run pretest ; fi'
   - 'if [ -n "${COVERAGE-}" ]; then npm run coverage ; fi'
   - 'if [ -n "${TEST-}" ]; then npm run tests-only ; fi'
 sudo: false
@@ -69,6 +73,9 @@ matrix:
     - node_js: "4"
       env: COVERAGE=true
   allow_failures:
+    - node_js: "6.7"
+    - node_js: "6.6"
+    - node_js: "6.5"
     - node_js: "6.4"
     - node_js: "6.3"
     - node_js: "6.2"
@@ -86,6 +93,7 @@ matrix:
     - node_js: "5.2"
     - node_js: "5.1"
     - node_js: "5.0"
+    - node_js: "4.5"
     - node_js: "4.4"
     - node_js: "4.3"
     - node_js: "4.2"
