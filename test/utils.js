@@ -35,3 +35,55 @@ test('assign()', function (t) {
 
     t.end();
 });
+
+test('combine()', function (t) {
+    t.test('both arrays', function (st) {
+        var a = [1];
+        var b = [2];
+        var combined = utils.combine(a, b);
+
+        st.deepEqual(a, [1], 'a is not mutated');
+        st.deepEqual(b, [2], 'b is not mutated');
+        st.notEqual(a, combined, 'a !== combined');
+        st.notEqual(b, combined, 'b !== combined');
+        st.deepEqual(combined, [1, 2], 'combined is a + b');
+
+        st.end();
+    });
+
+    t.test('one array, one non-array', function (st) {
+        var aN = 1;
+        var a = [aN];
+        var bN = 2;
+        var b = [bN];
+
+        var combinedAnB = utils.combine(aN, b);
+        st.deepEqual(b, [bN], 'b is not mutated');
+        st.notEqual(aN, combinedAnB, 'aN + b !== aN');
+        st.notEqual(a, combinedAnB, 'aN + b !== a');
+        st.notEqual(bN, combinedAnB, 'aN + b !== bN');
+        st.notEqual(b, combinedAnB, 'aN + b !== b');
+        st.deepEqual([1, 2], combinedAnB, 'first argument is array-wrapped when not an array');
+
+        var combinedABn = utils.combine(a, bN);
+        st.deepEqual(a, [aN], 'a is not mutated');
+        st.notEqual(aN, combinedABn, 'a + bN !== aN');
+        st.notEqual(a, combinedABn, 'a + bN !== a');
+        st.notEqual(bN, combinedABn, 'a + bN !== bN');
+        st.notEqual(b, combinedABn, 'a + bN !== b');
+        st.deepEqual([1, 2], combinedABn, 'second argument is array-wrapped when not an array');
+
+        st.end();
+    });
+
+    t.test('neither is an array', function (st) {
+        var combined = utils.combine(1, 2);
+        st.notEqual(1, combined, '1 + 2 !== 1');
+        st.notEqual(2, combined, '1 + 2 !== 2');
+        st.deepEqual([1, 2], combined, 'both arguments are array-wrapped when not an array');
+
+        st.end();
+    });
+
+    t.end();
+});
