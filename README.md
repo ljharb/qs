@@ -301,6 +301,15 @@ assert.equal(
 );
 ```
 
+You may use the `sort` option to affect the order of parameter keys:
+
+```javascript
+function alphabeticalSort(a, b) {
+  return a.localeCompare(b);
+}
+assert.equal(qs.stringify({ a: 'c', z: 'y', b : 'f' }, { sort: alphabeticalSort }), 'a=c&b=f&z=y');
+```
+
 Finally, you can use the `filter` option to restrict which keys will be included in the stringified output.
 If you pass a function, it will be called for each key to obtain the replacement value. Otherwise, if you
 pass an array, it will be used to select properties and array indices for stringification:
