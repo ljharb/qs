@@ -261,7 +261,7 @@ qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false });
 // 'a=b&a=c&a=d'
 ```
 
-You may use the `arrayFormat` option to specify the format of the output array
+You may use the `arrayFormat` option to specify the format of the output array:
 
 ```javascript
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'indices' })
