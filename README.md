@@ -278,6 +278,16 @@ Empty strings and null values will omit the value, but the equals sign (=) remai
 assert.equal(qs.stringify({ a: '' }), 'a=');
 ```
 
+Key with no values (such as an empty object or array) will return nothing:
+
+```javascript
+assert.equal(qs.stringify({ a: [] }), '');
+assert.equal(qs.stringify({ a: {} }), '');
+assert.equal(qs.stringify({ a: [{}] }), '');
+assert.equal(qs.stringify({ a: { b: []} }), '');
+assert.equal(qs.stringify({ a: { b: {}} }), '');
+```
+
 Properties that are set to `undefined` will be omitted entirely:
 
 ```javascript
