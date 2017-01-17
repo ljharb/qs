@@ -272,6 +272,20 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
 // 'a=b&a=c'
 ```
 
+When objects are stringified, by default they use bracket notation:
+
+```javascript
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } });
+// 'a[b][c]=d&a[b][e]=f'
+```
+
+You may override this to use dot notation by setting the `allowDots` option to `true`:
+
+```javascript
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
+// 'a.b.c=d&a.b.e=f'
+```
+
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
 
 ```javascript
