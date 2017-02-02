@@ -25,7 +25,10 @@
   "dependencies": {},
   "devDependencies": {
     "@ljharb/eslint-config": "^9.0.1",
+    "benchmark": "^2.1.2",
     "browserify": "^13.1.1",
+    "comma-number": "^1.1.0",
+    "console.table": "^0.7.0",
     "covert": "^1.1.0",
     "eslint": "^3.12.2",
     "evalmd": "^0.0.17",
