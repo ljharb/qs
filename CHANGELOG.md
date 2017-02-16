@@ -1,3 +1,7 @@
+## **6.0.3**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+- [Fix] Restore `dist` directory; will be removed in v7 (#148)
+
 ## [**6.0.2**](https://github.com/ljharb/qs/issues?milestone=33&state=closed)
 - Revert ES6 requirement and restore support for node down to v0.8.
 
