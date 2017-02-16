@@ -67,7 +67,7 @@ var parseObject = function parseObject(chain, val, options) {
         obj = obj.concat(parseObject(chain, val, options));
     } else {
         obj = options.plainObjects ? Object.create(null) : {};
-        var cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
+        var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
         var index = parseInt(cleanRoot, 10);
         if (
             !isNaN(index) &&
@@ -96,8 +96,8 @@ var parseKeys = function parseKeys(givenKey, val, options) {
 
     // The regex chunks
 
-    var parent = /^([^\[\]]*)/;
-    var child = /(\[[^\[\]]*\])/g;
+    var parent = /^([^[]*)/;
+    var child = /(\[[^[\]]*])/g;
 
     // Get the parent
 
@@ -123,9 +123,9 @@ var parseKeys = function parseKeys(givenKey, val, options) {
     var i = 0;
     while ((segment = child.exec(key)) !== null && i < options.depth) {
         i += 1;
-        if (!options.plainObjects && has.call(Object.prototype, segment[1].replace(/\[|\]/g, ''))) {
+        if (!options.plainObjects && has.call(Object.prototype, segment[1].slice(1, -1))) {
             if (!options.allowPrototypes) {
-                continue;
+                return;
             }
         }
         keys.push(segment[1]);

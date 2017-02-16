@@ -1,3 +1,6 @@
+## **6.2.2**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+
 ## **6.2.1**
 - [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
 - [Refactor] Be explicit and use `Object.prototype.hasOwnProperty.call`
