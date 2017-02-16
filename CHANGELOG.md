@@ -24,6 +24,9 @@
 - [Tests] skip Object.create tests when null objects are not available
 - [Tests] Turn on eslint for test files (#175)
 
+## **6.2.2**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+
 ## **6.2.1**
 - [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
 - [Refactor] Be explicit and use `Object.prototype.hasOwnProperty.call`
@@ -36,9 +39,16 @@
 - [New] add "encoder" and "decoder" options, for custom param encoding/decoding (#160)
 - [Fix] fix compacting of nested sparse arrays (#150)
 
+## **6.1.1**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+
 ## [**6.1.0**](https://github.com/ljharb/qs/issues?milestone=35&state=closed)
 - [New] allowDots option for `stringify` (#151)
 - [Fix] "sort" option should work at a depth of 3 or more (#151)
+- [Fix] Restore `dist` directory; will be removed in v7 (#148)
+
+## **6.0.3**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
 - [Fix] Restore `dist` directory; will be removed in v7 (#148)
 
 ## [**6.0.2**](https://github.com/ljharb/qs/issues?milestone=33&state=closed)
