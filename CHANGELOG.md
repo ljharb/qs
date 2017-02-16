@@ -1,3 +1,6 @@
+## **6.1.1**
+- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+
 ## [**6.1.0**](https://github.com/ljharb/qs/issues?milestone=34&state=closed)
 - [New] allowDots option for `stringify` (#151)
 - [Fix] "sort" option should work at a depth of 3 or more (#151)
