@@ -225,6 +225,15 @@ var unencoded = qs.stringify({ a: { b: 'c' } }, { encode: false });
 assert.equal(unencoded, 'a[b]=c');
 ```
 
+Encoding can be disabled for keys by setting the `encodeValuesOnly` option to `true`:
+```javascript
+var encodedValues  = qs.stringify(
+  { a: 'b', c: ['d', 'e=f'], f: [['g'], ['h']] },
+  { encodeValuesOnly: true }
+)
+assert.equal(encodedValues,'a=b&c[0]=d&c[1]=e%3Df&f[0][0]=g&f[1][0]=h');
+```
+
 This encoding can also be replaced by a custom encoding method set as `encoder` option:
 
 ```javascript
@@ -400,7 +409,7 @@ assert.equal(nullsSkipped, 'a=b');
 
 ### Dealing with special character sets
 
-By default the encoding and decoding of characters is done in `utf-8`. If you 
+By default the encoding and decoding of characters is done in `utf-8`. If you
 wish to encode querystrings to a different character set (i.e.
 [Shift JIS](https://en.wikipedia.org/wiki/Shift_JIS)) you can use the
 [`qs-iconv`](https://github.com/martinheidegger/qs-iconv) library:
