@@ -438,8 +438,8 @@ test('stringify()', function (t) {
     t.test('prefix boolean for encoder', function (st) {
         var prefixKeys = [];
         st.equal(qs.stringify({ a: 'b', c: ['d', 'e'], f: [['g'], ['h']] }, {
-            encoder: function (str, prefix) {
-                if (prefix) {
+            encoder: function (str, isPrefix) {
+                if (isPrefix) {
                     prefixKeys.push(str);
                 }
                 return str;

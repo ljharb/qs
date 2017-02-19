@@ -228,9 +228,9 @@ assert.equal(unencoded, 'a[b]=c');
 This encoding can also be replaced by a custom encoding method set as `encoder` option:
 
 ```javascript
-var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, prefix) {
+var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, isPrefix) {
   // Passed in values `a`, `b`, `c`
-  // prefix is true for 'a' and 'b' values
+  // isPrefix is true for 'a' and 'b' values, false for 'c' value
   return // Return encoded string
 }})
 ```
