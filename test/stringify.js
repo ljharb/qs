@@ -435,6 +435,20 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('prefix boolean for encoder', function (st) {
+        var prefixKeys = [];
+        st.equal(qs.stringify({ a: 'b', c: ['d', 'e'], f: [['g'], ['h']] }, {
+            encoder: function (str, prefix) {
+                if (prefix) {
+                    prefixKeys.push(str);
+                }
+                return str;
+            }
+        }), 'a=b&c[0]=d&c[1]=e&f[0][0]=g&f[1][0]=h');
+        st.same(prefixKeys, ['a', 'c[0]', 'c[1]', 'f[0][0]', 'f[1][0]']);
+        st.end();
+    });
+
     t.test('can stringify with custom encoding', function (st) {
         st.equal(qs.stringify({ 県: '大阪府', '': '' }, {
             encoder: function (str) {
