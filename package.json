@@ -27,7 +27,7 @@
     "@ljharb/eslint-config": "^11.0.0",
     "browserify": "^14.1.0",
     "covert": "^1.1.0",
-    "eslint": "^3.15.0",
+    "eslint": "^3.17.0",
     "evalmd": "^0.0.17",
     "iconv-lite": "^0.4.15",
     "mkdirp": "^0.5.1",
