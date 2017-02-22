@@ -10,10 +10,9 @@
         "indent": [2, 4],
         "max-params": [2, 12],
         "max-statements": [2, 43],
-        "no-extra-parens": 1,
         "no-continue": 1,
         "no-magic-numbers": 0,
         "no-restricted-syntax": [2, "BreakStatement", "DebuggerStatement", "ForInStatement", "LabeledStatement", "WithStatement"],
-        "operator-linebreak": 1
+        "operator-linebreak": [2, "after"],
     }
 }
