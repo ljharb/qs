@@ -1,3 +1,9 @@
+## **6.2.3**
+- [Fix] follow `allowPrototypes` option during merge (#201, #200)
+- [Fix] chmod a-x
+- [Fix] support keys starting with brackets (#202, #200)
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+
 ## **6.2.2**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
 
