@@ -399,16 +399,15 @@ test('parse()', function (t) {
 
     t.test('params starting with a closing bracket', function (st) {
         st.deepEqual(qs.parse(']=toString'), { ']': 'toString' });
+        st.deepEqual(qs.parse(']]=toString'), { ']]': 'toString' });
+        st.deepEqual(qs.parse(']hello]=toString'), { ']hello]': 'toString' });
         st.end();
     });
 
     t.test('params starting with a starting bracket', function (st) {
-        st.deepEqual(qs.parse('[=toString'), {});
-        st.end();
-    });
-
-    t.test('params starting with a starting bracket', function (st) {
-        st.deepEqual(qs.parse('[=toString'), {});
+        st.deepEqual(qs.parse('[=toString'), { '[': 'toString' });
+        st.deepEqual(qs.parse('[[=toString'), { '[[': 'toString' });
+        st.deepEqual(qs.parse('[hello[=toString'), { '[hello[': 'toString' });
         st.end();
     });
 
