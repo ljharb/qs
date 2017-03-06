@@ -7,6 +7,13 @@
 - [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
 - [eslint] reduce warnings
 
+## **6.3.2**
+- [Fix] follow `allowPrototypes` option during merge (#201, #200)
+- [Dev Deps] update `eslint`
+- [Fix] chmod a-x
+- [Fix] support keys starting with brackets (#202, #200)
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+
 ## **6.3.1**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties (thanks, @snyk!)
 - [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `browserify`, `iconv-lite`, `qs-iconv`, `tape`
@@ -33,6 +40,12 @@
 - [Tests] skip Object.create tests when null objects are not available
 - [Tests] Turn on eslint for test files (#175)
 
+## **6.2.3**
+- [Fix] follow `allowPrototypes` option during merge (#201, #200)
+- [Fix] chmod a-x
+- [Fix] support keys starting with brackets (#202, #200)
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+
 ## **6.2.2**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
 
@@ -48,6 +61,12 @@
 - [New] add "encoder" and "decoder" options, for custom param encoding/decoding (#160)
 - [Fix] fix compacting of nested sparse arrays (#150)
 
+## **6.1.2
+- [Fix] follow `allowPrototypes` option during merge (#201, #200)
+- [Fix] chmod a-x
+- [Fix] support keys starting with brackets (#202, #200)
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+
 ## **6.1.1**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
 
@@ -55,6 +74,12 @@
 - [New] allowDots option for `stringify` (#151)
 - [Fix] "sort" option should work at a depth of 3 or more (#151)
 - [Fix] Restore `dist` directory; will be removed in v7 (#148)
+
+## **6.0.4**
+- [Fix] follow `allowPrototypes` option during merge (#201, #200)
+- [Fix] chmod a-x
+- [Fix] support keys starting with brackets (#202, #200)
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
 
 ## **6.0.3**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
