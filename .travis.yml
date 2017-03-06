@@ -2,10 +2,10 @@ language: node_js
 os:
  - linux
 node_js:
-  - "7.4"
-  - "6.9"
+  - "7.7"
+  - "6.10"
   - "5.12"
-  - "4.6"
+  - "4.8"
   - "iojs-v3.3"
   - "iojs-v2.5"
   - "iojs-v1.8"
@@ -30,6 +30,12 @@ matrix:
       env: PRETEST=true
     - node_js: "4"
       env: COVERAGE=true
+    - node_js: "7.6"
+      env: TEST=true ALLOW_FAILURE=true
+    - node_js: "7.5"
+      env: TEST=true ALLOW_FAILURE=true
+    - node_js: "7.4"
+      env: TEST=true ALLOW_FAILURE=true
     - node_js: "7.3"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "7.2"
@@ -37,6 +43,8 @@ matrix:
     - node_js: "7.1"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "7.0"
+      env: TEST=true ALLOW_FAILURE=true
+    - node_js: "6.9"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "6.8"
       env: TEST=true ALLOW_FAILURE=true
@@ -79,6 +87,10 @@ matrix:
     - node_js: "5.1"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "5.0"
+      env: TEST=true ALLOW_FAILURE=true
+    - node_js: "4.7"
+      env: TEST=true ALLOW_FAILURE=true
+    - node_js: "4.6"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "4.5"
       env: TEST=true ALLOW_FAILURE=true
@@ -132,30 +144,30 @@ matrix:
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "0.4"
       env: TEST=true ALLOW_FAILURE=true
-    - node_js: "7"
-      env: TEST=true
-      os: osx
-    - node_js: "6"
-      env: TEST=true
-      os: osx
-    - node_js: "5"
-      env: TEST=true
-      os: osx
-    - node_js: "4"
-      env: TEST=true
-      os: osx
-    - node_js: "iojs"
-      env: TEST=true
-      os: osx
-    - node_js: "0.12"
-      env: TEST=true
-      os: osx
-    - node_js: "0.10"
-      env: TEST=true
-      os: osx
-    - node_js: "0.8"
-      env: TEST=true
-      os: osx
+    ##- node_js: "7"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "6"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "5"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "4"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "iojs"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "0.12"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "0.10"
+      #env: TEST=true
+      #os: osx
+    #- node_js: "0.8"
+      #env: TEST=true
+      #os: osx
   allow_failures:
     - os: osx
     - env: TEST=true ALLOW_FAILURE=true
