@@ -1,3 +1,12 @@
+## **6.4.0**
+- [New] `qs.stringify`: add `encodeValuesOnly` option
+- [Fix] follow `allowPrototypes` option during merge (#201, #201)
+- [Fix] support keys starting with brackets (#202, #200)
+- [Fix] chmod a-x
+- [Dev Deps] update `eslint`
+- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+- [eslint] reduce warnings
+
 ## **6.3.1**
 - [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties (thanks, @snyk!)
 - [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `browserify`, `iconv-lite`, `qs-iconv`, `tape`
