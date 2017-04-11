@@ -516,4 +516,11 @@ test('parse()', function (t) {
         }, new TypeError('Decoder has to be a function.'));
         st.end();
     });
+
+    t.test('does not mutate the options argument', function (st) {
+        var options = {};
+        qs.parse('a[b]=true', options);
+        st.deepEqual(options, {});
+        st.end();
+    });
 });

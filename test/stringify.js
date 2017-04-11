@@ -564,4 +564,10 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('does not mutate the options argument', function (st) {
+        var options = {};
+        qs.stringify({}, options);
+        st.deepEqual(options, {});
+        st.end();
+    });
 });
