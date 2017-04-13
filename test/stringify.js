@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var qs = require('../');
+var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 
 test('stringify()', function (t) {
@@ -452,6 +453,16 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('receives the default encoder as a second argument', function (st) {
+        st.plan(2);
+        qs.stringify({ a: 1 }, {
+            encoder: function (str, defaultEncoder) {
+                st.equal(defaultEncoder, utils.encode);
+            }
+        });
+        st.end();
+    });
+
     t.test('throws error with wrong encoder', function (st) {
         st.throws(function () {
             qs.stringify({}, { encoder: 'string' });
@@ -570,4 +581,6 @@ test('stringify()', function (t) {
         st.deepEqual(options, {});
         st.end();
     });
+
+    t.end();
 });

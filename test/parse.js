@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var qs = require('../');
+var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 
 test('parse()', function (t) {
@@ -510,6 +511,16 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('receives the default decoder as a second argument', function (st) {
+        st.plan(1);
+        qs.parse('a', {
+            decoder: function (str, defaultDecoder) {
+                st.equal(defaultDecoder, utils.decode);
+            }
+        });
+        st.end();
+    });
+
     t.test('throws error with wrong decoder', function (st) {
         st.throws(function () {
             qs.parse({}, { decoder: 'string' });
@@ -523,4 +534,6 @@ test('parse()', function (t) {
         st.deepEqual(options, {});
         st.end();
     });
+
+    t.end();
 });
