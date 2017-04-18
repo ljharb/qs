@@ -2,7 +2,7 @@
 
 A querystring parsing and stringifying library with some added security.
 
-[![Build Status](https://api.travis-ci.org/ljharb/qs.svg)](http://travis-ci.org/ljharb/qs)
+[![Build Status](https://api.travis-ci.org/ljharb/qs.svg?branch=master)](http://travis-ci.org/ljharb/qs)
 
 Lead Maintainer: [Jordan Harband](https://github.com/ljharb)
 
