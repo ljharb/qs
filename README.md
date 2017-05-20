@@ -1,8 +1,14 @@
-# qs
+# qs <sup>[![Version Badge][2]][1]</sup>
+
+[![Build Status][3]][4]
+[![dependency status][5]][6]
+[![dev dependency status][7]][8]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
+
+[![npm badge][11]][1]
 
 A querystring parsing and stringifying library with some added security.
-
-[![Build Status](https://api.travis-ci.org/ljharb/qs.svg)](http://travis-ci.org/ljharb/qs)
 
 Lead Maintainer: [Jordan Harband](https://github.com/ljharb)
 
@@ -438,3 +444,19 @@ assert.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 ```
+
+[1]: https://npmjs.org/package/qs
+[2]: http://versionbadg.es/ljharb/qs.svg
+[3]: https://api.travis-ci.org/ljharb/qs.svg
+[4]: https://travis-ci.org/ljharb/qs
+[5]: https://david-dm.org/ljharb/qs.svg
+[6]: https://david-dm.org/ljharb/qs
+[7]: https://david-dm.org/ljharb/qs/dev-status.svg
+[8]: https://david-dm.org/ljharb/qs?type=dev
+[9]: https://ci.testling.com/ljharb/qs.png
+[10]: https://ci.testling.com/ljharb/qs
+[11]: https://nodei.co/npm/qs.png?downloads=true&stars=true
+[license-image]: http://img.shields.io/npm/l/qs.svg
+[license-url]: LICENSE
+[downloads-image]: http://img.shields.io/npm/dm/qs.svg
+[downloads-url]: http://npm-stat.com/charts.html?package=qs
