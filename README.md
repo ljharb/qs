@@ -27,6 +27,8 @@ var str = qs.stringify(obj);
 assert.equal(str, 'a=c');
 ```
 
+For client-side (browser) use, the library can be loaded from a CDN. See [cdnjs](https://cdnjs.com/libraries/qs) for the URL to include in your `<script>` tag.
+
 ### Parsing Objects
 
 [](#preventEval)
