@@ -16,6 +16,7 @@ The **qs** module was originally created and maintained by [TJ Holowaychuk](http
 
 ## Usage
 
+For Node: 
 ```javascript
 var qs = require('qs');
 var assert = require('assert');
@@ -25,6 +26,17 @@ assert.deepEqual(obj, { a: 'c' });
 
 var str = qs.stringify(obj);
 assert.equal(str, 'a=c');
+```
+For Browsers: 
+```html
+<script type="text/javascript" href="/path/to/qs/dist/qs.js"></script>
+<script type="text/javascript">
+  var obj = Qs.parse('a=c');
+  console.log(obj); // { a: 'c' }
+
+  var str = Qs.stringify(obj);
+  console.log(obj); // 'a=c'
+</script>
 ```
 
 ### Parsing Objects
