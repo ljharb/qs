@@ -118,6 +118,13 @@ var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
+To bypass the leading question mark, use `ignoreQueryPrefix`:
+
+```javascript
+var prefixed = qs.parse('?a=b&c=d', { ignoreQueryPrefix: true });
+assert.deepEqual(prefixed, { a: 'b', c: 'd' });
+```
+
 An optional delimiter can also be passed:
 
 ```javascript
@@ -321,6 +328,12 @@ Properties that are set to `undefined` will be omitted entirely:
 
 ```javascript
 assert.equal(qs.stringify({ a: null, b: undefined }), 'a=');
+```
+
+The query string may optionally be prepended with a question mark:
+
+```javascript
+assert.equal(qs.stringify({ a: 'b', c: 'd' }, { addQueryPrefix: true }), '?a=b&c=d');
 ```
 
 The delimiter may be overridden with stringify as well:

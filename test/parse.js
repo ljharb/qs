@@ -305,6 +305,13 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('allows for query string prefix', function (st) {
+        st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
+        st.deepEqual(qs.parse('foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
+        st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: false }), { '?foo': 'bar' });
+        st.end();
+    });
+
     t.test('parses an object', function (st) {
         var input = {
             'user[name]': { 'pop[bob]': 3 },

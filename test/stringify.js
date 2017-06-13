@@ -18,6 +18,11 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('adds query prefix', function (st) {
+        st.equal(qs.stringify({ a: 'b' }, { addQueryPrefix: true }), '?a=b');
+        st.end();
+    });
+
     t.test('stringifies a nested object', function (st) {
         st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
         st.equal(qs.stringify({ a: { b: { c: { d: 'e' } } } }), 'a%5Bb%5D%5Bc%5D%5Bd%5D=e');
