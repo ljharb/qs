@@ -39,9 +39,9 @@ For example, the string `'foo[bar]=baz'` converts to:
 
 ```javascript
 assert.deepEqual(qs.parse('foo[bar]=baz'), {
-  foo: {
-    bar: 'baz'
-  }
+    foo: {
+        bar: 'baz'
+    }
 });
 ```
 
@@ -63,7 +63,7 @@ URI encoded strings work too:
 
 ```javascript
 assert.deepEqual(qs.parse('a%5Bb%5D=c'), {
-  a: { b: 'c' }
+    a: { b: 'c' }
 });
 ```
 
@@ -71,11 +71,11 @@ You can also nest your objects, like `'foo[bar][baz]=foobarbaz'`:
 
 ```javascript
 assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
-  foo: {
-    bar: {
-      baz: 'foobarbaz'
+    foo: {
+        bar: {
+            baz: 'foobarbaz'
+        }
     }
-  }
 });
 ```
 
@@ -84,19 +84,19 @@ By default, when nesting objects **qs** will only parse up to 5 children deep. T
 
 ```javascript
 var expected = {
-  a: {
-    b: {
-      c: {
-        d: {
-          e: {
-            f: {
-              '[g][h][i]': 'j'
+    a: {
+        b: {
+            c: {
+                d: {
+                    e: {
+                        f: {
+                            '[g][h][i]': 'j'
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 };
 var string = 'a[b][c][d][e][f][g][h][i]=j';
 assert.deepEqual(qs.parse(string), expected);
@@ -240,10 +240,10 @@ assert.equal(unencoded, 'a[b]=c');
 
 Encoding can be disabled for keys by setting the `encodeValuesOnly` option to `true`:
 ```javascript
-var encodedValues  = qs.stringify(
-  { a: 'b', c: ['d', 'e=f'], f: [['g'], ['h']] },
-  { encodeValuesOnly: true }
-)
+var encodedValues = qs.stringify(
+    { a: 'b', c: ['d', 'e=f'], f: [['g'], ['h']] },
+    { encodeValuesOnly: true }
+);
 assert.equal(encodedValues,'a=b&c[0]=d&c[1]=e%3Df&f[0][0]=g&f[1][0]=h');
 ```
 
@@ -251,8 +251,8 @@ This encoding can also be replaced by a custom encoding method set as `encoder` 
 
 ```javascript
 var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str) {
-  // Passed in values `a`, `b`, `c`
-  return // Return encoded string
+    // Passed in values `a`, `b`, `c`
+    return // Return encoded string
 }})
 ```
 
@@ -262,8 +262,8 @@ Analogue to the `encoder` there is a `decoder` option for `parse` to override de
 
 ```javascript
 var decoded = qs.parse('x=z', { decoder: function (str) {
-  // Passed in values `x`, `z`
-  return // Return decoded string
+    // Passed in values `x`, `z`
+    return // Return decoded string
 }})
 ```
 
@@ -357,7 +357,7 @@ You may use the `sort` option to affect the order of parameter keys:
 
 ```javascript
 function alphabeticalSort(a, b) {
-  return a.localeCompare(b);
+    return a.localeCompare(b);
 }
 assert.equal(qs.stringify({ a: 'c', z: 'y', b : 'f' }, { sort: alphabeticalSort }), 'a=c&b=f&z=y');
 ```
@@ -368,17 +368,17 @@ pass an array, it will be used to select properties and array indices for string
 
 ```javascript
 function filterFunc(prefix, value) {
-  if (prefix == 'b') {
-    // Return an `undefined` value to omit a property.
-    return;
-  }
-  if (prefix == 'e[f]') {
-    return value.getTime();
-  }
-  if (prefix == 'e[g][0]') {
-    return value * 2;
-  }
-  return value;
+    if (prefix == 'b') {
+        // Return an `undefined` value to omit a property.
+        return;
+    }
+    if (prefix == 'e[f]') {
+        return value.getTime();
+    }
+    if (prefix == 'e[g][0]') {
+        return value * 2;
+    }
+    return value;
 }
 qs.stringify({ a: 'b', c: 'd', e: { f: new Date(123), g: [2] } }, { filter: filterFunc });
 // 'a=b&c=d&e[f]=123&e[g][0]=4'
