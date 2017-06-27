@@ -23,6 +23,11 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('with query prefix, outputs blank string given an empty object', function (st) {
+        st.equal(qs.stringify({}, { addQueryPrefix: true }), '');
+        st.end();
+    });
+
     t.test('stringifies a nested object', function (st) {
         st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
         st.equal(qs.stringify({ a: { b: { c: { d: 'e' } } } }), 'a%5Bb%5D%5Bc%5D%5Bd%5D=e');
