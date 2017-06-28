@@ -30,12 +30,11 @@
         "editorconfig-tools": "^0.1.1",
         "eslint": "^3.19.0",
         "evalmd": "^0.0.17",
-        "iconv-lite": "^0.4.17",
+        "iconv-lite": "^0.4.18",
         "mkdirp": "^0.5.1",
-        "parallelshell": "^2.0.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.1",
-        "tape": "^4.6.3"
+        "tape": "^4.7.0"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
