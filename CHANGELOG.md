@@ -1,3 +1,15 @@
+## **6.5.0**
+- [New] add `utils.assign`
+- [New] pass default encoder/decoder to custom encoder/decoder functions (#206)
+- [New] `parse`/`stringify`: add `ignoreQueryPrefix`/`addQueryPrefix` options, respectively (#213)
+- [Fix] Handle stringifying empty objects with addQueryPrefix (#217)
+- [Fix] do not mutate `options` argument (#207)
+- [Refactor] `parse`: cache index to reuse in else statement (#182)
+- [Docs] add various badges to readme (#208)
+- [Dev Deps] update `eslint`, `browserify`, `iconv-lite`, `tape`
+- [Tests] up to `node` `v8.1`, `v7.10`, `v6.11`; npm v4.6 breaks on node < v1; npm v5+ breaks on node < v4
+- [Tests] add `editorconfig-tools`
+
 ## **6.4.0**
 - [New] `qs.stringify`: add `encodeValuesOnly` option
 - [Fix] follow `allowPrototypes` option during merge (#201, #201)
