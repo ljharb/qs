@@ -556,7 +556,7 @@ test('parse()', function (t) {
     });
 
     t.test('throws error with wrong decoder', function (st) {
-        st.throws(function () {
+        st['throws'](function () {
             qs.parse({}, { decoder: 'string' });
         }, new TypeError('Decoder has to be a function.'));
         st.end();

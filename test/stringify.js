@@ -474,7 +474,7 @@ test('stringify()', function (t) {
     });
 
     t.test('throws error with wrong encoder', function (st) {
-        st.throws(function () {
+        st['throws'](function () {
             qs.stringify({}, { encoder: 'string' });
         }, new TypeError('Encoder has to be a function.'));
         st.end();
@@ -504,7 +504,7 @@ test('stringify()', function (t) {
         mutatedDate.toISOString = function () {
             throw new SyntaxError();
         };
-        st.throws(function () {
+        st['throws'](function () {
             mutatedDate.toISOString();
         }, SyntaxError);
         st.equal(
@@ -546,7 +546,7 @@ test('stringify()', function (t) {
     t.test('Edge cases and unknown formats', function (st) {
         ['UFO1234', false, 1234, null, {}, []].forEach(
             function (format) {
-                st.throws(
+                st['throws'](
                     function () {
                         qs.stringify({ a: 'b c' }, { format: format });
                     },
