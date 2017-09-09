@@ -396,6 +396,33 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('does not crash when parsing deep objects', function (st) {
+        var parsed;
+        var str = 'foo';
+
+        for (var i = 0; i < 5000; i++) {
+            str += '[p]';
+        }
+
+        str += '=bar';
+
+        st.doesNotThrow(function () {
+            parsed = qs.parse(str, { depth: 5000 });
+        });
+
+        st.equal('foo' in parsed, true, 'parsed has "foo" property');
+
+        var depth = 0;
+        var ref = parsed.foo;
+        while ((ref = ref.p)) {
+            depth += 1;
+        }
+
+        st.equal(depth, 5000, 'parsed is 5000 properties deep');
+
+        st.end();
+    });
+
     t.test('parses null objects correctly', { skip: !Object.create }, function (st) {
         var a = Object.create(null);
         a.b = 'c';
