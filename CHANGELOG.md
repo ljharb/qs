@@ -1,3 +1,12 @@
+## **6.5.1**
+- [Fix] Fix parsing & compacting very deep objects (#224)
+- [Refactor] name utils functions
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`
+- [Tests] up to `node` `v8.4`; use `nvm install-latest-npm` so newer npm doesn’t break older node
+- [Tests] Use precise dist for Node.js 0.6 runtime (#225)
+- [Tests] make 0.6 required, now that it’s passing
+- [Tests] on `node` `v8.2`; fix npm on node 0.6
+
 ## **6.5.0**
 - [New] add `utils.assign`
 - [New] pass default encoder/decoder to custom encoder/decoder functions (#206)
