@@ -28,7 +28,7 @@
         "browserify": "^14.4.0",
         "covert": "^1.1.0",
         "editorconfig-tools": "^0.1.1",
-        "eslint": "^4.8.0",
+        "eslint": "^4.9.0",
         "evalmd": "^0.0.17",
         "iconv-lite": "^0.4.19",
         "mkdirp": "^0.5.1",
