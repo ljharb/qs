@@ -105,6 +105,31 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses a value with the supplied function', function (st) {
+        st.deepEqual(qs.parse('a[]=b,c', { valueParser: function (key, val) {
+            var brackets = /(\[[^[\]]*])/;
+            var returnVal = val;
+
+            if (
+                val !== null
+              && brackets.test(key)
+              && typeof val === 'string'
+              && val.indexOf(',') !== -1
+            ) {
+                returnVal = val.split(',');
+            }
+            return returnVal;
+        } }), { a: ['b', 'c'] });
+        st.end();
+    });
+
+    t.test('throws error with badly crafted valueParser', function (st) {
+        st['throws'](function () {
+            qs.parse({}, { valueParser: 'notAFunction' });
+        }, new TypeError('valueParser has to be a function.'));
+        st.end();
+    });
+
     t.test('parses a mix of simple and explicit arrays', function (st) {
         st.deepEqual(qs.parse('a=b&a[]=c'), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a[]=b&a=c'), { a: ['b', 'c'] });
