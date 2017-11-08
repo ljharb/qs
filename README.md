@@ -192,9 +192,11 @@ assert.deepEqual(withMaxIndex, { a: { '100': 'b' } });
 This limit can be overridden by passing an `arrayLimit` option:
 
 ```javascript
-var withArrayLimit = qs.parse('a[1]=b', { arrayLimit: 0 });
+var withArrayLimit = qs.parse('a[1]=b', { arrayLimit: 50 });
 assert.deepEqual(withArrayLimit, { a: { '1': 'b' } });
 ```
+
+If `arrayLimit` option is set to 0, then no limits in arrays length are considered.
 
 To disable array parsing entirely, set `parseArrays` to `false`.
 
