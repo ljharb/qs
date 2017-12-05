@@ -237,6 +237,14 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses jquery-param strings', function (st) {
+        // readable = 'filter[0][]=int1&filter[0][]==&filter[0][]=77&filter[]=and&filter[2][]=int2&filter[2][]==&filter[2][]=8'
+        var encoded = 'filter%5B0%5D%5B%5D=int1&filter%5B0%5D%5B%5D=%3D&filter%5B0%5D%5B%5D=77&filter%5B%5D=and&filter%5B2%5D%5B%5D=int2&filter%5B2%5D%5B%5D=%3D&filter%5B2%5D%5B%5D=8';
+        var expected = { filter: [['int1', '=', '77'], 'and', ['int2', '=', '8']] };
+        st.deepEqual(qs.parse(encoded), expected);
+        st.end();
+    });
+
     t.test('continues parsing when no parent is found', function (st) {
         st.deepEqual(qs.parse('[]=&a=b'), { 0: '', a: 'b' });
         st.deepEqual(qs.parse('[]&a=b', { strictNullHandling: true }), { 0: null, a: 'b' });
