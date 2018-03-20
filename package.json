@@ -24,16 +24,18 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "tape": "^4.6.0",
-    "covert": "^1.1.0",
-    "mkdirp": "^0.5.1",
-    "eslint": "^3.1.0",
     "@ljharb/eslint-config": "^6.0.0",
-    "parallelshell": "^2.0.0",
+    "browserify": "^13.0.1",
+    "covert": "^1.1.0",
+    "eslint": "^3.1.0",
+    "evalmd": "^0.0.17",
     "iconv-lite": "^0.4.13",
-    "qs-iconv": "^1.0.3",
-    "evalmd": "^0.0.17"
+    "mkdirp": "^0.5.1",
+    "parallelshell": "^2.0.0",
+    "qs-iconv": "^1.0.4",
+    "safe-publish-latest": "^1.1.1",
+    "safer-buffer": "^2.0.2",
+    "tape": "^4.6.3"
   },
   "scripts": {
     "pretest": "npm run --silent readme && npm run --silent lint",

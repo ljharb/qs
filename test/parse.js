@@ -3,6 +3,7 @@
 var test = require('tape');
 var qs = require('../');
 var iconv = require('iconv-lite');
+var SaferBuffer = require('safer-buffer').Buffer;
 
 test('parse()', function (t) {
     t.test('parses a simple string', function (st) {
@@ -221,7 +222,7 @@ test('parse()', function (t) {
     });
 
     t.test('parses buffers correctly', function (st) {
-        var b = new Buffer('test');
+        var b = SaferBuffer.from('test');
         st.deepEqual(qs.parse({ a: b }), { a: b });
         st.end();
     });
@@ -501,7 +502,7 @@ test('parse()', function (t) {
                     result.push(parseInt(parts[1], 16));
                     last = parts.index + parts[0].length;
                 }
-                return iconv.decode(new Buffer(result), 'shift_jis').toString();
+                return iconv.decode(SaferBuffer.from(result), 'shift_jis').toString();
             }
         }), { 県: '大阪府' });
         st.end();
