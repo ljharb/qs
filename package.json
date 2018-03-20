@@ -25,17 +25,17 @@
     "dependencies": {},
     "devDependencies": {
         "@ljharb/eslint-config": "^12.2.1",
-        "browserify": "^14.4.0",
+        "browserify": "^16.1.1",
         "covert": "^1.1.0",
         "editorconfig-tools": "^0.1.1",
-        "eslint": "^4.9.0",
+        "eslint": "^4.19.0",
         "evalmd": "^0.0.17",
         "iconv-lite": "^0.4.19",
         "mkdirp": "^0.5.1",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.1",
         "safer-buffer": "^2.0.2",
-        "tape": "^4.8.0"
+        "tape": "^4.9.0"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
