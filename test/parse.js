@@ -289,7 +289,14 @@ test('parse()', function (t) {
     });
 
     t.test('allows disabling array parsing', function (st) {
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { parseArrays: false }), { a: { '0': 'b', '1': 'c' } });
+        var indices = qs.parse('a[0]=b&a[1]=c', { parseArrays: false });
+        st.deepEqual(indices, { a: { 0: 'b', 1: 'c' } });
+        st.equal(Array.isArray(indices.a), false, 'parseArrays:false, indices case is not an array');
+
+        var emptyBrackets = qs.parse('a[]=b', { parseArrays: false });
+        st.deepEqual(emptyBrackets, { a: { 0: 'b' } });
+        st.equal(Array.isArray(emptyBrackets.a), false, 'parseArrays:false, empty brackets case is not an array');
+
         st.end();
     });
 
