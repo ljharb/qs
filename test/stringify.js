@@ -593,5 +593,11 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('Sets', { skip: typeof Set === 'undefined' }, function (st) {
+        var data = { k: new Set([1, 2, 3]) };
+        st.equal(qs.stringify(data, { arrayFormat: 'brackets', encodeValuesOnly: true }), 'k[]=1&k[]=2&k[]=3');
+        st.end();
+    });
+
     t.end();
 });
