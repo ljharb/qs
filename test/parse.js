@@ -627,5 +627,10 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('does not interpret %uXXXX syntax in iso-8859-1 mode', function (st) {
+        st.deepEqual(qs.parse('%u263A=%u263A', { charset: 'iso-8859-1' }), { '%u263A': '%u263A' });
+        st.end();
+    });
+
     t.end();
 });
