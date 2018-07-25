@@ -146,6 +146,56 @@ var withDots = qs.parse('a.b=c', { allowDots: true });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
+If you have to deal with legacy browsers or services, there's
+also support for decoding percent-encoded octets as iso-8859-1:
+
+```javascript
+var oldCharset = qs.parse('a=%A7', { charset: 'iso-8859-1' });
+assert.deepEqual(oldCharset, { a: '§' });
+```
+
+Some services add an initial `utf8=✓` value to forms so that old
+Internet Explorer versions are more likely to submit the form as
+utf-8. Additionally, the server can check the value against wrong
+encodings of the checkmark character and detect that a query string
+or `application/x-www-form-urlencoded` body was *not* sent as
+utf-8, eg. if the form had an `accept-charset` parameter or the
+containing page had a different character set.
+
+**qs** supports this mechanism via the `utf8Sentinel` option.
+If specified, the `utf8` parameter will be omitted from the
+returned object. It will be used to switch to `iso-8859-1`/`utf-8`
+mode depending on how the checkmark is encoded.
+
+```javascript
+var detectedAsUtf8 = qs.parse('utf8=%E2%9C%93&a=%C3%B8', {
+    charset: 'iso-8859-1',
+    utf8Sentinel: true
+});
+assert.deepEqual(detectedAsUtf8, { a: 'ø' });
+
+// Browsers encode the checkmark as &#10003; when submitting as iso-8859-1:
+var detectedAsIso8859_1 = qs.parse('utf8=%26%2310003%3B&a=%F8', {
+    charset: 'utf-8',
+    utf8Sentinel: true
+});
+assert.deepEqual(detectedAsIso8859_1, { a: 'ø' });
+```
+
+If you want to decode the `&#...;` syntax to the actual character,
+you can specify the `interpretNumericEntities` option as well:
+
+```javascript
+var detectedAsIso8859_1 = qs.parse('a=%26%239786%3B', {
+    charset: 'iso-8859-1',
+    interpretNumericEntities: true
+});
+assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
+```
+
+It also works when the charset has been detected in `utf8Sentinel`
+mode.
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
