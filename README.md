@@ -476,10 +476,28 @@ var nullsSkipped = qs.stringify({ a: 'b', c: null}, { skipNulls: true });
 assert.equal(nullsSkipped, 'a=b');
 ```
 
+If you're communicating with legacy systems, you can switch to `iso-8859-1`
+using the `charset` option:
+
+```javascript
+var iso = qs.stringify({ æ: 'æ' }, { charset: 'iso-8859-1' });
+assert.equal(iso, '%E6=%E6');
+```
+
+Characters that don't exist in `iso-8859-1` will be converted to numeric
+entities, similar to what browsers do:
+
+```javascript
+var numeric = qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' });
+assert.equal(numeric, 'a=%26%239786%3B');
+```
+
 ### Dealing with special character sets
 
-By default the encoding and decoding of characters is done in `utf-8`. If you
-wish to encode querystrings to a different character set (i.e.
+By default the encoding and decoding of characters is done in `utf-8`,
+and `iso-8859-1` support is also built in via the `charset` parameter.
+
+If you wish to encode querystrings to a different character set (i.e.
 [Shift JIS](https://en.wikipedia.org/wiki/Shift_JIS)) you can use the
 [`qs-iconv`](https://github.com/martinheidegger/qs-iconv) library:
 

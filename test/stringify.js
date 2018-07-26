@@ -586,6 +586,21 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('respects a charset of iso-8859-1', function (st) {
+        st.equal(qs.stringify({ æ: 'æ' }, { charset: 'iso-8859-1' }), '%E6=%E6');
+        st.end();
+    });
+
+    t.test('encodes unrepresentable chars as numeric entities in iso-8859-1 mode', function (st) {
+        st.equal(qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' }), 'a=%26%239786%3B');
+        st.end();
+    });
+
+    t.test('respects an explicit charset of utf-8 (the default)', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { charset: 'utf-8' }), 'a=%C3%A6');
+        st.end();
+    });
+
     t.test('does not mutate the options argument', function (st) {
         var options = {};
         qs.stringify({}, options);
