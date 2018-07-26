@@ -492,6 +492,18 @@ var numeric = qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' });
 assert.equal(numeric, 'a=%26%239786%3B');
 ```
 
+You can use the `utf8Sentinel` option to announce the character by
+including an `utf8=✓` parameter with the proper encoding if the checkmark,
+similar to what Ruby on Rails and others do when submitting forms.
+
+```javascript
+var sentinel = qs.stringify({ a: '☺' }, { utf8Sentinel: true });
+assert.equal(sentinel, 'utf8=%E2%9C%93&a=%E2%98%BA');
+
+var isoSentinel = qs.stringify({ a: 'æ' }, { utf8Sentinel: true, charset: 'iso-8859-1' });
+assert.equal(isoSentinel, 'utf8=%26%2310003%3B&a=%E6');
+```
+
 ### Dealing with special character sets
 
 By default the encoding and decoding of characters is done in `utf-8`,

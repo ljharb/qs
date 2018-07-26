@@ -601,6 +601,16 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('adds the right sentinel when instructed to and the charset is utf-8', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { utf8Sentinel: true, charset: 'utf-8' }), 'utf8=%E2%9C%93&a=%C3%A6');
+        st.end();
+    });
+
+    t.test('adds the right sentinel when instructed to and the charset is iso-8859-1', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { utf8Sentinel: true, charset: 'iso-8859-1' }), 'utf8=%26%2310003%3B&a=%E6');
+        st.end();
+    });
+
     t.test('does not mutate the options argument', function (st) {
         var options = {};
         qs.stringify({}, options);
