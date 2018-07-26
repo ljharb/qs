@@ -597,6 +597,11 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('does not require the utf8 sentinel to be defined before the parameters whose decoding it affects', function (st) {
+        st.deepEqual(qs.parse('a=' + urlEncodedOSlashInUtf8 + '&utf8=' + urlEncodedNumCheckmark, { utf8Sentinel: true, charset: 'utf-8' }), { a: 'Ã¸' });
+        st.end();
+    });
+
     t.test('should ignore an utf8 sentinel with an unknown value', function (st) {
         st.deepEqual(qs.parse('utf8=foo&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { utf8Sentinel: true, charset: 'utf-8' }), { ø: 'ø' });
         st.end();
