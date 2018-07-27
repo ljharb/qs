@@ -586,6 +586,13 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('throws if an invalid charset is specified', function (st) {
+        st['throws'](function () {
+            qs.stringify({ a: 'b' }, { charset: 'foobar' });
+        }, new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined'));
+        st.end();
+    });
+
     t.test('respects a charset of iso-8859-1', function (st) {
         st.equal(qs.stringify({ æ: 'æ' }, { charset: 'iso-8859-1' }), '%E6=%E6');
         st.end();
