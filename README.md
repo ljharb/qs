@@ -167,6 +167,12 @@ If specified, the `utf8` parameter will be omitted from the
 returned object. It will be used to switch to `iso-8859-1`/`utf-8`
 mode depending on how the checkmark is encoded.
 
+**Important**: When you specify both the `charset` option and the
+`utf8Sentinel` option, the `charset` will be overridden when
+the request contains a `utf8` parameter from which the actual
+charset can be deduced. In that sense the `charset` will behave
+as the default charset rather than the authoritative charset.
+
 ```javascript
 var detectedAsUtf8 = qs.parse('utf8=%E2%9C%93&a=%C3%B8', {
     charset: 'iso-8859-1',
