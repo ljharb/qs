@@ -162,13 +162,13 @@ or `application/x-www-form-urlencoded` body was *not* sent as
 utf-8, eg. if the form had an `accept-charset` parameter or the
 containing page had a different character set.
 
-**qs** supports this mechanism via the `utf8Sentinel` option.
+**qs** supports this mechanism via the `charsetSentinel` option.
 If specified, the `utf8` parameter will be omitted from the
 returned object. It will be used to switch to `iso-8859-1`/`utf-8`
 mode depending on how the checkmark is encoded.
 
 **Important**: When you specify both the `charset` option and the
-`utf8Sentinel` option, the `charset` will be overridden when
+`charsetSentinel` option, the `charset` will be overridden when
 the request contains a `utf8` parameter from which the actual
 charset can be deduced. In that sense the `charset` will behave
 as the default charset rather than the authoritative charset.
@@ -176,14 +176,14 @@ as the default charset rather than the authoritative charset.
 ```javascript
 var detectedAsUtf8 = qs.parse('utf8=%E2%9C%93&a=%C3%B8', {
     charset: 'iso-8859-1',
-    utf8Sentinel: true
+    charsetSentinel: true
 });
 assert.deepEqual(detectedAsUtf8, { a: 'ø' });
 
 // Browsers encode the checkmark as &#10003; when submitting as iso-8859-1:
 var detectedAsIso8859_1 = qs.parse('utf8=%26%2310003%3B&a=%F8', {
     charset: 'utf-8',
-    utf8Sentinel: true
+    charsetSentinel: true
 });
 assert.deepEqual(detectedAsIso8859_1, { a: 'ø' });
 ```
@@ -199,7 +199,7 @@ var detectedAsIso8859_1 = qs.parse('a=%26%239786%3B', {
 assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
 ```
 
-It also works when the charset has been detected in `utf8Sentinel`
+It also works when the charset has been detected in `charsetSentinel`
 mode.
 
 ### Parsing Arrays
@@ -498,15 +498,15 @@ var numeric = qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' });
 assert.equal(numeric, 'a=%26%239786%3B');
 ```
 
-You can use the `utf8Sentinel` option to announce the character by
+You can use the `charsetSentinel` option to announce the character by
 including an `utf8=✓` parameter with the proper encoding if the checkmark,
 similar to what Ruby on Rails and others do when submitting forms.
 
 ```javascript
-var sentinel = qs.stringify({ a: '☺' }, { utf8Sentinel: true });
+var sentinel = qs.stringify({ a: '☺' }, { charsetSentinel: true });
 assert.equal(sentinel, 'utf8=%E2%9C%93&a=%E2%98%BA');
 
-var isoSentinel = qs.stringify({ a: 'æ' }, { utf8Sentinel: true, charset: 'iso-8859-1' });
+var isoSentinel = qs.stringify({ a: 'æ' }, { charsetSentinel: true, charset: 'iso-8859-1' });
 assert.equal(isoSentinel, 'utf8=%26%2310003%3B&a=%E6');
 ```
 
