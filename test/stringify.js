@@ -586,6 +586,38 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('throws if an invalid charset is specified', function (st) {
+        st['throws'](function () {
+            qs.stringify({ a: 'b' }, { charset: 'foobar' });
+        }, new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined'));
+        st.end();
+    });
+
+    t.test('respects a charset of iso-8859-1', function (st) {
+        st.equal(qs.stringify({ æ: 'æ' }, { charset: 'iso-8859-1' }), '%E6=%E6');
+        st.end();
+    });
+
+    t.test('encodes unrepresentable chars as numeric entities in iso-8859-1 mode', function (st) {
+        st.equal(qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' }), 'a=%26%239786%3B');
+        st.end();
+    });
+
+    t.test('respects an explicit charset of utf-8 (the default)', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { charset: 'utf-8' }), 'a=%C3%A6');
+        st.end();
+    });
+
+    t.test('adds the right sentinel when instructed to and the charset is utf-8', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { charsetSentinel: true, charset: 'utf-8' }), 'utf8=%E2%9C%93&a=%C3%A6');
+        st.end();
+    });
+
+    t.test('adds the right sentinel when instructed to and the charset is iso-8859-1', function (st) {
+        st.equal(qs.stringify({ a: 'æ' }, { charsetSentinel: true, charset: 'iso-8859-1' }), 'utf8=%26%2310003%3B&a=%E6');
+        st.end();
+    });
+
     t.test('does not mutate the options argument', function (st) {
         var options = {};
         qs.stringify({}, options);
