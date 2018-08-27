@@ -5,6 +5,7 @@ node_modules
 
 # build output
 dist/*
+lib/cjs/
 
 # Only apps should have lockfiles
 yarn.lock
