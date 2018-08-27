@@ -2,7 +2,7 @@
 
 var test = require('tape');
 var qs = require('../');
-var utils = require('../lib/utils');
+var utils = require('../lib/cjs/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
 

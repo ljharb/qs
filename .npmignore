@@ -1,4 +1,6 @@
 bower.json
 component.json
 .npmignore
+.babelrc
 .travis.yml
+rollup.config.js

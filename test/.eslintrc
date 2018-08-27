@@ -1,4 +1,8 @@
 {
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "script"
+    },
     "rules": {
 		"array-bracket-newline": 0,
 		"array-element-newline": 0,
