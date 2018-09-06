@@ -9,6 +9,10 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 max_line_length = 140
 
+[*/*.js]
+indent_style = off
+indent_size = off
+
 [test/*]
 max_line_length = off
 

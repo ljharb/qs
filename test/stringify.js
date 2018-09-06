@@ -1,9 +1,14 @@
 'use strict';
 
+/** @typedef {import('../lib/stringify').Filter<*>} Filter */
+/** @typedef {import('../lib/stringify').Comparator} Comparator */
+/** @typedef {import('../lib/utils').Encoder} Encoder */
+
 var test = require('tape');
 var qs = require('../');
 var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
+
 var SaferBuffer = require('safer-buffer').Buffer;
 
 test('stringify()', function (t) {
@@ -321,9 +326,11 @@ test('stringify()', function (t) {
     });
 
     t.test('skips properties that are part of the object prototype', function (st) {
+        // @ts-ignore
         Object.prototype.crash = 'test';
         st.equal(qs.stringify({ a: 'b' }), 'a=b');
         st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
+        // @ts-ignore
         delete Object.prototype.crash;
         st.end();
     });
@@ -391,6 +398,7 @@ test('stringify()', function (t) {
     t.test('supports custom representations when filter=function', function (st) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
+        /** @type {Filter} */
         var filterFunc = function (prefix, value) {
             calls += 1;
             if (calls === 1) {
@@ -418,7 +426,8 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys', function (st) {
-        var sort = function (a, b) {
+        /** @type {Comparator} */
+        var sort = function (/** @type {string} */ a, /** @type {string} */ b) {
             return a.localeCompare(b);
         };
         st.equal(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort }), 'a=c&b=f&z=y');
@@ -427,12 +436,14 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
-        var sort = function (a, b) {
+        /** @type {Comparator} */
+        var sort = function (/** @type {string} */ a, /** @type {string} */ b) {
             return a.localeCompare(b);
         };
         st.equal(
             qs.stringify(
                 { a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' },
+                // @ts-ignore
                 { sort: sort, encode: false }
             ),
             'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb'
@@ -440,6 +451,7 @@ test('stringify()', function (t) {
         st.equal(
             qs.stringify(
                 { a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' },
+                // @ts-ignore
                 { sort: null, encode: false }
             ),
             'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b'
@@ -449,7 +461,8 @@ test('stringify()', function (t) {
 
     t.test('can stringify with custom encoding', function (st) {
         st.equal(qs.stringify({ 県: '大阪府', '': '' }, {
-            encoder: function (str) {
+            encoder: function (val) {
+                var str = String(val);
                 if (str.length === 0) {
                     return '';
                 }
@@ -469,20 +482,25 @@ test('stringify()', function (t) {
         qs.stringify({ a: 1 }, {
             encoder: function (str, defaultEncoder) {
                 st.equal(defaultEncoder, utils.encode);
+                return String(str);
             }
         });
         st.end();
     });
 
     t.test('throws error with wrong encoder', function (st) {
-        st['throws'](function () {
-            qs.stringify({}, { encoder: 'string' });
-        }, new TypeError('Encoder has to be a function.'));
+        st['throws'](
+            // @ts-ignore
+            function () { qs.stringify({}, { encoder: 'string' }); },
+            // @ts-ignore
+            new TypeError('Encoder has to be a function.')
+        );
         st.end();
     });
 
     t.test('can use custom encoder for a buffer object', { skip: typeof Buffer === 'undefined' }, function (st) {
         st.equal(qs.stringify({ a: SaferBuffer.from([1]) }, {
+            /** @type {Encoder} */
             encoder: function (buffer) {
                 if (typeof buffer === 'string') {
                     return buffer;
@@ -548,9 +566,9 @@ test('stringify()', function (t) {
         ['UFO1234', false, 1234, null, {}, []].forEach(
             function (format) {
                 st['throws'](
-                    function () {
-                        qs.stringify({ a: 'b c' }, { format: format });
-                    },
+                    // @ts-ignore
+                    function () { qs.stringify({ a: 'b c' }, { format: format }); },
+                    // @ts-ignore
                     new TypeError('Unknown format option provided.')
                 );
             }
@@ -587,9 +605,11 @@ test('stringify()', function (t) {
     });
 
     t.test('throws if an invalid charset is specified', function (st) {
-        st['throws'](function () {
-            qs.stringify({ a: 'b' }, { charset: 'foobar' });
-        }, new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined'));
+        st['throws'](
+            function () { qs.stringify({ a: 'b' }, { charset: 'foobar' }); },
+            // @ts-ignore
+            new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined')
+        );
         st.end();
     });
 

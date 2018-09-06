@@ -174,6 +174,7 @@ test('parse()', function (t) {
     t.test('cannot access Object prototype', function (st) {
         qs.parse('constructor[prototype][bad]=bad');
         qs.parse('bad[constructor][prototype][bad]=bad');
+        // @ts-ignore
         st.equal(typeof Object.prototype.bad, 'undefined');
         st.end();
     });
@@ -258,13 +259,17 @@ test('parse()', function (t) {
     });
 
     t.test('should not throw when a native prototype has an enumerable property', function (st) {
+        // @ts-ignore
         Object.prototype.crash = '';
+        // @ts-ignore
         Array.prototype.crash = '';
         st.doesNotThrow(qs.parse.bind(null, 'a=b'));
         st.deepEqual(qs.parse('a=b'), { a: 'b' });
         st.doesNotThrow(qs.parse.bind(null, 'a[][b]=c'));
         st.deepEqual(qs.parse('a[][b]=c'), { a: [{ b: 'c' }] });
+        // @ts-ignore
         delete Object.prototype.crash;
+        // @ts-ignore
         delete Array.prototype.crash;
         st.end();
     });
@@ -280,6 +285,7 @@ test('parse()', function (t) {
     });
 
     t.test('does not use non-splittable objects as delimiters', function (st) {
+        // @ts-ignore
         st.deepEqual(qs.parse('a=b&c=d', { delimiter: true }), { a: 'b', c: 'd' });
         st.end();
     });
@@ -390,6 +396,7 @@ test('parse()', function (t) {
         var a = {};
         a.b = a;
 
+        /** @type {object} */
         var parsed;
 
         st.doesNotThrow(function () {
@@ -405,6 +412,7 @@ test('parse()', function (t) {
     });
 
     t.test('does not crash when parsing deep objects', function (st) {
+        /** @type {object} */
         var parsed;
         var str = 'foo';
 
@@ -547,7 +555,7 @@ test('parse()', function (t) {
                     result.push(parseInt(parts[1], 16));
                     parts = reg.exec(str);
                 }
-                return iconv.decode(SaferBuffer.from(result), 'shift_jis').toString();
+                return String(iconv.decode(SaferBuffer.from(result), 'shift_jis'));
             }
         }), { 県: '大阪府' });
         st.end();
@@ -558,15 +566,19 @@ test('parse()', function (t) {
         qs.parse('a', {
             decoder: function (str, defaultDecoder) {
                 st.equal(defaultDecoder, utils.decode);
+                return str;
             }
         });
         st.end();
     });
 
     t.test('throws error with wrong decoder', function (st) {
-        st['throws'](function () {
-            qs.parse({}, { decoder: 'string' });
-        }, new TypeError('Decoder has to be a function.'));
+        st['throws'](
+            // @ts-ignore
+            function () { qs.parse({}, { decoder: 'string' }); },
+            // @ts-ignore
+            new TypeError('Decoder has to be a function.')
+        );
         st.end();
     });
 
@@ -578,9 +590,12 @@ test('parse()', function (t) {
     });
 
     t.test('throws if an invalid charset is specified', function (st) {
-        st['throws'](function () {
-            qs.parse('a=b', { charset: 'foobar' });
-        }, new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined'));
+        st['throws'](
+            // @ts-ignore
+            function () { qs.parse('a=b', { charset: 'foobar' }); },
+            // @ts-ignore
+            new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined')
+        );
         st.end();
     });
 

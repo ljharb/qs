@@ -25,6 +25,8 @@
     "dependencies": {},
     "devDependencies": {
         "@ljharb/eslint-config": "^13.0.0",
+        "@types/node": "^10.9.4",
+        "@types/tape": "^4.2.32",
         "browserify": "^16.2.2",
         "covert": "^1.1.0",
         "editorconfig-tools": "^0.1.1",
@@ -35,13 +37,16 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.2",
         "safer-buffer": "^2.1.2",
-        "tape": "^4.9.1"
+        "tape": "^4.9.1",
+        "typescript": "^3.0.3"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
         "pretest": "npm run --silent readme && npm run --silent lint",
         "test": "npm run --silent coverage",
         "tests-only": "node test",
+        "posttest": "npm run tests:ts",
+        "tests:ts": "tsc -m commonjs --noEmit --esModuleInterop --allowJs --checkJs --strict --strictNullChecks --strictFunctionTypes --strictPropertyInitialization --noImplicitThis --alwaysStrict --noUnusedLocals --noImplicitReturns lib/* test/*",
         "readme": "evalmd README.md",
         "postlint": "editorconfig-tools check * lib/* test/*",
         "lint": "eslint lib/*.js test/*.js",
