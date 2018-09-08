@@ -244,7 +244,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should not throw when a native prototype has an enumerable property', { parallel: false }, function (st) {
+    t.test('should not throw when a native prototype has an enumerable property', function (st) {
         Object.prototype.crash = '';
         Array.prototype.crash = '';
         st.doesNotThrow(qs.parse.bind(null, 'a=b'));
