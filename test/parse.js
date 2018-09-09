@@ -347,6 +347,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses string with comma as array divider', function (st) {
+        st.deepEqual(qs.parse('foo=bar,tee', { comma: true }), { foo: ['bar', 'tee'] });
+        st.deepEqual(qs.parse('foo[bar]=coffee,tee', { comma: true }), { foo: { bar: ['coffee', 'tee'] } });
+        st.deepEqual(qs.parse('foo=', { comma: true }), { foo: '' });
+        st.deepEqual(qs.parse('foo', { comma: true }), { foo: '' });
+        st.deepEqual(qs.parse('foo', { comma: true, strictNullHandling: true }), { foo: null });
+        st.end();
+    });
+
     t.test('parses an object in dot notation', function (st) {
         var input = {
             'user.name': { 'pop[bob]': 3 },
