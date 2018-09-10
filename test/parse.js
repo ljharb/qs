@@ -624,17 +624,28 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('interprets numeric entities in iso-8859-1 when the interpretNumericEntities option is given', function (st) {
+    t.test('interprets numeric entities in iso-8859-1 when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1', interpretNumericEntities: true }), { foo: '☺' });
         st.end();
     });
 
-    t.test('does not interpret numeric entities in iso-8859-1 when the interpretNumericEntities option is not given', function (st) {
+    t.test('handles a custom decoder returning `null`, in the `iso-8859-1` charset, when `interpretNumericEntities`', function (st) {
+        st.deepEqual(qs.parse('foo=&bar=' + urlEncodedNumSmiley, {
+            charset: 'iso-8859-1',
+            decoder: function (str, defaultDecoder, charset) {
+                return str ? defaultDecoder(str, defaultDecoder, charset) : null;
+            },
+            interpretNumericEntities: true
+        }), { foo: null, bar: '☺' });
+        st.end();
+    });
+
+    t.test('does not interpret numeric entities in iso-8859-1 when `interpretNumericEntities` is absent', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1' }), { foo: '&#9786;' });
         st.end();
     });
 
-    t.test('does not interpret numeric entities when the charset is utf-8, even when the interpretNumericEntities option is given', function (st) {
+    t.test('does not interpret numeric entities when the charset is utf-8, even when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'utf-8', interpretNumericEntities: true }), { foo: '&#9786;' });
         st.end();
     });
