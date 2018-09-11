@@ -1,10 +1,11 @@
 'use strict';
 
-/** @typedef {import('../lib/stringify').Filter<*>} Filter */
-/** @typedef {import('../lib/stringify').Comparator} Comparator */
-/** @typedef {import('../lib/utils').Encoder} Encoder */
+/** @typedef {import('../lib/qs').Filter<*>} Filter */
+/** @typedef {import('../lib/qs').Encoder} Encoder */
+/** @typedef {import('../lib/qs').DateSerializer} DateSerializer */
 
 var test = require('tape');
+/** @type {import('../')} */
 var qs = require('../');
 var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
@@ -426,9 +427,9 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys', function (st) {
-        /** @type {Comparator} */
-        var sort = function (/** @type {string} */ a, /** @type {string} */ b) {
-            return a.localeCompare(b);
+        /** @type {import('../lib/qs').Comparator} */
+        var sort = function (a, b) {
+            return String(a).localeCompare(String(b));
         };
         st.equal(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: sort }), 'a=c&b=f&z=y');
         st.equal(qs.stringify({ a: 'c', z: { j: 'a', i: 'b' }, b: 'f' }, { sort: sort }), 'a=c&b=f&z%5Bi%5D=b&z%5Bj%5D=a');
@@ -436,9 +437,9 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
-        /** @type {Comparator} */
-        var sort = function (/** @type {string} */ a, /** @type {string} */ b) {
-            return a.localeCompare(b);
+        /** @type {import('../lib/qs').Comparator} */
+        var sort = function (a, b) {
+            return String(a).localeCompare(String(b));
         };
         st.equal(
             qs.stringify(
@@ -461,6 +462,7 @@ test('stringify()', function (t) {
 
     t.test('can stringify with custom encoding', function (st) {
         st.equal(qs.stringify({ 県: '大阪府', '': '' }, {
+            /** @type Encoder */
             encoder: function (val) {
                 var str = String(val);
                 if (str.length === 0) {
@@ -480,6 +482,7 @@ test('stringify()', function (t) {
     t.test('receives the default encoder as a second argument', function (st) {
         st.plan(2);
         qs.stringify({ a: 1 }, {
+            /** @type Encoder */
             encoder: function (str, defaultEncoder) {
                 st.equal(defaultEncoder, utils.encode);
                 return String(str);
@@ -536,7 +539,7 @@ test('stringify()', function (t) {
         st.equal(
             qs.stringify(
                 { a: specificDate },
-                { serializeDate: function (d) { return d.getTime() * 7; } }
+                { serializeDate: /** @type {DateSerializer} */ function (d) { return d.getTime() * 7; } }
             ),
             'a=42',
             'custom serializeDate function called'
@@ -606,6 +609,7 @@ test('stringify()', function (t) {
 
     t.test('throws if an invalid charset is specified', function (st) {
         st['throws'](
+            // @ts-ignore
             function () { qs.stringify({ a: 'b' }, { charset: 'foobar' }); },
             // @ts-ignore
             new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined')

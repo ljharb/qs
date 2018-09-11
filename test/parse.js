@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import('../lib/qs').Decoder} Decoder */
+
 var test = require('tape');
 var qs = require('../');
 var utils = require('../lib/utils');
@@ -547,6 +549,7 @@ test('parse()', function (t) {
 
     t.test('can parse with custom encoding', function (st) {
         st.deepEqual(qs.parse('%8c%a7=%91%e5%8d%e3%95%7b', {
+            /** @type {Decoder} */
             decoder: function (str) {
                 var reg = /%([0-9A-F]{2})/ig;
                 var result = [];
@@ -564,6 +567,7 @@ test('parse()', function (t) {
     t.test('receives the default decoder as a second argument', function (st) {
         st.plan(1);
         qs.parse('a', {
+            /** @type {Decoder} */
             decoder: function (str, defaultDecoder) {
                 st.equal(defaultDecoder, utils.decode);
                 return str;
@@ -647,7 +651,9 @@ test('parse()', function (t) {
     t.test('handles a custom decoder returning `null`, in the `iso-8859-1` charset, when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=&bar=' + urlEncodedNumSmiley, {
             charset: 'iso-8859-1',
+            /** @type {Decoder} */
             decoder: function (str, defaultDecoder, charset) {
+                // @ts-ignore
                 return str ? defaultDecoder(str, defaultDecoder, charset) : null;
             },
             interpretNumericEntities: true
