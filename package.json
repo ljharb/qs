@@ -46,7 +46,7 @@
         "test": "npm run --silent coverage",
         "tests-only": "node test",
         "posttest": "npm run tests:ts",
-        "tests:ts": "tsc -m commonjs --noEmit --esModuleInterop --allowJs --checkJs --strict --strictNullChecks --strictFunctionTypes --strictPropertyInitialization --noImplicitThis --alwaysStrict --noUnusedLocals --noImplicitReturns lib/* test/*",
+        "tests:ts": "tsc -p .",
         "readme": "evalmd README.md",
         "postlint": "editorconfig-tools check * lib/* test/*",
         "lint": "eslint lib/*.js test/*.js",
