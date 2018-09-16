@@ -625,5 +625,25 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('strictNullHandling works with custom filter', function (st) {
+        var filter = function (prefix, value) {
+            return value;
+        };
+
+        var options = { strictNullHandling: true, filter: filter };
+        st.equal(qs.stringify({ key: null }, options), 'key');
+        st.end();
+    });
+
+    t.test('strictNullHandling works with null serializeDate', function (st) {
+        var serializeDate = function () {
+            return null;
+        };
+        var options = { strictNullHandling: true, serializeDate: serializeDate };
+        var date = new Date();
+        st.equal(qs.stringify({ key: date }, options), 'key');
+        st.end();
+    });
+
     t.end();
 });
