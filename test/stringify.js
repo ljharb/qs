@@ -453,7 +453,7 @@ test('stringify()', function (t) {
     });
 
     t.test('throws error with wrong encoder', function (st) {
-        st.throws(function () {
+        st['throws'](function () {
             qs.stringify({}, { encoder: 'string' });
         }, new TypeError('Encoder has to be a function.'));
         st.end();
@@ -483,7 +483,7 @@ test('stringify()', function (t) {
         mutatedDate.toISOString = function () {
             throw new SyntaxError();
         };
-        st.throws(function () {
+        st['throws'](function () {
             mutatedDate.toISOString();
         }, SyntaxError);
         st.equal(
@@ -523,16 +523,36 @@ test('stringify()', function (t) {
     });
 
     t.test('Edge cases and unknown formats', function (st) {
-        ['UFO1234', false, 1234, null, {}, []].forEach(
-            function (format) {
-                st.throws(
-                    function () {
-                        qs.stringify({ a: 'b c' }, { format: format });
-                    },
-                    new TypeError('Unknown format option provided.')
-                );
-            }
-        );
+        ['UFO1234', false, 1234, null, {}, []].forEach(function (format) {
+            st['throws'](
+                function () {
+                    qs.stringify({ a: 'b c' }, { format: format });
+                },
+                new TypeError('Unknown format option provided.')
+            );
+        });
         st.end();
     });
+
+    t.test('strictNullHandling works with custom filter', function (st) {
+        var filter = function (prefix, value) {
+            return value;
+        };
+
+        var options = { strictNullHandling: true, filter: filter };
+        st.equal(qs.stringify({ key: null }, options), 'key');
+        st.end();
+    });
+
+    t.test('strictNullHandling works with null serializeDate', function (st) {
+        var serializeDate = function () {
+            return null;
+        };
+        var options = { strictNullHandling: true, serializeDate: serializeDate };
+        var date = new Date();
+        st.equal(qs.stringify({ key: date }, options), 'key');
+        st.end();
+    });
+
+    t.end();
 });
