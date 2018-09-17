@@ -18,6 +18,9 @@ test('merge()', function (t) {
     var nestedArrays = utils.merge({ foo: ['baz'] }, { foo: ['bar', 'xyzzy'] });
     t.deepEqual(nestedArrays, { foo: ['baz', 'bar', 'xyzzy'] });
 
+    var noOptionsNonObjectSource = utils.merge({ foo: 'baz' }, 'bar');
+    t.deepEqual(noOptionsNonObjectSource, { foo: 'baz', bar: true });
+
     t.end();
 });
 
