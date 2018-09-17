@@ -1,3 +1,19 @@
+## **6.6.0**
+- [New] Add support for iso-8859-1, utf8 "sentinel" and numeric entities (#268)
+- [New] move two-value combine to a `utils` function (#189)
+- [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
+- [Fix] when `parseArrays` is false, properly handle keys ending in `[]` (#260)
+- [Fix] `stringify`: do not crash in an obscure combo of `interpretNumericEntities`, a bad custom `decoder`, & `iso-8859-1`
+- [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
+- [refactor] `stringify`: Avoid arr = arr.concat(...), push to the existing instance (#269)
+- [Refactor] `parse`: only need to reassign the var once
+- [Refactor] `parse`/`stringify`: clean up `charset` options checking; fix defaults
+- [Refactor] add missing defaults
+- [Refactor] `parse`: one less `concat` call
+- [Refactor] `utils`: `compactQueue`: make it explicitly side-effecting
+- [Dev Deps] update `browserify, `eslint`, `@ljharb/eslint-config`, `iconv-lite`, `safe-publish-latest`, `tape`
+- [Tests] up to `node` `v10.10`, `v9.11`, `v8.12`, `v6.14`, `v4.9`; pin included builds to LTS
+
 ## **6.5.2**
 - [Fix] use `safer-buffer` instead of `Buffer` constructor
 - [Refactor] utils: `module.exports` one thing, instead of mutating `exports` (#230)
