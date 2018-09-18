@@ -1,18 +1,18 @@
 {
     "name": "qs",
     "description": "A querystring parser that supports nesting and arrays, with a depth limit",
-    "homepage": "https://github.com/ljharb/qs",
-    "version": "6.5.2",
+    "homepage": "https://github.com/joelove/qs",
+    "version": "0.1.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ljharb/qs.git"
+        "url": "https://github.com/joelove/qs.git"
     },
     "main": "lib/index.js",
     "contributors": [
         {
-            "name": "Jordan Harband",
-            "email": "ljharb@gmail.com",
-            "url": "http://ljharb.codes"
+            "name": "Joe Love",
+            "email": "qs@joelove.uk",
+            "url": "http://joelove.uk"
         }
     ],
     "keywords": [
@@ -22,31 +22,30 @@
     "engines": {
         "node": ">=0.6"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@babel/runtime": "7.0.0"
+    },
     "devDependencies": {
-        "@ljharb/eslint-config": "^13.0.0",
-        "browserify": "^16.2.2",
-        "covert": "^1.1.0",
-        "editorconfig-tools": "^0.1.1",
-        "eslint": "^5.6.0",
-        "evalmd": "^0.0.17",
+        "@babel/core": "7.0.0",
+        "@babel/plugin-proposal-class-properties": "7.0.0",
+        "@babel/plugin-proposal-export-default-from": "7.0.0",
+        "@babel/plugin-proposal-export-namespace-from": "7.0.0",
+        "@babel/plugin-proposal-object-rest-spread": "7.0.0",
+        "@babel/plugin-transform-runtime": "7.0.0",
+        "@babel/polyfill": "7.0.0",
+        "@babel/preset-env": "7.0.0",
+        "babel-eslint": "^9.0.0",
+        "babel-loader": "^8.0.2",
         "iconv-lite": "^0.4.24",
-        "mkdirp": "^0.5.1",
-        "qs-iconv": "^1.0.4",
-        "safe-publish-latest": "^1.1.2",
-        "safer-buffer": "^2.1.2",
-        "tape": "^4.9.1"
+        "tape": "^4.9.1",
+        "webpack": "^4.19.1",
+        "webpack-cli": "^3.1.0",
+        "webpack-notifier": "^1.6.0"
     },
     "scripts": {
-        "prepublish": "safe-publish-latest && npm run dist",
-        "pretest": "npm run --silent readme && npm run --silent lint",
-        "test": "npm run --silent coverage",
-        "tests-only": "node test",
-        "readme": "evalmd README.md",
-        "postlint": "editorconfig-tools check * lib/* test/*",
+        "test": "tape ./test",
         "lint": "eslint lib/*.js test/*.js",
-        "coverage": "covert test",
-        "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
+        "build": "webpack -p --progress --config ./webpack.config.js"
     },
     "license": "BSD-3-Clause"
 }
