@@ -54,16 +54,17 @@ export type UtilOptionsInternal = UtilOptions & {
 
 type Nullish = null | undefined;
 type NonNullishPrimitive = boolean | number | string | symbol;
-type ObjectCoercible = {} | NonNullishPrimitive;
-type ObjectIndexable = { [key: string]: Value } | NonNullishPrimitive;
+type ObjectCoercible = object | NonNullishPrimitive;
 type Primitive = Nullish | NonNullishPrimitive;
 type Concatable<T> = T | T[];
-type Value = Concatable<object | Primitive>;
+type Value = Concatable<unknown>;
+// TODO: type NonPrimitive = object; for use in JSDoc
+
 
 export type arrayToObject = (source: Value[], options?: UtilOptionsInternal) => object;
 export type assign = (target: object, source: object) => /* target */ object;
 type queueObject = {
-  [key: string]: Concatable<object>,
+  [key: string]: Concatable<{}>,
 };
 type queueItem = {
   obj: queueObject,
@@ -74,7 +75,7 @@ export type compact = (value: ObjectCoercible) => ObjectCoercible;
 export type isBuffer = (obj: (Buffer | Value) & ({ constructor?: typeof Buffer })) => boolean;
 export type isRegExp = (obj: RegExp | Value) => boolean;
 export type merge = (
-  target: ObjectIndexable[] | Object,
+  target: ObjectCoercible[] | object,
   source?: ObjectCoercible,
   options?: UtilOptionsInternal,
 ) => /* target | */ object;
@@ -99,7 +100,7 @@ export type StringifyOptionsInternal = UtilOptions & {
   encode: boolean,
   encoder: Encoder,
   encodeValuesOnly: boolean,
-  filter: Filter<object & ObjectIndexable> | Array<string | number>
+  filter: Filter<object & ObjectCoercible> | Array<string | number>
   format: Format,
   serializeDate: DateSerializer,
   skipNulls: boolean,
@@ -113,7 +114,7 @@ export type StringifyOptions = Partial<StringifyOptionsInternal> & {
   indices?: boolean,
 };
 
-export type Stringify = (object: ObjectIndexable | Nullish, opts?: StringifyOptions) => string;
+export type Stringify = (object: ObjectCoercible | Nullish, opts?: StringifyOptions) => string;
 
 export type StringifyInternal = (
   object: Value,
