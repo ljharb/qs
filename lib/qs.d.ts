@@ -57,7 +57,7 @@ type NonNullishPrimitive = boolean | number | string | symbol;
 type ObjectCoercible = object | NonNullishPrimitive;
 type Primitive = Nullish | NonNullishPrimitive;
 type Concatable<T> = T | T[];
-type Value = Concatable<unknown>;
+type Value = Concatable<object | Primitive>;
 // TODO: type NonPrimitive = object; for use in JSDoc
 
 
@@ -71,7 +71,7 @@ type queueItem = {
   prop: keyof queueObject,
 };
 export type compactQueue = (queue: queueItem[]) => void;
-export type compact = (value: ObjectCoercible) => ObjectCoercible;
+export type compact = (value: object) => object;
 export type isBuffer = (obj: (Buffer | Value) & ({ constructor?: typeof Buffer })) => boolean;
 export type isRegExp = (obj: RegExp | Value) => boolean;
 export type merge = (
@@ -96,11 +96,11 @@ export type DateSerializer = (date: Date) => string | number;
 export type StringifyOptionsInternal = UtilOptions & {
   arrayFormat: ArrayFormat,
   charsetSentinel: boolean,
-  delimiter: string | RegExp,
+  delimiter: string,
   encode: boolean,
   encoder: Encoder,
   encodeValuesOnly: boolean,
-  filter: Filter<object & ObjectCoercible> | Array<string | number>
+  filter: Filter<ObjectCoercible | Nullish> | Array<string | number>
   format: Format,
   serializeDate: DateSerializer,
   skipNulls: boolean,
@@ -118,17 +118,17 @@ export type Stringify = (object: ObjectCoercible | Nullish, opts?: StringifyOpti
 
 export type StringifyInternal = (
   object: Value,
-  prefix: string,
+  prefix: string | number,
   generateArrayPrefix: arrayPrefixGenerator,
-  strictNullHandling: boolean,
-  skipNulls: boolean,
-  encoder: Encoder,
-  filter: Filter<Value>,
-  sort: Comparator,
+  strictNullHandling: boolean | undefined,
+  skipNulls: boolean | undefined,
+  encoder: Encoder | null,
+  filter: Filter<Value> | Array<string | number> | undefined,
+  sort: Comparator | null,
   allowDots: boolean,
   serializeDate: DateSerializer,
   formatter: Formatter,
-  encodeValuesOnly: boolean,
+  encodeValuesOnly: boolean | undefined,
   charset: Charset,
 ) => Concatable<string | Buffer>;
 
@@ -142,7 +142,7 @@ export type ParseOptionsInternal = UtilOptions & {
   delimiter: string | RegExp,
   depth: number,
   ignoreQueryPrefix: boolean,
-  interpretNumericEntities: InterpretNumericEntities | undefined,
+  interpretNumericEntities: boolean | undefined,
   parameterLimit: number,
   parseArrays: boolean,
   strictNullHandling: boolean,

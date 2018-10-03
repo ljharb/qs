@@ -310,10 +310,12 @@ test('parse()', function (t) {
     });
 
     t.test('allows disabling array parsing', function (st) {
+        /** @type {*} */
         var indices = qs.parse('a[0]=b&a[1]=c', { parseArrays: false });
         st.deepEqual(indices, { a: { 0: 'b', 1: 'c' } });
         st.equal(Array.isArray(indices.a), false, 'parseArrays:false, indices case is not an array');
 
+        /** @type {*} */
         var emptyBrackets = qs.parse('a[]=b', { parseArrays: false });
         st.deepEqual(emptyBrackets, { a: { 0: 'b' } });
         st.equal(Array.isArray(emptyBrackets.a), false, 'parseArrays:false, empty brackets case is not an array');
@@ -446,6 +448,7 @@ test('parse()', function (t) {
         a.b = 'c';
 
         st.deepEqual(qs.parse(a), { b: 'c' });
+        /** @type {*} */
         var result = qs.parse({ a: a });
         st.equal('a' in result, true, 'result has "a" property');
         st.deepEqual(result.a, a);
