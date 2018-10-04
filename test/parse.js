@@ -1,6 +1,6 @@
 'use strict';
 
-/** @typedef {import('../lib/qs').Decoder} Decoder */
+/** @typedef {import('../lib/utils').Decoder} Decoder */
 
 var test = require('tape');
 var qs = require('../');

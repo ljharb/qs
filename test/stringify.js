@@ -1,8 +1,8 @@
 'use strict';
 
-/** @typedef {import('../lib/qs').Filter<*>} Filter */
-/** @typedef {import('../lib/qs').Encoder} Encoder */
-/** @typedef {import('../lib/qs').DateSerializer} DateSerializer */
+/** @typedef {import('../lib/stringify').Filter<*>} Filter */
+/** @typedef {import('../lib/stringify').Encoder} Encoder */
+/** @typedef {import('../lib/stringify').DateSerializer} DateSerializer */
 
 var test = require('tape');
 /** @type {import('../')} */
@@ -427,7 +427,7 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys', function (st) {
-        /** @type {import('../lib/qs').Comparator} */
+        /** @type {import('../lib/stringify').Comparator} */
         var sort = function (a, b) {
             return String(a).localeCompare(String(b));
         };
@@ -437,7 +437,7 @@ test('stringify()', function (t) {
     });
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
-        /** @type {import('../lib/qs').Comparator} */
+        /** @type {import('../lib/stringify').Comparator} */
         var sort = function (a, b) {
             return String(a).localeCompare(String(b));
         };
