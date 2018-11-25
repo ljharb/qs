@@ -25,10 +25,10 @@
     "dependencies": {},
     "devDependencies": {
         "@ljharb/eslint-config": "^13.0.0",
-        "browserify": "^16.2.2",
+        "browserify": "^16.2.3",
         "covert": "^1.1.0",
         "editorconfig-tools": "^0.1.1",
-        "eslint": "^5.6.0",
+        "eslint": "^5.9.0",
         "evalmd": "^0.0.17",
         "iconv-lite": "^0.4.24",
         "mkdirp": "^0.5.1",
