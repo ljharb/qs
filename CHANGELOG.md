@@ -11,7 +11,7 @@
 - [Refactor] add missing defaults
 - [Refactor] `parse`: one less `concat` call
 - [Refactor] `utils`: `compactQueue`: make it explicitly side-effecting
-- [Dev Deps] update `browserify, `eslint`, `@ljharb/eslint-config`, `iconv-lite`, `safe-publish-latest`, `tape`
+- [Dev Deps] update `browserify`, `eslint`, `@ljharb/eslint-config`, `iconv-lite`, `safe-publish-latest`, `tape`
 - [Tests] up to `node` `v10.10`, `v9.11`, `v8.12`, `v6.14`, `v4.9`; pin included builds to LTS
 
 ## **6.5.2**
