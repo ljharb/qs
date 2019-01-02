@@ -207,7 +207,7 @@ In addition, you can transform parsed keys after decoding with `mapKeys`:
 ```javascript
 assert.deepEqual(
     qs.parse('aField=7', { mapKeys: function (k) { return k === 'aField' ? 'a' : k; } }),
-    { a: 7 }
+    { a: '7' }
 );
 ```
 

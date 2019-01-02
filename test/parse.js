@@ -157,7 +157,7 @@ test('parse()', function (t) {
     t.test('mapKeys option', function (st) {
         st.deepEqual(
             qs.parse('a=7'),
-            { a: 7 },
+            { a: '7' },
             'default key is \'a\''
         );
         st.deepEqual(
@@ -165,7 +165,7 @@ test('parse()', function (t) {
                 'aField=7', // eslint-disable-line camelcase
                 { mapKeys: function (k) { return k === 'aField' ? 'a' : k; } }
             ),
-            { a: 7 },
+            { a: '7' },
             'custom mapKeys function called'
         );
     });
