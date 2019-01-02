@@ -154,6 +154,22 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('mapKeys option', function (st) {
+        st.deepEqual(
+            qs.parse('a=7'),
+            { a: 7 },
+            'default key is \'a\''
+        );
+        st.deepEqual(
+            qs.parse(
+                'aField=7', // eslint-disable-line camelcase
+                { mapKeys: function (k) { return k === 'aField' ? 'a' : k; } }
+            ),
+            { a: 7 },
+            'custom mapKeys function called'
+        );
+    });
+
     t.test('correctly prunes undefined values when converting an array to an object', function (st) {
         st.deepEqual(qs.parse('a[2]=b&a[99999999]=c'), { a: { 2: 'b', 99999999: 'c' } });
         st.end();

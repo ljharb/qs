@@ -493,6 +493,22 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('mapKeys option', function (st) {
+        st.equal(
+            qs.stringify({ a: 7 }),
+            'a=7',
+            'default key is \'a\''
+        );
+        st.equal(
+            qs.stringify(
+                { a__rename: 7 }, // eslint-disable-line camelcase
+                { mapKeys: function (k) { return k === 'a__rename' ? 'a' : k; } }
+            ),
+            'a=7',
+            'custom mapKeys function called'
+        );
+    });
+
     t.test('serializeDate option', function (st) {
         var date = new Date();
         st.equal(

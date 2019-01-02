@@ -202,6 +202,15 @@ assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
 It also works when the charset has been detected in `charsetSentinel`
 mode.
 
+In addition, you can transform parsed keys after decoding with `mapKeys`:
+
+```javascript
+assert.deepEqual(
+    qs.parse('aField=7', { mapKeys: function (k) { return k === 'aField' ? 'a' : k; } }),
+    { a: 7 }
+);
+```
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
@@ -407,6 +416,15 @@ assert.equal(
     qs.stringify({ a: date }, { serializeDate: function (d) { return d.getTime(); } }),
     'a=7'
 );
+```
+
+In addition, you can transform keys entirely without writing a custom encoder using `mapKeys`:
+
+```javascript
+assert.equal(
+    qs.stringify({ a__rename: 7 }, { mapKeys: function(k) { return k === 'a__rename' ? 'a' : k; } }),
+    'a=7'
+)
 ```
 
 You may use the `sort` option to affect the order of parameter keys:
