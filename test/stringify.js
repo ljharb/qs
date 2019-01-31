@@ -39,7 +39,6 @@ test('stringify()', function (t) {
         st.end();
     });
 
-
     t.test('omits nested nulls when asked', function (st) {
         st.equal(qs.stringify({ a: { b: 'c', d: null } }, { skipNulls: true }), 'a%5Bb%5D=c');
         st.end();
@@ -258,20 +257,20 @@ test('stringify()', function (t) {
 
     t.test('can sort the keys at depth 3 or more too', function (st) {
         var sort = function (a, b) { return a.localeCompare(b); };
-        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: sort, encode: false }), 'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb');
-        st.equal(qs.stringify({ a: 'a', z: { zj: {zjb: 'zjb', zja: 'zja'}, zi: {zib: 'zib', zia: 'zia'} }, b: 'b' }, { sort: null, encode: false }), 'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b');
+        st.equal(qs.stringify({ a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' }, { sort: sort, encode: false }), 'a=a&b=b&z[zi][zia]=zia&z[zi][zib]=zib&z[zj][zja]=zja&z[zj][zjb]=zjb');
+        st.equal(qs.stringify({ a: 'a', z: { zj: { zjb: 'zjb', zja: 'zja' }, zi: { zib: 'zib', zia: 'zia' } }, b: 'b' }, { sort: null, encode: false }), 'a=a&z[zj][zjb]=zjb&z[zj][zja]=zja&z[zi][zib]=zib&z[zi][zia]=zia&b=b');
         st.end();
     });
 
     t.test('can stringify with custom encoding', function (st) {
-        st.equal(qs.stringify({ 県: '大阪府', '': ''}, {
+        st.equal(qs.stringify({ 県: '大阪府', '': '' }, {
             encoder: function (str) {
                 if (str.length === 0) {
                     return '';
                 }
                 var buf = iconv.encode(str, 'shiftjis');
                 var result = [];
-                for (var i=0; i < buf.length; ++i) {
+                for (var i = 0; i < buf.length; ++i) {
                     result.push(buf.readUInt8(i).toString(16));
                 }
                 return '%' + result.join('%');
@@ -281,7 +280,7 @@ test('stringify()', function (t) {
     });
 
     t.test('throws error with wrong encoder', function (st) {
-        st.throws(function () {
+        st['throws'](function () {
             qs.stringify({}, {
                 encoder: 'string'
             });
