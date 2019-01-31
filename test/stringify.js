@@ -19,6 +19,15 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies falsy values', function (st) {
+        st.equal(qs.stringify(undefined), '');
+        st.equal(qs.stringify(null), '');
+        st.equal(qs.stringify(null, { strictNullHandling: true }), '');
+        st.equal(qs.stringify(false), '');
+        st.equal(qs.stringify(0), '');
+        st.end();
+    });
+
     t.test('adds query prefix', function (st) {
         st.equal(qs.stringify({ a: 'b' }, { addQueryPrefix: true }), '?a=b');
         st.end();
@@ -26,6 +35,13 @@ test('stringify()', function (t) {
 
     t.test('with query prefix, outputs blank string given an empty object', function (st) {
         st.equal(qs.stringify({}, { addQueryPrefix: true }), '');
+        st.end();
+    });
+
+    t.test('stringifies nested falsy values', function (st) {
+        st.equal(qs.stringify({ a: { b: { c: null } } }), 'a%5Bb%5D%5Bc%5D=');
+        st.equal(qs.stringify({ a: { b: { c: null } } }, { strictNullHandling: true }), 'a%5Bb%5D%5Bc%5D');
+        st.equal(qs.stringify({ a: { b: { c: false } } }), 'a%5Bb%5D%5Bc%5D=false');
         st.end();
     });
 
