@@ -4,6 +4,8 @@ var test = require('tape');
 var utils = require('../lib/utils');
 
 test('merge()', function (t) {
+    t.deepEqual(utils.merge(null, true), [null, true], 'merges true into null');
+
     t.deepEqual(utils.merge({ a: 'b' }, { a: 'c' }), { a: ['b', 'c'] }, 'merges two objects with the same key');
 
     var oneMerged = utils.merge({ foo: 'bar' }, { foo: { first: '123' } });
