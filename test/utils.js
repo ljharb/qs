@@ -39,10 +39,10 @@ test('merge()', function (t) {
             });
             utils.merge(observed, [null]);
             st.equal(setCount, 0);
-            st.equal(getCount, 2);
+            st.equal(getCount, 1);
             observed[0] = observed[0]; // eslint-disable-line no-self-assign
             st.equal(setCount, 1);
-            st.equal(getCount, 3);
+            st.equal(getCount, 2);
             st.end();
         }
     );
