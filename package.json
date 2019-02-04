@@ -46,7 +46,7 @@
         "postlint": "editorconfig-tools check * lib/* test/*",
         "lint": "eslint lib/*.js test/*.js",
         "coverage": "covert test",
-        "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
+        "dist": "mkdirp dist && browserify --standalone qs lib/index.js > dist/qs.js"
     },
     "license": "BSD-3-Clause"
 }
