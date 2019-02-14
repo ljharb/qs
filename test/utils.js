@@ -1,6 +1,9 @@
 'use strict';
 
 var test = require('tape');
+var inspect = require('object-inspect');
+var SaferBuffer = require('safer-buffer').Buffer;
+var forEach = require('for-each');
 var utils = require('../lib/utils');
 
 test('merge()', function (t) {
@@ -113,5 +116,21 @@ test('combine()', function (t) {
         st.end();
     });
 
+    t.end();
+});
+
+test('isBuffer()', function (t) {
+    forEach([null, undefined, true, false, '', 'abc', 42, 0, NaN, {}, [], function () {}, /a/g], function (x) {
+        t.equal(utils.isBuffer(x), false, inspect(x) + ' is not a buffer');
+    });
+
+    var fakeBuffer = { constructor: Buffer };
+    t.equal(utils.isBuffer(fakeBuffer), false, 'fake buffer is not a buffer');
+
+    var saferBuffer = SaferBuffer.from('abc');
+    t.equal(utils.isBuffer(saferBuffer), true, 'SaferBuffer instance is a buffer');
+
+    var buffer = Buffer.from('abc');
+    t.equal(utils.isBuffer(buffer), true, 'real Buffer instance is a buffer');
     t.end();
 });
