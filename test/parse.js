@@ -564,7 +564,7 @@ test('parse()', function (t) {
                     result.push(parseInt(parts[1], 16));
                     parts = reg.exec(str);
                 }
-                return iconv.decode(SaferBuffer.from(result), 'shift_jis').toString();
+                return String(iconv.decode(SaferBuffer.from(result), 'shift_jis'));
             }
         }), { 県: '大阪府' });
         st.end();
