@@ -1,3 +1,17 @@
+## **6.7.0**
+- [New] `stringify`/`parse`: add `comma` as an `arrayFormat` option (#276, #219)
+- [Fix] correctly parse nested arrays (#212)
+- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source, also with an array source
+- [Robustness] `stringify`: cache `Object.prototype.hasOwnProperty`
+- [Refactor] `utils`: `isBuffer`: small tweak; add tests
+- [Refactor] use cached `Array.isArray`
+- [Refactor] `parse`/`stringify`: make a function to normalize the options
+- [Refactor] `utils`: reduce observable [[Get]]s
+- [Refactor] `stringify`/`utils`: cache `Array.isArray`
+- [Tests] always use `String(x)` over `x.toString()`
+- [Tests] fix Buffer tests to work in node < 4.5 and node < 5.10
+- [Tests] temporarily allow coverage to fail
+
 ## **6.6.0**
 - [New] Add support for iso-8859-1, utf8 "sentinel" and numeric entities (#268)
 - [New] move two-value combine to a `utils` function (#189)
