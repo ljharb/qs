@@ -520,6 +520,12 @@ test('stringify()', function (t) {
                 return String.fromCharCode(buffer.readUInt8(0) + 97);
             }
         }), 'a=b');
+
+        st.equal(qs.stringify({ a: SaferBuffer.from('a b') }, {
+            encoder: function (buffer) {
+                return buffer;
+            }
+        }), 'a=a b');
         st.end();
     });
 
@@ -560,17 +566,20 @@ test('stringify()', function (t) {
     t.test('RFC 1738 spaces serialization', function (st) {
         st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC1738 }), 'a=b+c');
         st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC1738 }), 'a+b=c+d');
+        st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.RFC1738 }), 'a+b=a+b');
         st.end();
     });
 
     t.test('RFC 3986 spaces serialization', function (st) {
         st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC3986 }), 'a=b%20c');
         st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
+        st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.RFC3986 }), 'a%20b=a%20b');
         st.end();
     });
 
     t.test('Backward compatibility to RFC 3986', function (st) {
         st.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
+        st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }), 'a%20b=a%20b');
         st.end();
     });
 
