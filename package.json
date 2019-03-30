@@ -35,6 +35,7 @@
         "eslint": "^5.15.3",
         "evalmd": "^0.0.17",
         "for-each": "^0.3.3",
+        "has-symbols": "^1.0.0",
         "iconv-lite": "^0.4.24",
         "mkdirp": "^0.5.1",
         "object-inspect": "^1.6.0",

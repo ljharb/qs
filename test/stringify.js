@@ -1,10 +1,14 @@
 'use strict';
 
+/* globals Symbol, BigInt */
+
 var test = require('tape');
 var qs = require('../');
 var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
+var hasSymbols = require('has-symbols');
+var hasBigInt = typeof BigInt === 'function';
 
 test('stringify()', function (t) {
     t.test('stringifies a querystring object', function (st) {
@@ -25,6 +29,39 @@ test('stringify()', function (t) {
         st.equal(qs.stringify(null, { strictNullHandling: true }), '');
         st.equal(qs.stringify(false), '');
         st.equal(qs.stringify(0), '');
+        st.end();
+    });
+
+    t.test('stringifies symbols', { skip: !hasSymbols() }, function (st) {
+        st.equal(qs.stringify(Symbol.iterator), '');
+        st.equal(qs.stringify([Symbol.iterator]), '0=Symbol%28Symbol.iterator%29');
+        st.equal(qs.stringify({ a: Symbol.iterator }), 'a=Symbol%28Symbol.iterator%29');
+        st.equal(
+            qs.stringify({ a: [Symbol.iterator] }, { encodeValuesOnly: true, arrayFormat: 'brackets' }),
+            'a[]=Symbol%28Symbol.iterator%29'
+        );
+        st.end();
+    });
+
+    t.test('stringifies bigints', { skip: !hasBigInt }, function (st) {
+        var three = BigInt(3); // eslint-disable-line new-cap
+        var encodeWithN = function (value, defaultEncoder, charset) {
+            var result = defaultEncoder(value, defaultEncoder, charset);
+            return typeof value === 'bigint' ? result + 'n' : result; // eslint-disable-line valid-typeof
+        };
+        st.equal(qs.stringify(three), '');
+        st.equal(qs.stringify([three]), '0=3');
+        st.equal(qs.stringify([three], { encoder: encodeWithN }), '0=3n');
+        st.equal(qs.stringify({ a: three }), 'a=3');
+        st.equal(qs.stringify({ a: three }, { encoder: encodeWithN }), 'a=3n');
+        st.equal(
+            qs.stringify({ a: [three] }, { encodeValuesOnly: true, arrayFormat: 'brackets' }),
+            'a[]=3'
+        );
+        st.equal(
+            qs.stringify({ a: [three] }, { encodeValuesOnly: true, encoder: encodeWithN, arrayFormat: 'brackets' }),
+            'a[]=3n'
+        );
         st.end();
     });
 
