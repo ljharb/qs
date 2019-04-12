@@ -515,6 +515,13 @@ var nullsSkipped = qs.stringify({ a: 'b', c: null}, { skipNulls: true });
 assert.equal(nullsSkipped, 'a=b');
 ```
 
+To completely skip rendering key with `blank` values ('', '  '), use the `skipBlanks` flag:
+
+```javascript
+var blanksSkipped = qs.stringify({ a: 'b', c: '', d: '  '}, { skipBlanks: true });
+assert.equal(blanksSkipped, 'a=b');
+```
+
 If you're communicating with legacy systems, you can switch to `iso-8859-1`
 using the `charset` option:
 
