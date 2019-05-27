@@ -789,5 +789,15 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies sparse arrays', function (st) {
+        /* eslint no-sparse-arrays: 0 */
+        st.equal(qs.stringify({ a: [, '2', , , '1'] }, { encodeValuesOnly: true }), 'a[1]=2&a[4]=1');
+        st.equal(qs.stringify({ a: [, { b: [, , { c: '1' }] }] }, { encodeValuesOnly: true }), 'a[1][b][2][c]=1');
+        st.equal(qs.stringify({ a: [, [, , [, , , { c: '1' }]]] }, { encodeValuesOnly: true }), 'a[1][2][3][c]=1');
+        st.equal(qs.stringify({ a: [, [, , [, , , { c: [, '1'] }]]] }, { encodeValuesOnly: true }), 'a[1][2][3][c][1]=1');
+
+        st.end();
+    });
+
     t.end();
 });

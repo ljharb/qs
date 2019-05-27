@@ -227,6 +227,13 @@ var noSparse = qs.parse('a[1]=b&a[15]=c');
 assert.deepEqual(noSparse, { a: ['b', 'c'] });
 ```
 
+You may also use `allowSparse` option to parse sparse arrays:
+
+```javascript
+var sparseArray = qs.parse('a[1]=2&a[3]=5', { allowSparse: true });
+assert.deepEqual(sparseArray, { a: [, '2', , '5'] });
+```
+
 Note that an empty string is also a value, and will be preserved:
 
 ```javascript

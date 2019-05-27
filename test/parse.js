@@ -269,6 +269,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses sparse arrays', function (st) {
+        /* eslint no-sparse-arrays: 0 */
+        st.deepEqual(qs.parse('a[4]=1&a[1]=2', { allowSparse: true }), { a: [, '2', , , '1'] });
+        st.deepEqual(qs.parse('a[1][b][2][c]=1', { allowSparse: true }), { a: [, { b: [, , { c: '1' }] }] });
+        st.deepEqual(qs.parse('a[1][2][3][c]=1', { allowSparse: true }), { a: [, [, , [, , , { c: '1' }]]] });
+        st.deepEqual(qs.parse('a[1][2][3][c][1]=1', { allowSparse: true }), { a: [, [, , [, , , { c: [, '1'] }]]] });
+        st.end();
+    });
+
     t.test('parses semi-parsed strings', function (st) {
         st.deepEqual(qs.parse({ 'a[b]': 'c' }), { a: { b: 'c' } });
         st.deepEqual(qs.parse({ 'a[b]': 'c', 'a[d]': 'e' }), { a: { b: 'c', d: 'e' } });
