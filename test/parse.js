@@ -361,6 +361,7 @@ test('parse()', function (t) {
 
     t.test('parses string with comma as array divider', function (st) {
         st.deepEqual(qs.parse('foo=bar,tee', { comma: true }), { foo: ['bar', 'tee'] });
+        st.deepEqual(qs.parse('foo[]=bar,tee', { comma: true }), { foo: ['bar', 'tee'] });
         st.deepEqual(qs.parse('foo[bar]=coffee,tee', { comma: true }), { foo: { bar: ['coffee', 'tee'] } });
         st.deepEqual(qs.parse('foo=', { comma: true }), { foo: '' });
         st.deepEqual(qs.parse('foo', { comma: true }), { foo: '' });

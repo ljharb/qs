@@ -105,7 +105,7 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
-            'a=b%2Cc%2Cd',
+            'a%5B%5D=b%2Cc%2Cd',
             'comma => comma'
         );
         st.equal(
@@ -134,7 +134,7 @@ test('stringify()', function (t) {
     t.test('stringifies a nested array value', function (st) {
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'indices' }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'brackets' }), 'a%5Bb%5D%5B%5D=c&a%5Bb%5D%5B%5D=d');
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c%2Cd'); // a[b]=c,d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D%5B%5D=c%2Cd'); // a[b][]=c,d
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.end();
     });
@@ -161,7 +161,7 @@ test('stringify()', function (t) {
                 { a: { b: ['c', 'd'] } },
                 { allowDots: true, encode: false, arrayFormat: 'comma' }
             ),
-            'a.b=c,d',
+            'a.b[]=c,d',
             'comma: stringifies with dots + comma'
         );
         st.equal(
@@ -716,6 +716,16 @@ test('stringify()', function (t) {
         var options = { strictNullHandling: true, serializeDate: serializeDate };
         var date = new Date();
         st.equal(qs.stringify({ key: date }, options), 'key');
+        st.end();
+    });
+
+    t.test('stringifies a comma array value with single element', function (st) {
+        st.equal(
+            qs.stringify({ a: ['b'] }, { arrayFormat: 'comma' }),
+            'a%5B%5D=b',
+            'comma => comma'
+        );
+
         st.end();
     });
 
