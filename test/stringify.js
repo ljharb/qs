@@ -336,6 +336,27 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies an empty array in different arrayFormat', function (st) {
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false }), 'b[0]=');
+        // arrayFormat default
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'indices' }), 'b[0]=');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'brackets' }), 'b[]=');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'repeat' }), 'b=');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'comma' }), 'b=');
+        // with strictNullHandling
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'indices', strictNullHandling: true }), 'b[0]');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'brackets', strictNullHandling: true }), 'b[]');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'repeat', strictNullHandling: true }), 'b');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'comma', strictNullHandling: true }), 'b');
+        // with skipNulls
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'indices', skipNulls: true }), '');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'brackets', skipNulls: true }), '');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'repeat', skipNulls: true }), '');
+        st.equal(qs.stringify({ a: [], b: [null] }, { encode: false, arrayFormat: 'comma', skipNulls: true }), '');
+
+        st.end();
+    });
+
     t.test('stringifies a null object', { skip: !Object.create }, function (st) {
         var obj = Object.create(null);
         obj.a = 'b';
