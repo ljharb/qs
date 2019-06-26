@@ -553,6 +553,10 @@ assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 ```
 
+## Security
+
+Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
+
 [1]: https://npmjs.org/package/qs
 [2]: http://versionbadg.es/ljharb/qs.svg
 [3]: https://api.travis-ci.org/ljharb/qs.svg
