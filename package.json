@@ -29,10 +29,10 @@
     "dependencies": {},
     "devDependencies": {
         "@ljharb/eslint-config": "^13.1.1",
-        "browserify": "^16.2.3",
+        "browserify": "^16.3.0",
         "covert": "^1.1.1",
         "editorconfig-tools": "^0.1.1",
-        "eslint": "^5.15.3",
+        "eslint": "^5.16.0",
         "evalmd": "^0.0.17",
         "for-each": "^0.3.3",
         "iconv-lite": "^0.4.24",
@@ -41,7 +41,7 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.2",
         "safer-buffer": "^2.1.2",
-        "tape": "^4.10.1"
+        "tape": "^4.11.0"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
