@@ -31,7 +31,7 @@
         "@ljharb/eslint-config": "^13.1.1",
         "browserify": "^16.3.0",
         "covert": "^1.1.1",
-        "editorconfig-tools": "^0.1.1",
+        "eclint": "^2.8.1",
         "eslint": "^5.16.0",
         "evalmd": "^0.0.17",
         "for-each": "^0.3.3",
@@ -50,7 +50,7 @@
         "test": "npm run --silent coverage",
         "tests-only": "node test",
         "readme": "evalmd README.md",
-        "postlint": "editorconfig-tools check * lib/* test/*",
+        "postlint": "eclint check * lib/* test/*",
         "lint": "eslint lib/*.js test/*.js",
         "coverage": "covert test",
         "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
