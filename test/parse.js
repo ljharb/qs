@@ -52,25 +52,13 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('current behavior with depth = 0', function (st) {
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: 0 }), { a: { '[0]': 'b', '[1]': 'c' } });
-        st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: 0 }), { a: { '[0][0]': 'b', '[0][1]': 'c', '[1]': 'd' }, e: '2' });
-        st.end();
-    });
-
-    t.test('uses original key when depth = 0', { skip: true, todo: true }, function (st) {
+    t.test('uses original key when depth = 0', function (st) {
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: 0 }), { 'a[0]': 'b', 'a[1]': 'c' });
         st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: 0 }), { 'a[0][0]': 'b', 'a[0][1]': 'c', 'a[1]': 'd', e: '2' });
         st.end();
     });
 
-    t.test('current behavior with depth = false', function (st) {
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: false }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: false }), { a: [['b', 'c'], 'd'], e: '2' });
-        st.end();
-    });
-
-    t.test('uses original key when depth = false', { skip: true, todo: true }, function (st) {
+    t.test('uses original key when depth = false', function (st) {
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: false }), { 'a[0]': 'b', 'a[1]': 'c' });
         st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: false }), { 'a[0][0]': 'b', 'a[0][1]': 'c', 'a[1]': 'd', e: '2' });
         st.end();
