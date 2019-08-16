@@ -1,3 +1,17 @@
+## **6.8.0**
+- [New] add `depth=false` to preserve the original key; [Fix] `depth=0` should preserve the original key (#326)
+- [New] [Fix] stringify symbols and bigints
+- [Fix] ensure node 0.12 can stringify Symbols
+- [Fix] fix for an impossible situation: when the formatter is called with a non-string value
+- [Refactor] `formats`: tiny bit of cleanup.
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `browserify`, `safe-publish-latest`, `iconv-lite`, `tape`
+- [Tests] add tests for `depth=0` and `depth=false` behavior, both current and intuitive/intended (#326)
+- [Tests] use `eclint` instead of `editorconfig-tools`
+- [docs] readme: add security note
+- [meta] add github sponsorship
+- [meta] add FUNDING.yml
+- [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+
 ## **6.7.0**
 - [New] `stringify`/`parse`: add `comma` as an `arrayFormat` option (#276, #219)
 - [Fix] correctly parse nested arrays (#212)
