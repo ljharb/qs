@@ -1,7 +1,5 @@
 'use strict';
 
-/* globals Symbol, BigInt */
-
 var test = require('tape');
 var qs = require('../');
 var utils = require('../lib/utils');
