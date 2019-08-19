@@ -275,10 +275,15 @@ assert.deepEqual(arraysOfObjects, { a: [{ b: 'c' }] });
 
 Some people use comma to join array, **qs** can parse it:
 ```javascript
+var arraysOfObjects = qs.parse('a[]=b,c', { comma: true })
+assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
+```
+or
+```javascript
 var arraysOfObjects = qs.parse('a=b,c', { comma: true })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
-(_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
+(_this cannot convert nested objects, such as `a[]={b:1},{c:d}`_)
 
 ### Stringifying
 
@@ -356,7 +361,7 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'brackets' })
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
 // 'a=b&a=c'
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
-// 'a=b,c'
+// 'a[]=b,c'
 ```
 
 When objects are stringified, by default they use bracket notation:
