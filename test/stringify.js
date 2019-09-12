@@ -625,5 +625,18 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allows for encoding keys and values differently', function (st) {
+        var encoder = function (str, defaultEncoder, charset, type) { // eslint-disable-line consistent-return
+            if (type === 'key') {
+                return defaultEncoder(str, defaultEncoder, charset, type).toLowerCase();
+            } else if (type === 'value') {
+                return defaultEncoder(str, defaultEncoder, charset, type).toUpperCase();
+            }
+        };
+
+        st.deepEqual(qs.stringify({ KeY: 'vAlUe' }, { encoder: encoder }), 'key=VALUE');
+        st.end();
+    });
+
     t.end();
 });
