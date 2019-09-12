@@ -11,7 +11,8 @@
         "no-buffer-constructor": 0,
         "no-extend-native": 0,
         "no-magic-numbers": 0,
+        "no-throw-literal": 0,
         "object-curly-newline": 0,
-        "sort-keys": 0
+        "sort-keys": 0,
     }
 }

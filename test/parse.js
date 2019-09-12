@@ -686,5 +686,20 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('allows for decoding keys and values differently', function (st) {
+        var decoder = function (str, defaultDecoder, charset, type) {
+            if (type === 'key') {
+                return defaultDecoder(str, defaultDecoder, charset, type).toLowerCase();
+            }
+            if (type === 'value') {
+                return defaultDecoder(str, defaultDecoder, charset, type).toUpperCase();
+            }
+            throw 'this should never happen! type: ' + type;
+        };
+
+        st.deepEqual(qs.parse('KeY=vAlUe', { decoder: decoder }), { key: 'VALUE' });
+        st.end();
+    });
+
     t.end();
 });

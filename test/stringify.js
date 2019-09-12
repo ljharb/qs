@@ -719,5 +719,20 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allows for encoding keys and values differently', function (st) {
+        var encoder = function (str, defaultEncoder, charset, type) {
+            if (type === 'key') {
+                return defaultEncoder(str, defaultEncoder, charset, type).toLowerCase();
+            }
+            if (type === 'value') {
+                return defaultEncoder(str, defaultEncoder, charset, type).toUpperCase();
+            }
+            throw 'this should never happen! type: ' + type;
+        };
+
+        st.deepEqual(qs.stringify({ KeY: 'vAlUe' }, { encoder: encoder }), 'key=VALUE');
+        st.end();
+    });
+
     t.end();
 });

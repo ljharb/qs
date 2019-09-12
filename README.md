@@ -330,6 +330,30 @@ var decoded = qs.parse('x=z', { decoder: function (str) {
 }})
 ```
 
+You can encode keys and values using different logic by using the type argument provided to the encoder:
+
+```javascript
+var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, defaultEncoder, charset, type) {
+    if (type === 'key') {
+        return // Encoded key
+    } else if (type === 'value') {
+        return // Encoded value
+    }
+}})
+```
+
+The type argument is also provided to the decoder:
+
+```javascript
+var decoded = qs.parse('x=z', { decoder: function (str, defaultEncoder, charset, type) {
+    if (type === 'key') {
+        return // Decoded key
+    } else if (type === 'value') {
+        return // Decoded value
+    }
+}})
+```
+
 Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
 
 When arrays are stringified, by default they are given explicit indices:
