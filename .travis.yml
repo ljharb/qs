@@ -36,6 +36,8 @@ matrix:
   include:
     - node_js: "lts/*"
       env: PRETEST=true
+    - node_js: "lts/*"
+      env: POSTTEST=true
     - node_js: "4"
       env: COVERAGE=true
     - node_js: "12.9"

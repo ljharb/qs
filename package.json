@@ -49,6 +49,7 @@
         "pretest": "npm run --silent readme && npm run --silent lint",
         "test": "npm run --silent coverage",
         "tests-only": "node test",
+        "posttest": "npx aud",
         "readme": "evalmd README.md",
         "postlint": "eclint check * lib/* test/*",
         "lint": "eslint lib/*.js test/*.js",
