@@ -32,7 +32,7 @@
         "browserify": "^16.5.0",
         "covert": "^1.1.1",
         "eclint": "^2.8.1",
-        "eslint": "^6.3.0",
+        "eslint": "^6.4.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.0",
