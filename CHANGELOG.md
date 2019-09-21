@@ -1,3 +1,11 @@
+## **6.9.0**
+- [New] `parse`/`stringify`: Pass extra key/value argument to `decoder` (#333)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `evalmd`
+- [Tests] `parse`: add passing `arrayFormat` tests
+- [Tests] add `posttest` using `npx aud` to run `npm audit` without a lockfile
+- [Tests] up to `node` `v12.10`, `v11.15`, `v10.16`, `v8.16`
+- [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
+
 ## **6.8.0**
 - [New] add `depth=false` to preserve the original key; [Fix] `depth=0` should preserve the original key (#326)
 - [New] [Fix] stringify symbols and bigints
