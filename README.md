@@ -202,6 +202,30 @@ assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
 It also works when the charset has been detected in `charsetSentinel`
 mode.
 
+### Overriding how values are parsed
+
+**qs** can take an optional `valueParser` function as an option - this will parse the value before it is assigned
+
+signature: Function that takes key and val, and returns the desired parsed value. in this example, Key would be `a[]` and value would be `b,c`. the return value is an array of `['b', 'c']`
+
+```javascript
+var parseCommaDelimitedString = function (key, val) {
+    var brackets = /(\[[^[\]]*])/;
+    var returnVal = val;
+
+    if (val !== null
+        && brackets.test(key)
+        && typeof val === 'string'
+        && val.indexOf(',') !== -1)
+    {
+        returnVal = val.split(',');
+    }
+    return returnVal;
+};
+var customParsedObject = qs.parse('a[]=b,c', { valueParser: parseCommaDelimitedString })
+assert.deepEqual(customParsedObject, { a: ['b', 'c'] })
+```
+
 ### Parsing Arrays
 
 **qs** can also parse arrays using a similar `[]` notation:
