@@ -400,6 +400,20 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('use number decoder, parses string that has one number with comma option enabled', function (st) {
+        var decoder = function (str, defaultDecoder, charset, type) {
+            if (!isNaN(Number(str))) {
+                return parseFloat(str);
+            }
+            return defaultDecoder(str, defaultDecoder, charset, type);
+        };
+
+        st.deepEqual(qs.parse('foo=1', { comma: true, decoder: decoder }), { foo: 1 });
+        st.deepEqual(qs.parse('foo=0', { comma: true, decoder: decoder }), { foo: 0 });
+
+        st.end();
+    });
+
     t.test('parses an object in dot notation', function (st) {
         var input = {
             'user.name': { 'pop[bob]': 3 },
