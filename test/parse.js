@@ -414,6 +414,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses brackets holds array of arrays when having two parts of strings with comma as array divider', function (st) {
+        st.deepEqual(qs.parse('foo[]=1,2,3&foo[]=4,5,6', { comma: true }), { foo: [['1', '2', '3'], ['4', '5', '6']] });
+        st.deepEqual(qs.parse('foo[]=1,2,3&foo[]=', { comma: true }), { foo: [['1', '2', '3'], ''] });
+        st.deepEqual(qs.parse('foo[]=1,2,3&foo[]=,', { comma: true }), { foo: [['1', '2', '3'], ['', '']] });
+        st.deepEqual(qs.parse('foo[]=1,2,3&foo[]=a', { comma: true }), { foo: [['1', '2', '3'], 'a'] });
+
+        st.end();
+    });
+
     t.test('parses an object in dot notation', function (st) {
         var input = {
             'user.name': { 'pop[bob]': 3 },
