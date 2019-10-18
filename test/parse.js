@@ -429,6 +429,14 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses comma delimited array while having percent-encoded comma treated as normal text', function (st) {
+        st.deepEqual(qs.parse('foo=a%2Cb', { comma: true }), { foo: ['a', 'b'] });
+        st.deepEqual(qs.parse('foo=a%2C%20b,d', { comma: true }), { foo: ['a, b', 'd'] });
+        st.deepEqual(qs.parse('foo=a%2C%20b,c%2C%20d', { comma: true }), { foo: ['a, b', 'c, d'] });
+
+        st.end();
+    });
+
     t.test('parses an object in dot notation', function (st) {
         var input = {
             'user.name': { 'pop[bob]': 3 },
