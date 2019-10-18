@@ -105,7 +105,17 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
+            'comma => comma'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma', format: 'RFC3986' }),
+            'a=b,c,d',
+            'comma => comma'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma', format: 'RFC1738' }),
+            'a=b%2cc%2cd',
             'comma => comma'
         );
         st.equal(
@@ -134,7 +144,9 @@ test('stringify()', function (t) {
     t.test('stringifies a nested array value', function (st) {
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'indices' }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'brackets' }), 'a%5Bb%5D%5B%5D=c&a%5Bb%5D%5B%5D=d');
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c%2Cd'); // a[b]=c,d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c,d'); // a[b]=c,d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma', format: 'RFC3986' }), 'a%5Bb%5D=c,d'); // a[b]=c,d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma', format: 'RFC1738' }), 'a%5Bb%5D=c%2cd'); // a[b]=c,d
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.end();
     });
