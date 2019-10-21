@@ -367,6 +367,7 @@ test('parse()', function (t) {
 
     t.test('allows for query string prefix', function (st) {
         st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
+        st.deepEqual(qs.parse('???foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
         st.deepEqual(qs.parse('foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
         st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: false }), { '?foo': 'bar' });
         st.end();
