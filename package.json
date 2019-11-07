@@ -7,6 +7,9 @@
         "type": "git",
         "url": "https://github.com/ljharb/qs.git"
     },
+    "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+    },
     "main": "lib/index.js",
     "contributors": [
         {
