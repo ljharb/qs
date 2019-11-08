@@ -1,3 +1,10 @@
+## **6.9.1**
+- [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
+- [Fix] `parse`: with comma true, do not split non-string values (#334)
+- [meta] add `funding` field
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`
+- [Tests] use shared travis-ci config
+
 ## **6.9.0**
 - [New] `parse`/`stringify`: Pass extra key/value argument to `decoder` (#333)
 - [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `evalmd`
