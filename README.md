@@ -581,6 +581,12 @@ assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 
 Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
 
+## qs for enterprise
+
+Available as part of the Tidelift Subscription
+
+The maintainers of qs and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-qs?utm_source=npm-qs&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
 [1]: https://npmjs.org/package/qs
 [2]: http://versionbadg.es/ljharb/qs.svg
 [3]: https://api.travis-ci.org/ljharb/qs.svg
