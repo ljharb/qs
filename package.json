@@ -40,7 +40,7 @@
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.1",
         "iconv-lite": "^0.4.24",
-        "mkdirp": "^0.5.1",
+        "mkdirp": "^1.0.3",
         "object-inspect": "^1.7.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.4",
