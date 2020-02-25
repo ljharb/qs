@@ -1,4 +1,9 @@
-bower.json
-component.json
+.github
+test
+.editorconfig
+.eslintignore
+.eslintrc
 .npmignore
 .travis.yml
+bower.json
+component.json
