@@ -11,6 +11,21 @@
         "url": "https://github.com/sponsors/ljharb"
     },
     "main": "lib/index.js",
+    "exports": {
+        ".": [
+            {
+                "import": "./lib/index.mjs",
+                "require": "./lib/index.js",
+                "default": "./lib/index.js"
+            },
+            "./lib/index.js"
+        ],
+        "./package": "./package.json",
+        "./package.json": "./package.json",
+        "./lib/formats": "./lib/formats.js",
+        "./lib/parse": "./lib/parse.js",
+        "./lib/stringify": "./lib/stringify.js"
+    },
     "contributors": [
         {
             "name": "Jordan Harband",
