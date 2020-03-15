@@ -400,6 +400,12 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses values with comma as array divider', function (st) {
+        st.deepEqual(qs.parse({ foo: 'bar,tee' }, { comma: false }), { foo: 'bar,tee' });
+        st.deepEqual(qs.parse({ foo: 'bar,tee' }, { comma: true }), { foo: ['bar', 'tee'] });
+        st.end();
+    });
+
     t.test('use number decoder, parses string that has one number with comma option enabled', function (st) {
         var decoder = function (str, defaultDecoder, charset, type) {
             if (!isNaN(Number(str))) {
