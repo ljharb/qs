@@ -39,13 +39,13 @@
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.1",
-        "iconv-lite": "^0.4.24",
-        "mkdirp": "^0.5.1",
+        "iconv-lite": "^0.5.1",
+        "mkdirp": "^0.5.3",
         "object-inspect": "^1.7.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.4",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.0.0-next.4"
+        "tape": "^5.0.0-next.5"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
