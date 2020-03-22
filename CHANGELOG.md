@@ -1,3 +1,12 @@
+## **6.9.2**
+- [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
+- [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
+- [meta] ignore eclint transitive audit warning
+- [meta] fix indentation in package.json
+- [meta] add tidelift marketing copy
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `object-inspect`, `has-symbols`, `tape`, `mkdirp`, `iconv-lite`
+- [actions] add automatic rebasing / merge commit blocking
+
 ## **6.9.1**
 - [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
 - [Fix] `parse`: with comma true, do not split non-string values (#334)
