@@ -28,20 +28,20 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@ljharb/eslint-config": "^14.0.2",
+        "@ljharb/eslint-config": "^16.0.0",
         "browserify": "^16.5.0",
         "covert": "^1.1.1",
         "eclint": "^2.8.1",
-        "eslint": "^6.1.0",
-        "evalmd": "^0.0.17",
+        "eslint": "^6.8.0",
+        "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
-        "iconv-lite": "^0.4.24",
-        "mkdirp": "^0.5.1",
-        "object-inspect": "^1.6.0",
+        "iconv-lite": "^0.5.1",
+        "mkdirp": "^0.5.4",
+        "object-inspect": "^1.7.0",
         "qs-iconv": "^1.0.4",
-        "safe-publish-latest": "^1.1.3",
+        "safe-publish-latest": "^1.1.4",
         "safer-buffer": "^2.1.2",
-        "tape": "^4.11.0"
+        "tape": "^5.0.0-next.5"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",

@@ -556,7 +556,7 @@ test('parse()', function (t) {
 
         st.deepEqual(
             qs.parse('a[b]=c&a=toString', { plainObjects: true }),
-            { a: { b: 'c', toString: true } },
+            { __proto__: null, a: { __proto__: null, b: 'c', toString: true } },
             'can overwrite prototype with plainObjects true'
         );
 
@@ -641,7 +641,6 @@ test('parse()', function (t) {
     });
 
     t.test('prefers an iso-8859-1 charset specified by the utf8 sentinel to a default charset of utf-8', function (st) {
-        // eslint-disable-next-line quote-props
         st.deepEqual(qs.parse('utf8=' + urlEncodedNumCheckmark + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { charsetSentinel: true, charset: 'utf-8' }), { 'Ã¸': 'Ã¸' });
         st.end();
     });
@@ -662,7 +661,6 @@ test('parse()', function (t) {
     });
 
     t.test('uses the utf8 sentinel to switch to iso-8859-1 when no default charset is given', function (st) {
-        // eslint-disable-next-line quote-props
         st.deepEqual(qs.parse('utf8=' + urlEncodedNumCheckmark + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { charsetSentinel: true }), { 'Ã¸': 'Ã¸' });
         st.end();
     });
