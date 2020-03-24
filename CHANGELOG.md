@@ -1,3 +1,16 @@
+## **6.8.1**
+- [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
+- [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
+- [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
+- [fix] `parse`: with comma true, do not split non-string values (#334)
+- [meta] add tidelift marketing copy
+- [meta] add `funding` field
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`, `safe-publish-latest`, `evalmd`, `has-symbols`, `iconv-lite`, `mkdirp`, `object-inspect`
+- [Tests] `parse`: add passing `arrayFormat` tests
+- [Tests] use shared travis-ci configs
+- [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
+- [actions] add automatic rebasing / merge commit blocking
+
 ## **6.8.0**
 - [New] add `depth=false` to preserve the original key; [Fix] `depth=0` should preserve the original key (#326)
 - [New] [Fix] stringify symbols and bigints
