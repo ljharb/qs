@@ -22,6 +22,19 @@
 - [Tests] up to `node` `v12.10`, `v11.15`, `v10.16`, `v8.16`
 - [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
 
+## **6.8.1**
+- [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
+- [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
+- [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
+- [fix] `parse`: with comma true, do not split non-string values (#334)
+- [meta] add tidelift marketing copy
+- [meta] add `funding` field
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`, `safe-publish-latest`, `evalmd`, `has-symbols`, `iconv-lite`, `mkdirp`, `object-inspect`
+- [Tests] `parse`: add passing `arrayFormat` tests
+- [Tests] use shared travis-ci configs
+- [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
+- [actions] add automatic rebasing / merge commit blocking
+
 ## **6.8.0**
 - [New] add `depth=false` to preserve the original key; [Fix] `depth=0` should preserve the original key (#326)
 - [New] [Fix] stringify symbols and bigints
@@ -35,6 +48,26 @@
 - [meta] add github sponsorship
 - [meta] add FUNDING.yml
 - [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+
+## **6.7.1**
+- [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
+- [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
+- [fix] `parse`: with comma true, do not split non-string values (#334)
+- [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
+- [Fix] fix for an impossible situation: when the formatter is called with a non-string value
+- [Refactor] `formats`: tiny bit of cleanup.
+- readme: add security note
+- [meta] add tidelift marketing copy
+- [meta] add `funding` field
+- [meta] add FUNDING.yml
+- [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`, `safe-publish-latest`, `evalmd`, `iconv-lite`, `mkdirp`, `object-inspect`, `browserify`
+- [Tests] `parse`: add passing `arrayFormat` tests
+- [Tests] use shared travis-ci configs
+- [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
+- [Tests] add tests for `depth=0` and `depth=false` behavior, both current and intuitive/intended
+- [Tests] use `eclint` instead of `editorconfig-tools`
+- [actions] add automatic rebasing / merge commit blocking
 
 ## **6.7.0**
 - [New] `stringify`/`parse`: add `comma` as an `arrayFormat` option (#276, #219)
