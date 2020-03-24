@@ -42,10 +42,10 @@ test('stringify()', function (t) {
     });
 
     t.test('stringifies bigints', { skip: !hasBigInt }, function (st) {
-        var three = BigInt(3); // eslint-disable-line new-cap
+        var three = BigInt(3);
         var encodeWithN = function (value, defaultEncoder, charset) {
             var result = defaultEncoder(value, defaultEncoder, charset);
-            return typeof value === 'bigint' ? result + 'n' : result; // eslint-disable-line valid-typeof
+            return typeof value === 'bigint' ? result + 'n' : result;
         };
         st.equal(qs.stringify(three), '');
         st.equal(qs.stringify([three]), '0=3');
