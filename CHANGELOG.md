@@ -22,6 +22,10 @@
 - [Tests] up to `node` `v12.10`, `v11.15`, `v10.16`, `v8.16`
 - [Tests] `Buffer.from` in node v5.0-v5.9 and v4.0-v4.4 requires a TypedArray
 
+## **6.8.2**
+- [Fix] proper comma parsing of URL-encoded commas (#361)
+- [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
+
 ## **6.8.1**
 - [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
 - [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
@@ -48,6 +52,10 @@
 - [meta] add github sponsorship
 - [meta] add FUNDING.yml
 - [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+
+## **6.7.2**
+- [Fix] proper comma parsing of URL-encoded commas (#361)
+- [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
 
 ## **6.7.1**
 - [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
