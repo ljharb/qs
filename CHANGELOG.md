@@ -1,3 +1,7 @@
+## **6.7.2**
+- [Fix] proper comma parsing of URL-encoded commas (#361)
+- [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
+
 ## **6.7.1**
 - [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
 - [Fix] `parse`: with comma true, handle field that holds an array of arrays (#335)
