@@ -1,3 +1,7 @@
+## **6.8.2**
+- [Fix] proper comma parsing of URL-encoded commas (#361)
+- [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
+
 ## **6.8.1**
 - [Fix] `parse`: Fix parsing array from object with `comma` true (#359)
 - [Fix] `parse`: throw a TypeError instead of an Error for bad charset (#349)
