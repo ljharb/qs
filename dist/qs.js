@@ -329,6 +329,18 @@ var arrayPrefixGenerators = {
     }
 };
 
+var objectPrefixGenerators = {
+    brackets: function brackets(prefix, key) {
+        return prefix + '[' + key + ']';
+    },
+    curly: function curly(prefix, key) {
+        return prefix + '{' + key + '}';
+    },
+    dots: function dots(prefix, key) {
+        return prefix + '.' + key;
+    }
+};
+
 var isArray = Array.isArray;
 var push = Array.prototype.push;
 var pushToArray = function (arr, valueOrArray) {
@@ -340,6 +352,7 @@ var toISO = Date.prototype.toISOString;
 var defaultFormat = formats['default'];
 var defaults = {
     addQueryPrefix: false,
+    // deprecated
     allowDots: false,
     charset: 'utf-8',
     charsetSentinel: false,
@@ -370,12 +383,12 @@ var stringify = function stringify(
     object,
     prefix,
     generateArrayPrefix,
+    generateObjectPrefix,
     strictNullHandling,
     skipNulls,
     encoder,
     filter,
     sort,
-    allowDots,
     serializeDate,
     formatter,
     encodeValuesOnly,
@@ -432,12 +445,12 @@ var stringify = function stringify(
                 obj[key],
                 typeof generateArrayPrefix === 'function' ? generateArrayPrefix(prefix, key) : prefix,
                 generateArrayPrefix,
+                generateObjectPrefix,
                 strictNullHandling,
                 skipNulls,
                 encoder,
                 filter,
                 sort,
-                allowDots,
                 serializeDate,
                 formatter,
                 encodeValuesOnly,
@@ -446,14 +459,14 @@ var stringify = function stringify(
         } else {
             pushToArray(values, stringify(
                 obj[key],
-                prefix + (allowDots ? '.' + key : '[' + key + ']'),
+                generateObjectPrefix(prefix, key),
                 generateArrayPrefix,
+                generateObjectPrefix,
                 strictNullHandling,
                 skipNulls,
                 encoder,
                 filter,
                 sort,
-                allowDots,
                 serializeDate,
                 formatter,
                 encodeValuesOnly,
@@ -532,16 +545,27 @@ module.exports = function (object, opts) {
         return '';
     }
 
-    var arrayFormat;
-    if (opts && opts.arrayFormat in arrayPrefixGenerators) {
-        arrayFormat = opts.arrayFormat;
+    var generateArrayPrefix;
+    if (opts && typeof opts.arrayFormat === 'function') {
+        generateArrayPrefix = opts.arrayFormat;
+    } else if (opts && opts.arrayFormat in arrayPrefixGenerators) {
+        generateArrayPrefix = arrayPrefixGenerators[opts.arrayFormat];
     } else if (opts && 'indices' in opts) {
-        arrayFormat = opts.indices ? 'indices' : 'repeat';
+        generateArrayPrefix = arrayPrefixGenerators[opts.indices ? 'indices' : 'repeat'];
     } else {
-        arrayFormat = 'indices';
+        generateArrayPrefix = arrayPrefixGenerators.indices;
     }
 
-    var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
+    var generateObjectPrefix;
+    if (opts && typeof opts.objectFormat === 'function') {
+        generateObjectPrefix = opts.objectFormat;
+    } else if (opts && opts.objectFormat in objectPrefixGenerators) {
+        generateObjectPrefix = objectPrefixGenerators[opts.objectFormat];
+    } else if (opts && opts.allowDots) {
+        generateObjectPrefix = objectPrefixGenerators.dots;
+    } else {
+        generateObjectPrefix = objectPrefixGenerators.brackets;
+    }
 
     if (!objKeys) {
         objKeys = Object.keys(obj);
@@ -561,12 +585,12 @@ module.exports = function (object, opts) {
             obj[key],
             key,
             generateArrayPrefix,
+            generateObjectPrefix,
             options.strictNullHandling,
             options.skipNulls,
             options.encode ? options.encoder : null,
             options.filter,
             options.sort,
-            options.allowDots,
             options.serializeDate,
             options.formatter,
             options.encodeValuesOnly,

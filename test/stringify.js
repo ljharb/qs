@@ -284,6 +284,56 @@ test('stringify()', function (t) {
             'default => indices'
         );
 
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { objectFormat: 'dots', encode: false, arrayFormat: 'indices' }
+            ),
+            'a[0].b=c',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { objectFormat: 'dots', encode: false, arrayFormat: 'brackets' }
+            ),
+            'a[].b=c',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: 'c' }] },
+                { objectFormat: 'dots', encode: false }
+            ),
+            'a[0].b=c',
+            'default => indices'
+        );
+
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { objectFormat: 'dots', encode: false, arrayFormat: 'indices' }
+            ),
+            'a[0].b.c[0]=1',
+            'indices => indices'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { objectFormat: 'dots', encode: false, arrayFormat: 'brackets' }
+            ),
+            'a[].b.c[]=1',
+            'brackets => brackets'
+        );
+        st.equal(
+            qs.stringify(
+                { a: [{ b: { c: [1] } }] },
+                { objectFormat: 'dots', encode: false }
+            ),
+            'a[0].b.c[0]=1',
+            'default => indices'
+        );
+
         st.end();
     });
 
@@ -317,8 +367,33 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('uses custom function notation for arrays when no arrayFormat=function(){}', function (st) {
+        st.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: function (prefix, key) { return prefix + '-' + key; } }), 'a-0=b&a-1=c');
+        st.end();
+    });
+
     t.test('stringifies a complicated object', function (st) {
         st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }), 'a%5Bb%5D=c&a%5Bd%5D=e');
+        st.end();
+    });
+
+    t.test('uses brackets notation for objects when no objectFormat=brackets', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }, { objectFormat: 'brackets' }), 'a%5Bb%5D=c&a%5Bd%5D=e');
+        st.end();
+    });
+
+    t.test('uses dots notation for objects when no objectFormat=dots', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }, { objectFormat: 'dots' }), 'a.b=c&a.d=e');
+        st.end();
+    });
+
+    t.test('uses curly notation for objects when no objectFormat=curly', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }, { objectFormat: 'curly' }), 'a%7Bb%7D=c&a%7Bd%7D=e');
+        st.end();
+    });
+
+    t.test('uses custom function notation for objects when no objectFormat=function(){}', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: 'e' } }, { objectFormat: function (prefix, key) { return prefix + '/' + key; } }), 'a%2Fb=c&a%2Fd=e');
         st.end();
     });
 

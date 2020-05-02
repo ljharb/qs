@@ -381,6 +381,8 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
 // 'a=b&a=c'
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
 // 'a=b,c'
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: function customFormat(prefix, key) { return prefix + '-' + key; } })
+// 'a-0=b&a-1=c'
 ```
 
 When objects are stringified, by default they use bracket notation:
@@ -390,11 +392,17 @@ qs.stringify({ a: { b: { c: 'd', e: 'f' } } });
 // 'a[b][c]=d&a[b][e]=f'
 ```
 
-You may override this to use dot notation by setting the `allowDots` option to `true`:
+You may use the `objectFormat` option to specify the format of the output object:
 
 ```javascript
-qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'dots' });
 // 'a.b.c=d&a.b.e=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'brackets' });
+// 'a[b][c]=d&a[b][e]=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'curly' });
+// 'a{b}{c}=d&a{b}{e}=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: function customFormat(prefix, key) { return prefix + '/' + key; } });
+// 'a/b/c=d&a/b/e=f'
 ```
 
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
