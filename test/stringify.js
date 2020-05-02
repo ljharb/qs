@@ -595,6 +595,18 @@ test('stringify()', function (t) {
             'custom serializeDate function called'
         );
 
+        st.equal(
+            qs.stringify(
+                { a: [date] },
+                {
+                    serializeDate: function (d) { return d.getTime(); },
+                    arrayFormat: 'comma'
+                }
+            ),
+            'a=' + date.getTime(),
+            'works with arrayFormat comma'
+        );
+
         st.end();
     });
 
