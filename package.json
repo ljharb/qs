@@ -32,7 +32,7 @@
     "dependencies": {},
     "devDependencies": {
         "@ljharb/eslint-config": "^16.0.0",
-        "browserify": "^16.5.0",
+        "browserify": "^16.5.1",
         "covert": "^1.1.1",
         "eclint": "^2.8.1",
         "eslint": "^6.8.0",
@@ -45,7 +45,7 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.4",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.0.0-next.5"
+        "tape": "^5.0.0"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
