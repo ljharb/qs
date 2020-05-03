@@ -139,10 +139,25 @@ var regexed = qs.parse('a=b;c=d,e=f', { delimiter: /[;,]/ });
 assert.deepEqual(regexed, { a: 'b', c: 'd', e: 'f' });
 ```
 
-Option `allowDots` can be used to enable dot notation:
+You may set `objectFormat: 'dots'` to enable dot notation:
 
 ```javascript
-var withDots = qs.parse('a.b=c', { allowDots: true });
+var withDots = qs.parse('a.b=c', { objectFormat: 'dots' });
+assert.deepEqual(withDots, { a: { b: 'c' } });
+```
+
+You may set `objectFormat: 'curly'` to enable curly brackets notation:
+
+```javascript
+var withDots = qs.parse('a{b}=c', { objectFormat: 'curly' });
+assert.deepEqual(withDots, { a: { b: 'c' } });
+```
+
+You may use function in `objectFormat` to parse custom notation
+(function should replace your custom format with default brackets format):
+
+```javascript
+var withDots = qs.parse('a/b=c', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
@@ -275,10 +290,17 @@ assert.deepEqual(arraysOfObjects, { a: [{ b: 'c' }] });
 
 Some people use comma to join array, **qs** can parse it:
 ```javascript
-var arraysOfObjects = qs.parse('a=b,c', { comma: true })
+var arraysOfObjects = qs.parse('a=b,c', { arrayFormat: 'comma' })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
 (_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
+
+And you may write function for parse arrays with custom keys
+(function should replace your custom format with default brackets format):
+```javascript
+var arraysOfObjects = qs.parse('a-0=b&a-1=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } })
+assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
+```
 
 ### Stringifying
 
@@ -381,6 +403,8 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
 // 'a=b&a=c'
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
 // 'a=b,c'
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: function customFormat(prefix, key) { return prefix + '-' + key; } })
+// 'a-0=b&a-1=c'
 ```
 
 When objects are stringified, by default they use bracket notation:
@@ -390,11 +414,17 @@ qs.stringify({ a: { b: { c: 'd', e: 'f' } } });
 // 'a[b][c]=d&a[b][e]=f'
 ```
 
-You may override this to use dot notation by setting the `allowDots` option to `true`:
+You may use the `objectFormat` option to specify the format of the output object:
 
 ```javascript
-qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'dots' });
 // 'a.b.c=d&a.b.e=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'brackets' });
+// 'a[b][c]=d&a[b][e]=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: 'curly' });
+// 'a{b}{c}=d&a{b}{e}=f'
+qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { arrayFormat: function customFormat(prefix, key) { return prefix + '/' + key; } });
+// 'a/b/c=d&a/b/e=f'
 ```
 
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
