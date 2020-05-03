@@ -40,7 +40,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('arrayFormat: indices allows only indexed arrays', function (st) {
+    t.test('arrayFormat: indices allows indexed arrays', function (st) {
         st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'indices' }), { a: 'b,c' });
@@ -48,15 +48,15 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('arrayFormat: comma allows only comma-separated arrays', function (st) {
+    t.test('arrayFormat: comma allows comma-separated arrays', function (st) {
         st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'comma' }), { a: 'b,c' });
+        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
         st.end();
     });
 
-    t.test('arrayFormat: repeat allows only repeated values', function (st) {
+    t.test('arrayFormat: repeat allows repeated values', function (st) {
         st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
         st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'repeat' }), { a: 'b,c' });
@@ -64,9 +64,54 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('arrayFormat: function(){} allows custom keys for arrays', function (st) {
+        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b,c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } }), { a: 'b,c' });
+        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a-0=b&a-1=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } }), { a: ['b', 'c'] });
+        st.end();
+    });
+
     t.test('allows enabling dot notation', function (st) {
         st.deepEqual(qs.parse('a.b=c'), { 'a.b': 'c' });
         st.deepEqual(qs.parse('a.b=c', { allowDots: true }), { a: { b: 'c' } });
+        st.end();
+    });
+
+    t.test('objectFormat: brackets allows keys with brackets', function (st) {
+        st.deepEqual(qs.parse('a[b]=c&a[d]=e'), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a[b]=c&a[d]=e', { objectFormat: 'brackets' }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a.b=c&a.d=e', { objectFormat: 'brackets' }), { 'a.b': 'c', 'a.d': 'e' });
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e', { objectFormat: 'brackets' }), { 'a{b}': 'c', 'a{d}': 'e' });
+        st.deepEqual(qs.parse('a/b=c&a/d=e', { objectFormat: 'brackets' }), { 'a/b': 'c', 'a/d': 'e' });
+        st.end();
+    });
+
+    t.test('objectFormat: dots allows keys with dots', function (st) {
+        st.deepEqual(qs.parse('a.b=c&a.d=e'), { 'a.b': 'c', 'a.d': 'e' });
+        st.deepEqual(qs.parse('a[b]=c&a[d]=e', { objectFormat: 'dots' }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a.b=c&a.d=e', { objectFormat: 'dots' }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e', { objectFormat: 'dots' }), { 'a{b}': 'c', 'a{d}': 'e' });
+        st.deepEqual(qs.parse('a/b=c&a/d=e', { objectFormat: 'dots' }), { 'a/b': 'c', 'a/d': 'e' });
+        st.end();
+    });
+
+    t.test('objectFormat: curly allows keys with curly brackets', function (st) {
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e'), { 'a{b}': 'c', 'a{d}': 'e' });
+        st.deepEqual(qs.parse('a[b]=c&a[d]=e', { objectFormat: 'curly' }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a.b=c&a.d=e', { objectFormat: 'curly' }), { 'a.b': 'c', 'a.d': 'e' });
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e', { objectFormat: 'curly' }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a/b=c&a/d=e', { objectFormat: 'curly' }), { 'a/b': 'c', 'a/d': 'e' });
+        st.end();
+    });
+
+    t.test('objectFormat: function allows keys with custom format', function (st) {
+        st.deepEqual(qs.parse('a/b=c&a/d=e'), { 'a/b': 'c', 'a/d': 'e' });
+        st.deepEqual(qs.parse('a[b]=c&a[d]=e', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } }), { a: { b: 'c', d: 'e' } });
+        st.deepEqual(qs.parse('a.b=c&a.d=e', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } }), { 'a.b': 'c', 'a.d': 'e' });
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } }), { 'a{b}': 'c', 'a{d}': 'e' });
+        st.deepEqual(qs.parse('a/b=c&a/d=e', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } }), { a: { b: 'c', d: 'e' } });
         st.end();
     });
 

@@ -139,10 +139,25 @@ var regexed = qs.parse('a=b;c=d,e=f', { delimiter: /[;,]/ });
 assert.deepEqual(regexed, { a: 'b', c: 'd', e: 'f' });
 ```
 
-Option `allowDots` can be used to enable dot notation:
+You may set `objectFormat: 'dots'` to enable dot notation:
 
 ```javascript
-var withDots = qs.parse('a.b=c', { allowDots: true });
+var withDots = qs.parse('a.b=c', { objectFormat: 'dot' });
+assert.deepEqual(withDots, { a: { b: 'c' } });
+```
+
+You may set `objectFormat: 'curly'` to enable curly brackets notation:
+
+```javascript
+var withDots = qs.parse('a{b}=c', { objectFormat: 'curly' });
+assert.deepEqual(withDots, { a: { b: 'c' } });
+```
+
+You may use function in `objectFormat` to parse custom notation
+(function should replace your custom format with default brackets format):
+
+```javascript
+var withDots = qs.parse('a/b=c', { objectFormat: function (key) { return key.replace(/\/([^.[]+)/g, '[$1]'); } });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
@@ -275,10 +290,17 @@ assert.deepEqual(arraysOfObjects, { a: [{ b: 'c' }] });
 
 Some people use comma to join array, **qs** can parse it:
 ```javascript
-var arraysOfObjects = qs.parse('a=b,c', { comma: true })
+var arraysOfObjects = qs.parse('a=b,c', { arrayFormat: 'comma' })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
 (_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
+
+And you may write function for parse arrays with custom keys
+(function should replace your custom format with default brackets format):
+```javascript
+var arraysOfObjects = qs.parse('a-0=b&a-1=c', { arrayFormat: function (key) { return key.replace(/-([^-[]+)/g, '[$1]'); } })
+assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
+```
 
 ### Stringifying
 
