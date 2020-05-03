@@ -142,7 +142,7 @@ assert.deepEqual(regexed, { a: 'b', c: 'd', e: 'f' });
 You may set `objectFormat: 'dots'` to enable dot notation:
 
 ```javascript
-var withDots = qs.parse('a.b=c', { objectFormat: 'dot' });
+var withDots = qs.parse('a.b=c', { objectFormat: 'dots' });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
