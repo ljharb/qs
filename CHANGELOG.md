@@ -1,3 +1,9 @@
+## **6.9.4**
+- [Fix] `stringify`: when `arrayFormat` is `comma`, respect `serializeDate` (#364)
+- [Refactor] `stringify`: reduce branching (part of #350)
+- [Refactor] move `maybeMap` to `utils`
+- [Dev Deps] update `browserify`, `tape`
+
 ## **6.9.3**
 - [Fix] proper comma parsing of URL-encoded commas (#361)
 - [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
