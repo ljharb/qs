@@ -109,6 +109,21 @@ test('stringify()', function (t) {
             'comma => comma'
         );
         st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'space' }),
+            'a=b%20c%20d',
+            'space => space'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'pipe' }),
+            'a=b%7Cc%7Cd',
+            'pipe => pipe'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'tab' }),
+            'a=b%09c%09d',
+            'tab => tab'
+        );
+        st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }),
             'a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d',
             'default => indices'
@@ -135,6 +150,9 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'indices' }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'brackets' }), 'a%5Bb%5D%5B%5D=c&a%5Bb%5D%5B%5D=d');
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c%2Cd'); // a[b]=c,d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'space' }), 'a%5Bb%5D=c%20d'); // a[b]=c d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'pipe' }), 'a%5Bb%5D=c%7Cd'); // a[b]=c|d
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'tab' }), 'a%5Bb%5D=c%09d'); // a[b]=c\td
         st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
         st.end();
     });
@@ -163,6 +181,30 @@ test('stringify()', function (t) {
             ),
             'a.b=c,d',
             'comma: stringifies with dots + comma'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false, arrayFormat: 'space' }
+            ),
+            'a.b=c d',
+            'space: stringifies with dots + space'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false, arrayFormat: 'pipe' }
+            ),
+            'a.b=c|d',
+            'pipe: stringifies with dots + pipe'
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encode: false, arrayFormat: 'tab' }
+            ),
+            'a.b=c\td',
+            'tab: stringifies with dots + tab'
         );
         st.equal(
             qs.stringify(

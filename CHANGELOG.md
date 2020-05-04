@@ -1,3 +1,6 @@
+## [Unreleased]
+- [New] Add support stringifying `space`, `pipe`, and `tab` delimited arrays (#363)
+
 ## **6.9.3**
 - [Fix] proper comma parsing of URL-encoded commas (#361)
 - [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)

@@ -381,6 +381,12 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
 // 'a=b&a=c'
 qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
 // 'a=b,c'
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'space' })
+// 'a=b c'
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'pipe' })
+// 'a=b|c'
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'tab' })
+// 'a=b\tc'
 ```
 
 When objects are stringified, by default they use bracket notation:
