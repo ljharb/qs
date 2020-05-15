@@ -31,7 +31,7 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@ljharb/eslint-config": "^16.0.0",
+        "@ljharb/eslint-config": "^17.1.0",
         "browserify": "^16.5.1",
         "covert": "^1.1.1",
         "eclint": "^2.8.1",
