@@ -31,21 +31,22 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@ljharb/eslint-config": "^16.0.0",
+        "@ljharb/eslint-config": "^17.1.0",
+        "aud": "^1.1.2",
         "browserify": "^16.5.1",
         "covert": "^1.1.1",
         "eclint": "^2.8.1",
-        "eslint": "^6.8.0",
+        "eslint": "^7.3.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.1",
         "iconv-lite": "^0.5.1",
-        "mkdirp": "^0.5.4",
-        "object-inspect": "^1.7.0",
+        "mkdirp": "^0.5.5",
+        "object-inspect": "^1.8.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.4",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.0.0"
+        "tape": "^5.0.1"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && npm run dist",
