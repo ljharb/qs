@@ -14,6 +14,9 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('a[<=>]==23'), { a: { '<=>': '=23' } });
         st.deepEqual(qs.parse('a[==]=23'), { a: { '==': '23' } });
         st.deepEqual(qs.parse('foo', { strictNullHandling: true }), { foo: null });
+        st.deepEqual(qs.parse('foo=', { strictNullHandling: true }), { foo: '' });
+        st.deepEqual(qs.parse('foo', { emptyValue: true }), { foo: true });
+        st.deepEqual(qs.parse('foo=', { emptyValue: true }), { foo: '' });
         st.deepEqual(qs.parse('foo'), { foo: '' });
         st.deepEqual(qs.parse('foo='), { foo: '' });
         st.deepEqual(qs.parse('foo=bar'), { foo: 'bar' });
@@ -22,6 +25,7 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('foo=bar&bar=baz'), { foo: 'bar', bar: 'baz' });
         st.deepEqual(qs.parse('foo2=bar2&baz2='), { foo2: 'bar2', baz2: '' });
         st.deepEqual(qs.parse('foo=bar&baz', { strictNullHandling: true }), { foo: 'bar', baz: null });
+        st.deepEqual(qs.parse('foo=bar&baz', { emptyValue: 'quux' }), { foo: 'bar', baz: 'quux' });
         st.deepEqual(qs.parse('foo=bar&baz'), { foo: 'bar', baz: '' });
         st.deepEqual(qs.parse('cht=p3&chd=t:60,40&chs=250x100&chl=Hello|World'), {
             cht: 'p3',
@@ -205,6 +209,7 @@ test('parse()', function (t) {
 
     t.test('supports malformed uri characters', function (st) {
         st.deepEqual(qs.parse('{%:%}', { strictNullHandling: true }), { '{%:%}': null });
+        st.deepEqual(qs.parse('{%:%}', { emptyValue: 'foo' }), { '{%:%}': 'foo' });
         st.deepEqual(qs.parse('{%:%}='), { '{%:%}': '' });
         st.deepEqual(qs.parse('foo=%:%}'), { foo: '%:%}' });
         st.end();
@@ -237,8 +242,18 @@ test('parse()', function (t) {
             'with arrayLimit 20 + array indices: null then empty string works'
         );
         st.deepEqual(
+            qs.parse('a[0]=b&a[1]&a[2]=c&a[19]=', { emptyValue: 'foo', arrayLimit: 20 }),
+            { a: ['b', 'foo', 'c', ''] },
+            'with arrayLimit 20 + array indices: null then empty string works'
+        );
+        st.deepEqual(
             qs.parse('a[]=b&a[]&a[]=c&a[]=', { strictNullHandling: true, arrayLimit: 0 }),
             { a: ['b', null, 'c', ''] },
+            'with arrayLimit 0 + array brackets: null then empty string works'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[]&a[]=c&a[]=', { emptyValue: 'foo', arrayLimit: 0 }),
+            { a: ['b', 'foo', 'c', ''] },
             'with arrayLimit 0 + array brackets: null then empty string works'
         );
 
@@ -248,8 +263,18 @@ test('parse()', function (t) {
             'with arrayLimit 20 + array indices: empty string then null works'
         );
         st.deepEqual(
+            qs.parse('a[0]=b&a[1]=&a[2]=c&a[19]', { emptyValue: 'foo', arrayLimit: 20 }),
+            { a: ['b', '', 'c', 'foo'] },
+            'with arrayLimit 20 + array indices: empty string then null works'
+        );
+        st.deepEqual(
             qs.parse('a[]=b&a[]=&a[]=c&a[]', { strictNullHandling: true, arrayLimit: 0 }),
             { a: ['b', '', 'c', null] },
+            'with arrayLimit 0 + array brackets: empty string then null works'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[]=&a[]=c&a[]', { emptyValue: 'foo', arrayLimit: 0 }),
+            { a: ['b', '', 'c', 'foo'] },
             'with arrayLimit 0 + array brackets: empty string then null works'
         );
 
@@ -292,6 +317,7 @@ test('parse()', function (t) {
     t.test('continues parsing when no parent is found', function (st) {
         st.deepEqual(qs.parse('[]=&a=b'), { 0: '', a: 'b' });
         st.deepEqual(qs.parse('[]&a=b', { strictNullHandling: true }), { 0: null, a: 'b' });
+        st.deepEqual(qs.parse('[]&a=b', { emptyValue: 'foo' }), { 0: 'foo', a: 'b' });
         st.deepEqual(qs.parse('[foo]=bar'), { foo: 'bar' });
         st.end();
     });
@@ -665,6 +691,13 @@ test('parse()', function (t) {
         st['throws'](function () {
             qs.parse({}, { decoder: 'string' });
         }, new TypeError('Decoder has to be a function.'));
+        st.end();
+    });
+
+    t.test('throws error when both strictNullHandling and emptyValue are provided', function (st) {
+        st['throws'](function () {
+            qs.parse({}, { strictNullHandling: true, emptyValue: 'foo ' });
+        }, new TypeError('strictNullHandling and emptyValue are not compatible.'));
         st.end();
     });
 

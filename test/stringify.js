@@ -324,6 +324,7 @@ test('stringify()', function (t) {
 
     t.test('stringifies an empty value', function (st) {
         st.equal(qs.stringify({ a: '' }), 'a=');
+        st.equal(qs.stringify({ a: null }), 'a=');
         st.equal(qs.stringify({ a: null }, { strictNullHandling: true }), 'a');
 
         st.equal(qs.stringify({ a: '', b: '' }), 'a=&b=');
@@ -333,6 +334,10 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: { b: null } }, { strictNullHandling: true }), 'a%5Bb%5D');
         st.equal(qs.stringify({ a: { b: null } }, { strictNullHandling: false }), 'a%5Bb%5D=');
 
+        st.equal(qs.stringify({ a: true }, { emptyValue: true }), 'a');
+
+        st.equal(qs.stringify({ a: null, b: true }, { emptyValue: true }), 'a=&b');
+        st.equal(qs.stringify({ a: null, b: true }, { strictNullHandling: true, emptyValue: true }), 'a&b');
         st.end();
     });
 
