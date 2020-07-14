@@ -66,5 +66,8 @@
             "iconv-lite",
             "mkdirp"
         ]
+    },
+    "engines": {
+        "node": ">=0.8"
     }
 }
