@@ -772,5 +772,22 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('objects inside arrays', function (st) {
+        var obj = { a: { b: { c: 'd', e: 'f' } } };
+        var withArray = { a: { b: [{ c: 'd', e: 'f' }] } };
+
+        st.equal(qs.stringify(obj, { encode: false }), 'a[b][c]=d&a[b][e]=f', 'no array, no arrayFormat');
+        st.equal(qs.stringify(obj, { encode: false, arrayFormat: 'bracket' }), 'a[b][c]=d&a[b][e]=f', 'no array, bracket');
+        st.equal(qs.stringify(obj, { encode: false, arrayFormat: 'indices' }), 'a[b][c]=d&a[b][e]=f', 'no array, indices');
+        st.equal(qs.stringify(obj, { encode: false, arrayFormat: 'comma' }), 'a[b][c]=d&a[b][e]=f', 'no array, comma');
+
+        st.equal(qs.stringify(withArray, { encode: false }), 'a[b][0][c]=d&a[b][0][e]=f', 'array, no arrayFormat');
+        st.equal(qs.stringify(withArray, { encode: false, arrayFormat: 'bracket' }), 'a[b][0][c]=d&a[b][0][e]=f', 'array, bracket');
+        st.equal(qs.stringify(withArray, { encode: false, arrayFormat: 'indices' }), 'a[b][0][c]=d&a[b][0][e]=f', 'array, indices');
+        st.equal(qs.stringify(obj, { encode: false, arrayFormat: 'comma' }), '???', 'array, comma (pending issue #378)', { skip: true });
+
+        st.end();
+    });
+
     t.end();
 });
