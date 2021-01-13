@@ -10,3 +10,7 @@ dist/*
 yarn.lock
 package-lock.json
 npm-shrinkwrap.json
+
+# coverage output
+coverage/
+.nyc_output/
