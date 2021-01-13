@@ -1,3 +1,14 @@
+## **6.9.5**
+- [Fix] `stringify`: do not encode parens for RFC1738
+- [Fix] `stringify`: fix arrayFormat comma with empty array/objects (#350)
+- [Refactor] `format`: remove `util.assign` call
+- [meta] add "Allow Edits" workflow; update rebase workflow
+- [actions] switch Automatic Rebase workflow to `pull_request_target` event
+- [Tests] `stringify`: add tests for #378
+- [Tests] migrate tests to Github Actions
+- [Tests] run `nyc` on all tests; use `tape` runner
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `browserify`, `mkdirp`, `object-inspect`, `tape`; add `aud`
+
 ## **6.9.4**
 - [Fix] `stringify`: when `arrayFormat` is `comma`, respect `serializeDate` (#364)
 - [Refactor] `stringify`: reduce branching (part of #350)
