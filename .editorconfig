@@ -31,3 +31,9 @@ indent_size = 2
 [LICENSE]
 indent_size = 2
 max_line_length = off
+
+[coverage/**/*]
+indent_size = off
+indent_style = off
+indent = off
+max_line_length = off
