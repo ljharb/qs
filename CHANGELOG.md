@@ -1,3 +1,6 @@
+## **6.9.6**
+- [Fix] restore `dist` dir; mistakenly removed in d4f6c32
+
 ## **6.9.5**
 - [Fix] `stringify`: do not encode parens for RFC1738
 - [Fix] `stringify`: fix arrayFormat comma with empty array/objects (#350)
