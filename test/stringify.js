@@ -433,12 +433,35 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('doesn\'t blow up when Buffer global is missing', function (st) {
+    t.test('does not blow up when Buffer global is missing', function (st) {
         var tempBuffer = global.Buffer;
         delete global.Buffer;
         var result = qs.stringify({ a: 'b', c: 'd' });
         global.Buffer = tempBuffer;
         st.equal(result, 'a=b&c=d');
+        st.end();
+    });
+
+    t.test('does not crash when parsing circular references', function (st) {
+        var a = {};
+        a.b = a;
+
+        st['throws'](
+            function () { qs.stringify({ 'foo[bar]': 'baz', 'foo[baz]': a }); },
+            RangeError,
+            'cyclic values throw'
+        );
+
+        var circular = {
+            a: 'value'
+        };
+        circular.a = circular;
+        st['throws'](
+            function () { qs.stringify(circular); },
+            RangeError,
+            'cyclic values throw'
+        );
+
         st.end();
     });
 

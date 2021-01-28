@@ -29,6 +29,9 @@
     "engines": {
         "node": ">=0.6"
     },
+    "dependencies": {
+        "side-channel": "^1.0.4"
+    },
     "devDependencies": {
         "@ljharb/eslint-config": "^17.5.1",
         "aud": "^1.1.4",
@@ -55,7 +58,7 @@
         "tests-only": "nyc tape 'test/**/*.js'",
         "posttest": "aud --production",
         "readme": "evalmd README.md",
-        "postlint": "eclint check * lib/* test/*",
+        "postlint": "eclint check * lib/* test/* !dist/*",
         "lint": "eslint lib/*.js test/*.js",
         "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
     },
