@@ -29,13 +29,12 @@
     "engines": {
         "node": ">=0.6"
     },
-    "dependencies": {},
     "devDependencies": {
-        "@ljharb/eslint-config": "^17.3.0",
-        "aud": "^1.1.3",
+        "@ljharb/eslint-config": "^17.5.1",
+        "aud": "^1.1.4",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
-        "eslint": "^7.17.0",
+        "eslint": "^7.20.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.1",
