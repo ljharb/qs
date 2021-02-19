@@ -52,7 +52,11 @@ jobs:
           cache-node-modules-key: node_modules-${{ github.workflow }}-${{ github.action }}-${{ github.run_id }}
           skip-ls-check: true
       - run: npm run tests-only
+        if: ${{ matrix.node-version }} != 0.6
+      - run: ./node_modules/.bin/tape 'test/**/*.js'
+        if: ${{ matrix.node-version }} = 0.6
       - run: bash <(curl -s https://codecov.io/bash) -f coverage/*.json;
+        if: ${{ matrix.node-version }} != 0.6
 
   node:
     name: 'node 0.x'
