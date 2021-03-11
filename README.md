@@ -345,7 +345,7 @@ var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, defaultE
 The type argument is also provided to the decoder:
 
 ```javascript
-var decoded = qs.parse('x=z', { decoder: function (str, defaultEncoder, charset, type) {
+var decoded = qs.parse('x=z', { decoder: function (str, defaultDecoder, charset, type) {
     if (type === 'key') {
         return // Decoded key
     } else if (type === 'value') {
