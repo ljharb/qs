@@ -15,4 +15,14 @@ coverage/
 bower.json
 component.json
 .npmignore
-.github/workflows
+.github/workflows/
+.github/FUNDING.yml
+
+# tests
+test/
+
+# tooling configs
+.eslintrc
+.eslintignore
+.editorconfig
+.nycrc
