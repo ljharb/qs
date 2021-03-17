@@ -8,19 +8,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: ljharb/actions/node/run@main
-        name: 'npm install && npm run pretest'
-        with:
-          node-version: 'lts/*'
-          command: 'pretest'
+      - uses: ljharb/actions/node/install@main
+        name: 'nvm install ${{ matrix.node-version }} && npm install'
+      - run: npm run pretest
 
   posttest:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - uses: ljharb/actions/node/run@main
-        name: 'npm install && npm run posttest'
-        with:
-          node-version: 'lts/*'
-          command: 'posttest'
+      - uses: ljharb/actions/node/install@main
+        name: 'nvm install ${{ matrix.node-version }} && npm install'
+      - run: npm run posttest
