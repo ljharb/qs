@@ -1,3 +1,13 @@
+## **6.10.0**
+- [New] `stringify`: throw on cycles, instead of an infinite loop (#395, #394, #393)
+- [New] `parse`: add `allowSparse` option for collapsing arrays with missing indices (#312)
+- [meta] fix README.md (#399)
+- [meta] only run `npm run dist` in publish, not install
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `has-symbols`, `tape`
+- [Tests] fix tests on node v0.6
+- [Tests] use `ljharb/actions/node/install` instead of `ljharb/actions/node/run`
+- [Tests] Revert "[meta] ignore eclint transitive audit warning"
+
 ## **6.9.6**
 - [Fix] restore `dist` dir; mistakenly removed in d4f6c32
 
