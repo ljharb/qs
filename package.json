@@ -37,10 +37,10 @@
         "aud": "^1.1.4",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
-        "eslint": "^7.20.0",
+        "eslint": "^7.22.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
-        "has-symbols": "^1.0.1",
+        "has-symbols": "^1.0.2",
         "iconv-lite": "^0.5.1",
         "in-publish": "^2.0.1",
         "mkdirp": "^0.5.5",
@@ -49,7 +49,7 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^1.1.4",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.1.1"
+        "tape": "^5.2.2"
     },
     "scripts": {
         "prepublish": "safe-publish-latest && (not-in-publish || npm run dist)",
