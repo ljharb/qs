@@ -1,3 +1,6 @@
+## **6.10.1**
+- [Fix] `stringify`: avoid exception on repeated object values (#402)
+
 ## **6.10.0**
 - [New] `stringify`: throw on cycles, instead of an infinite loop (#395, #394, #393)
 - [New] `parse`: add `allowSparse` option for collapsing arrays with missing indices (#312)
