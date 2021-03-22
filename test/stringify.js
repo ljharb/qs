@@ -465,6 +465,28 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('non-circular duplicated references can still work', function (st) {
+        var hourOfDay = {
+            'function': 'hour_of_day'
+        };
+
+        var p1 = {
+            'function': 'gte',
+            arguments: [hourOfDay, 0]
+        };
+        var p2 = {
+            'function': 'lte',
+            arguments: [hourOfDay, 23]
+        };
+
+        st.equal(
+            qs.stringify({ filters: { $and: [p1, p2] } }, { encodeValuesOnly: true }),
+            'filters[$and][0][function]=gte&filters[$and][0][arguments][0][function]=hour_of_day&filters[$and][0][arguments][1]=0&filters[$and][1][function]=lte&filters[$and][1][arguments][0][function]=hour_of_day&filters[$and][1][arguments][1]=23'
+        );
+
+        st.end();
+    });
+
     t.test('selects properties when filter=array', function (st) {
         st.equal(qs.stringify({ a: 'b' }, { filter: ['a'] }), 'a=b');
         st.equal(qs.stringify({ a: 1 }, { filter: [] }), '');
