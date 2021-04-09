@@ -280,6 +280,17 @@ assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
 (_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
 
+### Parsing primitive/scalar values (numbers, booleans, null, etc)
+
+By default, all values are parsed as strings. This behavior will not change and is explained in [issue #91](https://github.com/ljharb/qs/issues/91).
+
+```javascript
+var primitiveValues = qs.parse('a=15&b=true&c=null');
+assert.deepEqual(primitiveValues, { a: '15', b: 'true', c: 'null' });
+```
+
+If you wish to auto-convert values which look like numbers, booleans, and other values into their primitive counterparts, you can use the [query-types Express JS middleware](https://github.com/xpepermint/query-types) which will auto-convert all request query parameters.
+
 ### Stringifying
 
 [](#preventEval)
