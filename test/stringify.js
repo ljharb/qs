@@ -105,7 +105,7 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
             'comma => comma'
         );
         st.equal(
