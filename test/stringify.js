@@ -97,10 +97,11 @@ test('stringify()', function (t) {
     });
 
     t.test('stringifies a nested array value', function (st) {
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'indices' }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'brackets' }), 'a%5Bb%5D%5B%5D=c&a%5Bb%5D%5B%5D=d');
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c%2Cd'); // a[b]=c,d
-        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }), 'a%5Bb%5D%5B0%5D=c&a%5Bb%5D%5B1%5D=d');
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a[b][0]=c&a[b][1]=d');
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { encodeValuesOnly: true, arrayFormat: 'brackets' }), 'a[b][]=c&a[b][]=d');
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { encodeValuesOnly: true, arrayFormat: 'comma' }), 'a[b]=c%2Cd');
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { encodeValuesOnly: true, arrayFormat: 'comma' }), 'a[b]=c,d', '(pending issue #378)', { skip: true });
+        st.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { encodeValuesOnly: true }), 'a[b][0]=c&a[b][1]=d');
         st.end();
     });
 
@@ -108,7 +109,7 @@ test('stringify()', function (t) {
         st.equal(
             qs.stringify(
                 { a: { b: ['c', 'd'] } },
-                { allowDots: true, encode: false, arrayFormat: 'indices' }
+                { allowDots: true, encodeValuesOnly: true, arrayFormat: 'indices' }
             ),
             'a.b[0]=c&a.b[1]=d',
             'indices: stringifies with dots + indices'
@@ -116,7 +117,7 @@ test('stringify()', function (t) {
         st.equal(
             qs.stringify(
                 { a: { b: ['c', 'd'] } },
-                { allowDots: true, encode: false, arrayFormat: 'brackets' }
+                { allowDots: true, encodeValuesOnly: true, arrayFormat: 'brackets' }
             ),
             'a.b[]=c&a.b[]=d',
             'brackets: stringifies with dots + brackets'
@@ -124,15 +125,24 @@ test('stringify()', function (t) {
         st.equal(
             qs.stringify(
                 { a: { b: ['c', 'd'] } },
-                { allowDots: true, encode: false, arrayFormat: 'comma' }
+                { allowDots: true, encodeValuesOnly: true, arrayFormat: 'comma' }
             ),
-            'a.b=c,d',
+            'a.b=c%2Cd',
             'comma: stringifies with dots + comma'
         );
         st.equal(
             qs.stringify(
                 { a: { b: ['c', 'd'] } },
-                { allowDots: true, encode: false }
+                { allowDots: true, encodeValuesOnly: true, arrayFormat: 'comma' }
+            ),
+            'a.b=c,d',
+            'comma: stringifies with dots + comma (pending issue #378)',
+            { skip: true }
+        );
+        st.equal(
+            qs.stringify(
+                { a: { b: ['c', 'd'] } },
+                { allowDots: true, encodeValuesOnly: true }
             ),
             'a.b[0]=c&a.b[1]=d',
             'default: stringifies with dots + indices'
@@ -180,17 +190,23 @@ test('stringify()', function (t) {
 
     t.test('stringifies an array with mixed objects and primitives', function (st) {
         st.equal(
-            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false, arrayFormat: 'indices' }),
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'indices' }),
             'a[0][b]=1&a[1]=2&a[2]=3',
             'indices => indices'
         );
         st.equal(
-            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false, arrayFormat: 'brackets' }),
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'brackets' }),
             'a[][b]=1&a[]=2&a[]=3',
             'brackets => brackets'
         );
         st.equal(
-            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encode: false }),
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'comma' }),
+            '???',
+            'brackets => brackets (pending issue #378)',
+            { skip: true }
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true }),
             'a[0][b]=1&a[1]=2&a[2]=3',
             'default => indices'
         );
