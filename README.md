@@ -1,4 +1,13 @@
-# qs
+# qs <sup>[![Version Badge][2]][1]</sup>
+
+[![github actions][actions-image]][actions-url]
+[![coverage][codecov-image]][codecov-url]
+[![dependency status][deps-svg]][deps-url]
+[![dev dependency status][dev-deps-svg]][dev-deps-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
+
+[![npm badge][npm-badge-png]][package-url]
 
 A querystring parsing and stringifying library with some added security.
 
@@ -462,3 +471,29 @@ assert.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 ```
+
+## Security
+
+Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
+
+## qs for enterprise
+
+Available as part of the Tidelift Subscription
+
+The maintainers of qs and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-qs?utm_source=npm-qs&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
+[package-url]: https://npmjs.org/package/qs
+[npm-version-svg]: https://versionbadg.es/ljharb/qs.svg
+[deps-svg]: https://david-dm.org/ljharb/qs.svg
+[deps-url]: https://david-dm.org/ljharb/qs
+[dev-deps-svg]: https://david-dm.org/ljharb/qs/dev-status.svg
+[dev-deps-url]: https://david-dm.org/ljharb/qs#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/qs.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/qs.svg
+[license-url]: LICENSE
+[downloads-image]: https://img.shields.io/npm/dm/qs.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=qs
+[codecov-image]: https://codecov.io/gh/ljharb/qs/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/ljharb/qs/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/qs
+[actions-url]: https://github.com/ljharb/qs/actions
