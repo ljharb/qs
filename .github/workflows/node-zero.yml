@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.stable) }}
 
     steps:
@@ -31,7 +32,7 @@ jobs:
           cache-node-modules-key: node_modules-${{ github.workflow }}-${{ github.action }}-${{ github.run_id }}
           skip-ls-check: true
       - run: npm run tests-only
-      - run: bash <(curl -s https://codecov.io/bash) -f coverage/*.json;
+      - uses: codecov/codecov-action@v1
 
   unstable:
     needs: [matrix, stable]
@@ -41,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.unstable) }}
 
     steps:
@@ -55,7 +57,7 @@ jobs:
         if: ${{ matrix.node-version }} != 0.6
       - run: ./node_modules/.bin/tape 'test/**/*.js'
         if: ${{ matrix.node-version }} = 0.6
-      - run: bash <(curl -s https://codecov.io/bash) -f coverage/*.json;
+      - uses: codecov/codecov-action@v1
         if: ${{ matrix.node-version }} != 0.6
 
   node:

@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.latest) }}
 
     steps:
@@ -30,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
       - run: npm run tests-only
-      - run: bash <(curl -s https://codecov.io/bash) -f coverage/*.json;
+      - uses: codecov/codecov-action@v1
 
   minors:
     needs: [matrix, latest]
@@ -40,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.minors) }}
 
     steps:
@@ -50,7 +52,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
       - run: npm run tests-only
-      - run: bash <(curl -s https://codecov.io/bash) -f coverage/*.json;
+      - uses: codecov/codecov-action@v1
 
   node:
     name: 'io.js'
