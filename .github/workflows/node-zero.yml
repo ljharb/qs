@@ -32,7 +32,7 @@ jobs:
           cache-node-modules-key: node_modules-${{ github.workflow }}-${{ github.action }}-${{ github.run_id }}
           skip-ls-check: true
       - run: npm run tests-only
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
 
   unstable:
     needs: [matrix, stable]
@@ -57,7 +57,7 @@ jobs:
         if: ${{ matrix.node-version }} != 0.6
       - run: ./node_modules/.bin/tape 'test/**/*.js'
         if: ${{ matrix.node-version }} = 0.6
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
         if: ${{ matrix.node-version }} != 0.6
 
   node:

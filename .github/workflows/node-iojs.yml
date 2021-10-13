@@ -31,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
       - run: npm run tests-only
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
 
   minors:
     needs: [matrix, latest]
@@ -52,7 +52,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
       - run: npm run tests-only
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
 
   node:
     name: 'io.js'
