@@ -454,7 +454,7 @@ test('stringify()', function (t) {
 
         st['throws'](
             function () { qs.stringify({ 'foo[bar]': 'baz', 'foo[baz]': a }); },
-            RangeError,
+            /RangeError: Cyclic object value/,
             'cyclic values throw'
         );
 
@@ -464,8 +464,14 @@ test('stringify()', function (t) {
         circular.a = circular;
         st['throws'](
             function () { qs.stringify(circular); },
-            RangeError,
+            /RangeError: Cyclic object value/,
             'cyclic values throw'
+        );
+
+        var arr = ['a'];
+        st.doesNotThrow(
+            function () { qs.stringify({ x: arr, y: arr }); },
+            'non-cyclic values do not throw'
         );
 
         st.end();
