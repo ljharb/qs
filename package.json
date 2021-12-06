@@ -33,7 +33,7 @@
         "side-channel": "^1.0.4"
     },
     "devDependencies": {
-        "@ljharb/eslint-config": "^19.1.0",
+        "@ljharb/eslint-config": "^20.0.0",
         "aud": "^1.1.5",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
