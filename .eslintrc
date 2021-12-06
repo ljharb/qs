@@ -16,7 +16,6 @@
         "no-continue": 1,
         "no-magic-numbers": 0,
         "no-restricted-syntax": [2, "BreakStatement", "DebuggerStatement", "ForInStatement", "LabeledStatement", "WithStatement"],
-        "operator-linebreak": [2, "before"],
     },
 
     "overrides": [

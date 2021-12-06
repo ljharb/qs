@@ -33,11 +33,11 @@
         "side-channel": "^1.0.4"
     },
     "devDependencies": {
-        "@ljharb/eslint-config": "^19.0.1",
+        "@ljharb/eslint-config": "^19.1.0",
         "aud": "^1.1.5",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
-        "eslint": "^8.2.0",
+        "eslint": "^8.4.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.2",
@@ -49,7 +49,7 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.3.1"
+        "tape": "^5.3.2"
     },
     "scripts": {
         "prepublishOnly": "safe-publish-latest && npm run dist",
