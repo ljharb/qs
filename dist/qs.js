@@ -323,6 +323,7 @@ var arrayPrefixGenerators = {
 };
 
 var isArray = Array.isArray;
+var split = String.prototype.split;
 var push = Array.prototype.push;
 var pushToArray = function (arr, valueOrArray) {
     push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
@@ -359,6 +360,8 @@ var isNonNullishPrimitive = function isNonNullishPrimitive(v) {
         || typeof v === 'bigint';
 };
 
+var sentinel = {};
+
 var stringify = function stringify(
     object,
     prefix,
@@ -378,8 +381,23 @@ var stringify = function stringify(
 ) {
     var obj = object;
 
-    if (sideChannel.has(object)) {
-        throw new RangeError('Cyclic object value');
+    var tmpSc = sideChannel;
+    var step = 0;
+    var findFlag = false;
+    while ((tmpSc = tmpSc.get(sentinel)) !== undefined && !findFlag) {
+        // Where object last appeared in the ref tree
+        var pos = tmpSc.get(object);
+        step += 1;
+        if (typeof pos !== 'undefined') {
+            if (pos === step) {
+                throw new RangeError('Cyclic object value');
+            } else {
+                findFlag = true; // Break while
+            }
+        }
+        if (typeof tmpSc.get(sentinel) === 'undefined') {
+            step = 0;
+        }
     }
 
     if (typeof filter === 'function') {
@@ -406,6 +424,14 @@ var stringify = function stringify(
     if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
         if (encoder) {
             var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
+            if (generateArrayPrefix === 'comma' && encodeValuesOnly) {
+                var valuesArray = split.call(String(obj), ',');
+                var valuesJoined = '';
+                for (var i = 0; i < valuesArray.length; ++i) {
+                    valuesJoined += (i === 0 ? '' : ',') + formatter(encoder(valuesArray[i], defaults.encoder, charset, 'value', format));
+                }
+                return [formatter(keyValue) + '=' + valuesJoined];
+            }
             return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
         }
         return [formatter(prefix) + '=' + formatter(String(obj))];
@@ -428,8 +454,8 @@ var stringify = function stringify(
         objKeys = sort ? keys.sort(sort) : keys;
     }
 
-    for (var i = 0; i < objKeys.length; ++i) {
-        var key = objKeys[i];
+    for (var j = 0; j < objKeys.length; ++j) {
+        var key = objKeys[j];
         var value = typeof key === 'object' && key.value !== undefined ? key.value : obj[key];
 
         if (skipNulls && value === null) {
@@ -440,7 +466,9 @@ var stringify = function stringify(
             ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(prefix, key) : prefix
             : prefix + (allowDots ? '.' + key : '[' + key + ']');
 
-        sideChannel.set(object, true);
+        sideChannel.set(object, step);
+        var valueSideChannel = getSideChannel();
+        valueSideChannel.set(sentinel, sideChannel);
         pushToArray(values, stringify(
             value,
             keyPrefix,
@@ -456,7 +484,7 @@ var stringify = function stringify(
             formatter,
             encodeValuesOnly,
             charset,
-            sideChannel
+            valueSideChannel
         ));
     }
 
@@ -772,6 +800,7 @@ var encode = function encode(str, defaultEncoder, charset, kind, format) {
 
         i += 1;
         c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
+        /* eslint operator-linebreak: [2, "before"] */
         out += hexTable[0xF0 | (c >> 18)]
             + hexTable[0x80 | ((c >> 12) & 0x3F)]
             + hexTable[0x80 | ((c >> 6) & 0x3F)]
@@ -1385,17 +1414,29 @@ var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
 var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
 var weakSetHas = hasWeakSet ? WeakSet.prototype.has : null;
+var hasWeakRef = typeof WeakRef === 'function' && WeakRef.prototype;
+var weakRefDeref = hasWeakRef ? WeakRef.prototype.deref : null;
 var booleanValueOf = Boolean.prototype.valueOf;
 var objectToString = Object.prototype.toString;
 var functionToString = Function.prototype.toString;
 var match = String.prototype.match;
 var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
 var gOPS = Object.getOwnPropertySymbols;
-var symToString = typeof Symbol === 'function' ? Symbol.prototype.toString : null;
+var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
+var hasShammedSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'object';
 var isEnumerable = Object.prototype.propertyIsEnumerable;
+
+var gPO = (typeof Reflect === 'function' ? Reflect.getPrototypeOf : Object.getPrototypeOf) || (
+    [].__proto__ === Array.prototype // eslint-disable-line no-proto
+        ? function (O) {
+            return O.__proto__; // eslint-disable-line no-proto
+        }
+        : null
+);
 
 var inspectCustom = require('./util.inspect').custom;
 var inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
+var toStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag !== 'undefined' ? Symbol.toStringTag : null;
 
 module.exports = function inspect_(obj, options, depth, seen) {
     var opts = options || {};
@@ -1412,8 +1453,8 @@ module.exports = function inspect_(obj, options, depth, seen) {
         throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
     }
     var customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
-    if (typeof customInspect !== 'boolean') {
-        throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
+    if (typeof customInspect !== 'boolean' && customInspect !== 'symbol') {
+        throw new TypeError('option "customInspect", if provided, must be `true`, `false`, or `\'symbol\'`');
     }
 
     if (
@@ -1485,8 +1526,8 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']' + (keys.length > 0 ? ' { ' + keys.join(', ') + ' }' : '');
     }
     if (isSymbol(obj)) {
-        var symString = symToString.call(obj);
-        return typeof obj === 'object' ? markBoxed(symString) : symString;
+        var symString = hasShammedSymbols ? String(obj).replace(/^(Symbol\(.*\))_[^)]*$/, '$1') : symToString.call(obj);
+        return typeof obj === 'object' && !hasShammedSymbols ? markBoxed(symString) : symString;
     }
     if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
@@ -1515,7 +1556,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (typeof obj === 'object' && customInspect) {
         if (inspectSymbol && typeof obj[inspectSymbol] === 'function') {
             return obj[inspectSymbol]();
-        } else if (typeof obj.inspect === 'function') {
+        } else if (customInspect !== 'symbol' && typeof obj.inspect === 'function') {
             return obj.inspect();
         }
     }
@@ -1539,6 +1580,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (isWeakSet(obj)) {
         return weakCollectionOf('WeakSet');
     }
+    if (isWeakRef(obj)) {
+        return weakCollectionOf('WeakRef');
+    }
     if (isNumber(obj)) {
         return markBoxed(inspect(Number(obj)));
     }
@@ -1553,11 +1597,16 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (!isDate(obj) && !isRegExp(obj)) {
         var ys = arrObjKeys(obj, inspect);
-        if (ys.length === 0) { return '{}'; }
+        var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
+        var protoTag = obj instanceof Object ? '' : 'null prototype';
+        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? toStr(obj).slice(8, -1) : protoTag ? 'Object' : '';
+        var constructorTag = isPlainObject || typeof obj.constructor !== 'function' ? '' : obj.constructor.name ? obj.constructor.name + ' ' : '';
+        var tag = constructorTag + (stringTag || protoTag ? '[' + [].concat(stringTag || [], protoTag || []).join(': ') + '] ' : '');
+        if (ys.length === 0) { return tag + '{}'; }
         if (indent) {
-            return '{' + indentedJoin(ys, indent) + '}';
+            return tag + '{' + indentedJoin(ys, indent) + '}';
         }
-        return '{ ' + ys.join(', ') + ' }';
+        return tag + '{ ' + ys.join(', ') + ' }';
     }
     return String(obj);
 };
@@ -1571,15 +1620,42 @@ function quote(s) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-function isArray(obj) { return toStr(obj) === '[object Array]'; }
-function isDate(obj) { return toStr(obj) === '[object Date]'; }
-function isRegExp(obj) { return toStr(obj) === '[object RegExp]'; }
-function isError(obj) { return toStr(obj) === '[object Error]'; }
-function isSymbol(obj) { return toStr(obj) === '[object Symbol]'; }
-function isString(obj) { return toStr(obj) === '[object String]'; }
-function isNumber(obj) { return toStr(obj) === '[object Number]'; }
-function isBigInt(obj) { return toStr(obj) === '[object BigInt]'; }
-function isBoolean(obj) { return toStr(obj) === '[object Boolean]'; }
+function isArray(obj) { return toStr(obj) === '[object Array]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isDate(obj) { return toStr(obj) === '[object Date]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isRegExp(obj) { return toStr(obj) === '[object RegExp]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isError(obj) { return toStr(obj) === '[object Error]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isString(obj) { return toStr(obj) === '[object String]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isNumber(obj) { return toStr(obj) === '[object Number]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+
+// Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
+function isSymbol(obj) {
+    if (hasShammedSymbols) {
+        return obj && typeof obj === 'object' && obj instanceof Symbol;
+    }
+    if (typeof obj === 'symbol') {
+        return true;
+    }
+    if (!obj || typeof obj !== 'object' || !symToString) {
+        return false;
+    }
+    try {
+        symToString.call(obj);
+        return true;
+    } catch (e) {}
+    return false;
+}
+
+function isBigInt(obj) {
+    if (!obj || typeof obj !== 'object' || !bigIntValueOf) {
+        return false;
+    }
+    try {
+        bigIntValueOf.call(obj);
+        return true;
+    } catch (e) {}
+    return false;
+}
 
 var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
 function has(obj, key) {
@@ -1633,6 +1709,17 @@ function isWeakMap(x) {
             return true;
         }
         return x instanceof WeakMap; // core-js workaround, pre-v2.5.0
+    } catch (e) {}
+    return false;
+}
+
+function isWeakRef(x) {
+    if (!weakRefDeref || !x || typeof x !== 'object') {
+        return false;
+    }
+    try {
+        weakRefDeref.call(x);
+        return true;
     } catch (e) {}
     return false;
 }
@@ -1753,17 +1840,28 @@ function arrObjKeys(obj, inspect) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
     }
+    var syms = typeof gOPS === 'function' ? gOPS(obj) : [];
+    var symMap;
+    if (hasShammedSymbols) {
+        symMap = {};
+        for (var k = 0; k < syms.length; k++) {
+            symMap['$' + syms[k]] = syms[k];
+        }
+    }
+
     for (var key in obj) { // eslint-disable-line no-restricted-syntax
         if (!has(obj, key)) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
         if (isArr && String(Number(key)) === key && key < obj.length) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
-        if ((/[^\w$]/).test(key)) {
+        if (hasShammedSymbols && symMap['$' + key] instanceof Symbol) {
+            // this is to prevent shammed Symbols, which are stored as strings, from being included in the string key section
+            continue; // eslint-disable-line no-restricted-syntax, no-continue
+        } else if ((/[^\w$]/).test(key)) {
             xs.push(inspect(key, obj) + ': ' + inspect(obj[key], obj));
         } else {
             xs.push(key + ': ' + inspect(obj[key], obj));
         }
     }
     if (typeof gOPS === 'function') {
-        var syms = gOPS(obj);
         for (var j = 0; j < syms.length; j++) {
             if (isEnumerable.call(obj, syms[j])) {
                 xs.push('[' + inspect(syms[j]) + ']: ' + inspect(obj[syms[j]], obj));

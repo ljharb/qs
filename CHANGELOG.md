@@ -1,3 +1,13 @@
+## **6.10.2**
+- [Fix] `stringify`: actually fix cyclic references (#426)
+- [Fix] `stringify`: avoid encoding arrayformat comma when `encodeValuesOnly = true` (#424)
+- [readme] remove travis badge; add github actions/codecov badges; update URLs
+- [Docs] add note and links for coercing primitive values (#408)
+- [actions] update codecov uploader
+- [actions] update workflows
+- [Tests] clean up stringify tests slightly
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `object-inspect`, `safe-publish-latest`, `tape`
+
 ## **6.10.1**
 - [Fix] `stringify`: avoid exception on repeated object values (#402)
 
