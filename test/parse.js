@@ -620,6 +620,66 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('dunder proto is ignored', function (st) {
+        var payload = 'categories[__proto__]=login&categories[__proto__]&categories[length]=42';
+        var result = qs.parse(payload, { allowPrototypes: true });
+
+        st.deepEqual(
+            result,
+            {
+                categories: {
+                    length: '42'
+                }
+            },
+            'silent [[Prototype]] payload'
+        );
+
+        var plainResult = qs.parse(payload, { allowPrototypes: true, plainObjects: true });
+
+        st.deepEqual(
+            plainResult,
+            {
+                __proto__: null,
+                categories: {
+                    __proto__: null,
+                    length: '42'
+                }
+            },
+            'silent [[Prototype]] payload: plain objects'
+        );
+
+        var query = qs.parse('categories[__proto__]=cats&categories[__proto__]=dogs&categories[some][json]=toInject', { allowPrototypes: true });
+
+        st.notOk(Array.isArray(query.categories), 'is not an array');
+        st.notOk(query.categories instanceof Array, 'is not instanceof an array');
+        st.deepEqual(query.categories, { some: { json: 'toInject' } });
+        st.equal(JSON.stringify(query.categories), '{"some":{"json":"toInject"}}', 'stringifies as a non-array');
+
+        st.deepEqual(
+            qs.parse('foo[__proto__][hidden]=value&foo[bar]=stuffs', { allowPrototypes: true }),
+            {
+                foo: {
+                    bar: 'stuffs'
+                }
+            },
+            'hidden values'
+        );
+
+        st.deepEqual(
+            qs.parse('foo[__proto__][hidden]=value&foo[bar]=stuffs', { allowPrototypes: true, plainObjects: true }),
+            {
+                __proto__: null,
+                foo: {
+                    __proto__: null,
+                    bar: 'stuffs'
+                }
+            },
+            'hidden values: plain objects'
+        );
+
+        st.end();
+    });
+
     t.test('can return null objects', { skip: !Object.create }, function (st) {
         var expected = Object.create(null);
         expected.a = Object.create(null);
