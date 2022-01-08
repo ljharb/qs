@@ -37,7 +37,7 @@
         "aud": "^1.1.5",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
-        "eslint": "^8.5.0",
+        "eslint": "^8.6.0",
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "has-symbols": "^1.0.2",
