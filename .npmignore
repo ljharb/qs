@@ -13,3 +13,5 @@ coverage/
 
 bower.json
 component.json
+
+.github/workflows
