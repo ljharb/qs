@@ -1,3 +1,15 @@
+## **6.9.7**
+- [Fix] `parse`: ignore `__proto__` keys (#428)
+- [Fix] `stringify`: avoid encoding arrayformat comma when `encodeValuesOnly = true` (#424)
+- [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
+- [readme] remove travis badge; add github actions/codecov badges; update URLs
+- [Docs] add note and links for coercing primitive values (#408)
+- [Tests] clean up stringify tests slightly
+- [meta] fix README.md (#399)
+- Revert "[meta] ignore eclint transitive audit warning"
+- [actions] backport actions from main
+- [Dev Deps] backport updates from main
+
 ## **6.9.6**
 - [Fix] restore `dist` dir; mistakenly removed in d4f6c32
 
