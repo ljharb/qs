@@ -8,4 +8,10 @@ yarn.lock
 package-lock.json
 npm-shrinkwrap.json
 
+.nyc_output/
+coverage/
+
+bower.json
+component.json
+
 .github/workflows
