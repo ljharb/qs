@@ -1,4 +1,14 @@
-bower.json
-component.json
-.npmignore
-.travis.yml
+# gitignore
+npm-debug.log
+node_modules
+.DS_Store
+
+# Only apps should have lockfiles
+yarn.lock
+package-lock.json
+npm-shrinkwrap.json
+
+.nyc_output/
+coverage/
+
+.github/workflows

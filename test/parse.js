@@ -523,7 +523,7 @@ test('parse()', function (t) {
 
         st.deepEqual(
             qs.parse('a[b]=c&a=toString', { plainObjects: true }),
-            { a: { b: 'c', toString: true } },
+            { __proto__: null, a: { __proto__: null, b: 'c', toString: true } },
             'can overwrite prototype with plainObjects true'
         );
 
