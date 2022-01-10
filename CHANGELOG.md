@@ -1,3 +1,29 @@
+## **6.6.1**
+- [Fix] `parse`: ignore `__proto__` keys (#428)
+- [Fix] fix for an impossible situation: when the formatter is called with a non-string value
+- [Fix] `utils.merge`: avoid a crash with a null target and an array source
+- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source
+- [Fix] correctly parse nested arrays
+- [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
+- [Robustness] `stringify`: cache `Object.prototype.hasOwnProperty`
+- [Refactor] `formats`: tiny bit of cleanup.
+- [Refactor] `utils`: `isBuffer`: small tweak; add tests
+- [Refactor]: `stringify`/`utils`: cache `Array.isArray`
+- [Refactor] `utils`: reduce observable [[Get]]s
+- [Refactor] use cached `Array.isArray`
+- [Refactor] `parse`/`stringify`: make a function to normalize the options
+- [readme] remove travis badge; add github actions/codecov badges; update URLs
+- [Docs] Clarify the need for "arrayLimit" option
+- [meta] fix README.md (#399)
+- [meta] do not publish workflow files
+- [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+- [meta] add FUNDING.yml
+- [meta] Fixes typo in CHANGELOG.md
+- [actions] backport actions from main
+- [Tests] fix Buffer tests to work in node < 4.5 and node < 5.10
+- [Tests] always use `String(x)` over `x.toString()`
+- [Dev Deps] backport from main
+
 ## **6.6.0**
 - [New] Add support for iso-8859-1, utf8 "sentinel" and numeric entities (#268)
 - [New] move two-value combine to a `utils` function (#189)

@@ -4,21 +4,29 @@
 var replace = String.prototype.replace;
 var percentTwenties = /%20/g;
 
-module.exports = {
-    'default': 'RFC3986',
-    formatters: {
-        RFC1738: function (value) {
-            return replace.call(value, percentTwenties, '+');
-        },
-        RFC3986: function (value) {
-            return value;
-        }
-    },
+var util = require('./utils');
+
+var Format = {
     RFC1738: 'RFC1738',
     RFC3986: 'RFC3986'
 };
 
-},{}],2:[function(require,module,exports){
+module.exports = util.assign(
+    {
+        'default': Format.RFC3986,
+        formatters: {
+            RFC1738: function (value) {
+                return replace.call(value, percentTwenties, '+');
+            },
+            RFC3986: function (value) {
+                return String(value);
+            }
+        }
+    },
+    Format
+);
+
+},{"./utils":5}],2:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -149,7 +157,7 @@ var parseObject = function (chain, val, options) {
             ) {
                 obj = [];
                 obj[index] = leaf;
-            } else {
+            } else if (cleanRoot !== '__proto__') {
                 obj[cleanRoot] = leaf;
             }
         }
@@ -214,31 +222,40 @@ var parseKeys = function parseQueryStringKeys(givenKey, val, options) {
     return parseObject(keys, val, options);
 };
 
-module.exports = function (str, opts) {
-    var options = opts ? utils.assign({}, opts) : {};
+var normalizeParseOptions = function normalizeParseOptions(opts) {
+    if (!opts) {
+        return defaults;
+    }
 
-    if (options.decoder !== null && options.decoder !== undefined && typeof options.decoder !== 'function') {
+    if (opts.decoder !== null && opts.decoder !== undefined && typeof opts.decoder !== 'function') {
         throw new TypeError('Decoder has to be a function.');
     }
 
-    options.ignoreQueryPrefix = options.ignoreQueryPrefix === true;
-    options.delimiter = typeof options.delimiter === 'string' || utils.isRegExp(options.delimiter) ? options.delimiter : defaults.delimiter;
-    options.depth = typeof options.depth === 'number' ? options.depth : defaults.depth;
-    options.arrayLimit = typeof options.arrayLimit === 'number' ? options.arrayLimit : defaults.arrayLimit;
-    options.parseArrays = options.parseArrays !== false;
-    options.decoder = typeof options.decoder === 'function' ? options.decoder : defaults.decoder;
-    options.allowDots = typeof options.allowDots === 'undefined' ? defaults.allowDots : !!options.allowDots;
-    options.plainObjects = typeof options.plainObjects === 'boolean' ? options.plainObjects : defaults.plainObjects;
-    options.allowPrototypes = typeof options.allowPrototypes === 'boolean' ? options.allowPrototypes : defaults.allowPrototypes;
-    options.parameterLimit = typeof options.parameterLimit === 'number' ? options.parameterLimit : defaults.parameterLimit;
-    options.strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : defaults.strictNullHandling;
-
-    if (typeof options.charset !== 'undefined' && options.charset !== 'utf-8' && options.charset !== 'iso-8859-1') {
+    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
         throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
     }
-    if (typeof options.charset === 'undefined') {
-        options.charset = defaults.charset;
-    }
+    var charset = typeof opts.charset === 'undefined' ? defaults.charset : opts.charset;
+
+    return {
+        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
+        allowPrototypes: typeof opts.allowPrototypes === 'boolean' ? opts.allowPrototypes : defaults.allowPrototypes,
+        arrayLimit: typeof opts.arrayLimit === 'number' ? opts.arrayLimit : defaults.arrayLimit,
+        charset: charset,
+        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
+        decoder: typeof opts.decoder === 'function' ? opts.decoder : defaults.decoder,
+        delimiter: typeof opts.delimiter === 'string' || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
+        depth: typeof opts.depth === 'number' ? opts.depth : defaults.depth,
+        ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
+        interpretNumericEntities: typeof opts.interpretNumericEntities === 'boolean' ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
+        parameterLimit: typeof opts.parameterLimit === 'number' ? opts.parameterLimit : defaults.parameterLimit,
+        parseArrays: opts.parseArrays !== false,
+        plainObjects: typeof opts.plainObjects === 'boolean' ? opts.plainObjects : defaults.plainObjects,
+        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
+    };
+};
+
+module.exports = function (str, opts) {
+    var options = normalizeParseOptions(opts);
 
     if (str === '' || str === null || typeof str === 'undefined') {
         return options.plainObjects ? Object.create(null) : {};
@@ -264,15 +281,16 @@ module.exports = function (str, opts) {
 
 var utils = require('./utils');
 var formats = require('./formats');
+var has = Object.prototype.hasOwnProperty;
 
 var arrayPrefixGenerators = {
-    brackets: function brackets(prefix) { // eslint-disable-line func-name-matching
+    brackets: function brackets(prefix) {
         return prefix + '[]';
     },
-    indices: function indices(prefix, key) { // eslint-disable-line func-name-matching
+    indices: function indices(prefix, key) {
         return prefix + '[' + key + ']';
     },
-    repeat: function repeat(prefix) { // eslint-disable-line func-name-matching
+    repeat: function repeat(prefix) {
         return prefix;
     }
 };
@@ -285,6 +303,7 @@ var pushToArray = function (arr, valueOrArray) {
 
 var toISO = Date.prototype.toISOString;
 
+var defaultFormat = formats['default'];
 var defaults = {
     addQueryPrefix: false,
     allowDots: false,
@@ -294,16 +313,18 @@ var defaults = {
     encode: true,
     encoder: utils.encode,
     encodeValuesOnly: false,
+    format: defaultFormat,
+    formatter: formats.formatters[defaultFormat],
     // deprecated
     indices: false,
-    serializeDate: function serializeDate(date) { // eslint-disable-line func-name-matching
+    serializeDate: function serializeDate(date) {
         return toISO.call(date);
     },
     skipNulls: false,
     strictNullHandling: false
 };
 
-var stringify = function stringify( // eslint-disable-line func-name-matching
+var stringify = function stringify(
     object,
     prefix,
     generateArrayPrefix,
@@ -348,7 +369,7 @@ var stringify = function stringify( // eslint-disable-line func-name-matching
     }
 
     var objKeys;
-    if (Array.isArray(filter)) {
+    if (isArray(filter)) {
         objKeys = filter;
     } else {
         var keys = Object.keys(obj);
@@ -362,7 +383,7 @@ var stringify = function stringify( // eslint-disable-line func-name-matching
             continue;
         }
 
-        if (Array.isArray(obj)) {
+        if (isArray(obj)) {
             pushToArray(values, stringify(
                 obj[key],
                 generateArrayPrefix(prefix, key),
@@ -400,41 +421,63 @@ var stringify = function stringify( // eslint-disable-line func-name-matching
     return values;
 };
 
-module.exports = function (object, opts) {
-    var obj = object;
-    var options = opts ? utils.assign({}, opts) : {};
+var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
+    if (!opts) {
+        return defaults;
+    }
 
-    if (options.encoder !== null && options.encoder !== undefined && typeof options.encoder !== 'function') {
+    if (opts.encoder !== null && typeof opts.encoder !== 'undefined' && typeof opts.encoder !== 'function') {
         throw new TypeError('Encoder has to be a function.');
     }
 
-    var delimiter = typeof options.delimiter === 'undefined' ? defaults.delimiter : options.delimiter;
-    var strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : defaults.strictNullHandling;
-    var skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : defaults.skipNulls;
-    var encode = typeof options.encode === 'boolean' ? options.encode : defaults.encode;
-    var encoder = typeof options.encoder === 'function' ? options.encoder : defaults.encoder;
-    var sort = typeof options.sort === 'function' ? options.sort : null;
-    var allowDots = typeof options.allowDots === 'undefined' ? defaults.allowDots : !!options.allowDots;
-    var serializeDate = typeof options.serializeDate === 'function' ? options.serializeDate : defaults.serializeDate;
-    var encodeValuesOnly = typeof options.encodeValuesOnly === 'boolean' ? options.encodeValuesOnly : defaults.encodeValuesOnly;
-    var charset = options.charset || defaults.charset;
-    if (typeof options.charset !== 'undefined' && options.charset !== 'utf-8' && options.charset !== 'iso-8859-1') {
-        throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
+    var charset = opts.charset || defaults.charset;
+    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
+        throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
     }
 
-    if (typeof options.format === 'undefined') {
-        options.format = formats['default'];
-    } else if (!Object.prototype.hasOwnProperty.call(formats.formatters, options.format)) {
-        throw new TypeError('Unknown format option provided.');
+    var format = formats['default'];
+    if (typeof opts.format !== 'undefined') {
+        if (!has.call(formats.formatters, opts.format)) {
+            throw new TypeError('Unknown format option provided.');
+        }
+        format = opts.format;
     }
-    var formatter = formats.formatters[options.format];
+    var formatter = formats.formatters[format];
+
+    var filter = defaults.filter;
+    if (typeof opts.filter === 'function' || isArray(opts.filter)) {
+        filter = opts.filter;
+    }
+
+    return {
+        addQueryPrefix: typeof opts.addQueryPrefix === 'boolean' ? opts.addQueryPrefix : defaults.addQueryPrefix,
+        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
+        charset: charset,
+        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
+        delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
+        encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
+        encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
+        encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
+        filter: filter,
+        formatter: formatter,
+        serializeDate: typeof opts.serializeDate === 'function' ? opts.serializeDate : defaults.serializeDate,
+        skipNulls: typeof opts.skipNulls === 'boolean' ? opts.skipNulls : defaults.skipNulls,
+        sort: typeof opts.sort === 'function' ? opts.sort : null,
+        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
+    };
+};
+
+module.exports = function (object, opts) {
+    var obj = object;
+    var options = normalizeStringifyOptions(opts);
+
     var objKeys;
     var filter;
 
     if (typeof options.filter === 'function') {
         filter = options.filter;
         obj = filter('', obj);
-    } else if (Array.isArray(options.filter)) {
+    } else if (isArray(options.filter)) {
         filter = options.filter;
         objKeys = filter;
     }
@@ -446,10 +489,10 @@ module.exports = function (object, opts) {
     }
 
     var arrayFormat;
-    if (options.arrayFormat in arrayPrefixGenerators) {
-        arrayFormat = options.arrayFormat;
-    } else if ('indices' in options) {
-        arrayFormat = options.indices ? 'indices' : 'repeat';
+    if (opts && opts.arrayFormat in arrayPrefixGenerators) {
+        arrayFormat = opts.arrayFormat;
+    } else if (opts && 'indices' in opts) {
+        arrayFormat = opts.indices ? 'indices' : 'repeat';
     } else {
         arrayFormat = 'indices';
     }
@@ -460,38 +503,38 @@ module.exports = function (object, opts) {
         objKeys = Object.keys(obj);
     }
 
-    if (sort) {
-        objKeys.sort(sort);
+    if (options.sort) {
+        objKeys.sort(options.sort);
     }
 
     for (var i = 0; i < objKeys.length; ++i) {
         var key = objKeys[i];
 
-        if (skipNulls && obj[key] === null) {
+        if (options.skipNulls && obj[key] === null) {
             continue;
         }
         pushToArray(keys, stringify(
             obj[key],
             key,
             generateArrayPrefix,
-            strictNullHandling,
-            skipNulls,
-            encode ? encoder : null,
-            filter,
-            sort,
-            allowDots,
-            serializeDate,
-            formatter,
-            encodeValuesOnly,
-            charset
+            options.strictNullHandling,
+            options.skipNulls,
+            options.encode ? options.encoder : null,
+            options.filter,
+            options.sort,
+            options.allowDots,
+            options.serializeDate,
+            options.formatter,
+            options.encodeValuesOnly,
+            options.charset
         ));
     }
 
-    var joined = keys.join(delimiter);
+    var joined = keys.join(options.delimiter);
     var prefix = options.addQueryPrefix === true ? '?' : '';
 
     if (options.charsetSentinel) {
-        if (charset === 'iso-8859-1') {
+        if (options.charset === 'iso-8859-1') {
             // encodeURIComponent('&#10003;'), the "numeric entity" representation of a checkmark
             prefix += 'utf8=%26%2310003%3B&';
         } else {
@@ -507,6 +550,7 @@ module.exports = function (object, opts) {
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
+var isArray = Array.isArray;
 
 var hexTable = (function () {
     var array = [];
@@ -522,7 +566,7 @@ var compactQueue = function compactQueue(queue) {
         var item = queue.pop();
         var obj = item.obj[item.prop];
 
-        if (Array.isArray(obj)) {
+        if (isArray(obj)) {
             var compacted = [];
 
             for (var j = 0; j < obj.length; ++j) {
@@ -553,9 +597,9 @@ var merge = function merge(target, source, options) {
     }
 
     if (typeof source !== 'object') {
-        if (Array.isArray(target)) {
+        if (isArray(target)) {
             target.push(source);
-        } else if (typeof target === 'object') {
+        } else if (target && typeof target === 'object') {
             if ((options && (options.plainObjects || options.allowPrototypes)) || !has.call(Object.prototype, source)) {
                 target[source] = true;
             }
@@ -566,20 +610,21 @@ var merge = function merge(target, source, options) {
         return target;
     }
 
-    if (typeof target !== 'object') {
+    if (!target || typeof target !== 'object') {
         return [target].concat(source);
     }
 
     var mergeTarget = target;
-    if (Array.isArray(target) && !Array.isArray(source)) {
+    if (isArray(target) && !isArray(source)) {
         mergeTarget = arrayToObject(target, options);
     }
 
-    if (Array.isArray(target) && Array.isArray(source)) {
+    if (isArray(target) && isArray(source)) {
         source.forEach(function (item, i) {
             if (has.call(target, i)) {
-                if (target[i] && typeof target[i] === 'object') {
-                    target[i] = merge(target[i], item, options);
+                var targetItem = target[i];
+                if (targetItem && typeof targetItem === 'object' && item && typeof item === 'object') {
+                    target[i] = merge(targetItem, item, options);
                 } else {
                     target.push(item);
                 }
@@ -710,7 +755,7 @@ var isRegExp = function isRegExp(obj) {
 };
 
 var isBuffer = function isBuffer(obj) {
-    if (obj === null || typeof obj === 'undefined') {
+    if (!obj || typeof obj !== 'object') {
         return false;
     }
 
