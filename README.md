@@ -380,7 +380,7 @@ assert.equal(nullsSkipped, 'a=b');
 
 ### Dealing with special character sets
 
-By default the encoding and decoding of characters is done in `utf-8`. If you 
+By default the encoding and decoding of characters is done in `utf-8`. If you
 wish to encode querystrings to a different character set (i.e.
 [Shift JIS](https://en.wikipedia.org/wiki/Shift_JIS)) you can use the
 [`qs-iconv`](https://github.com/martinheidegger/qs-iconv) library:

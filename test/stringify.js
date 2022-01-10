@@ -224,7 +224,7 @@ test('stringify()', function (t) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
         var filterFunc = function (prefix, value) {
-            calls++;
+            calls += 1;
             if (calls === 1) {
                 st.equal(prefix, '', 'prefix is empty');
                 st.equal(value, obj);
