@@ -1,3 +1,24 @@
+## **6.4.1**
+- [Fix] `parse`: ignore `__proto__` keys (#428)
+- [Fix] fix for an impossible situation: when the formatter is called with a non-string value
+- [Fix] use `safer-buffer` instead of `Buffer` constructor
+- [Fix] `utils.merge`: avoid a crash with a null target and an array source
+- [Fix]` `utils.merge`: avoid a crash with a null target and a truthy non-array source
+- [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
+- [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
+- [Fix] when `parseArrays` is false, properly handle keys ending in `[]`
+- [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
+- [Refactor] use cached `Array.isArray`
+- [Refactor] `stringify`: Avoid arr = arr.concat(...), push to the existing instance (#269)
+- [readme] remove travis badge; add github actions/codecov badges; update URLs
+- [Docs] Clarify the need for "arrayLimit" option
+- [meta] fix README.md (#399)
+- [meta] Clean up license text so it’s properly detected as BSD-3-Clause
+- [meta] add FUNDING.yml
+- [actions] backport actions from main
+- [Tests] remove nonexistent tape option
+- [Dev Deps] backport from main
+
 ## **6.4.0**
 - [New] `qs.stringify`: add `encodeValuesOnly` option
 - [Fix] follow `allowPrototypes` option during merge (#201, #201)
