@@ -32,7 +32,6 @@
     "devDependencies": {
         "@ljharb/eslint-config": "^20.1.0",
         "browserify": "^16.5.2",
-        "covert": "^1.1.1",
         "eclint": "^2.8.1",
         "eslint": "^8.6.0",
         "evalmd": "^0.0.19",
@@ -41,6 +40,7 @@
         "iconv-lite": "^0.5.1",
         "in-publish": "^2.0.1",
         "mkdirp": "^0.5.4",
+        "nyc": "^10.3.2",
         "object-inspect": "^1.12.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
@@ -51,13 +51,12 @@
         "prepublishOnly": "safe-publish-latest && npm run dist",
         "prepublish": "not-in-publish || npm run prepublishOnly",
         "pretest": "npm run --silent readme && npm run --silent lint",
-        "test": "npm run --silent coverage",
-        "tests-only": "node test",
+        "test": "npm run --silent tests-only",
+        "tests-only": "nyc tape 'test/**/*.js'",
         "posttest": "npx aud --production",
         "readme": "evalmd README.md",
         "postlint": "eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git')",
         "lint": "eslint lib/*.js test/*.js",
-        "coverage": "covert test",
         "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
     },
     "license": "BSD-3-Clause"
