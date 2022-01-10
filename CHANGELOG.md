@@ -1,3 +1,16 @@
+## **6.7.3**
+- [Fix] `parse`: ignore `__proto__` keys (#428)
+- [Fix] `stringify`: avoid encoding arrayformat comma when `encodeValuesOnly = true` (#424)
+- [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
+- [readme] remove travis badge; add github actions/codecov badges; update URLs
+- [Docs] add note and links for coercing primitive values (#408)
+- [meta] fix README.md (#399)
+- [meta] do not publish workflow files
+- [actions] backport actions from main
+- [Dev Deps] backport updates from main
+- [Tests] use `nyc` for coverage
+- [Tests] clean up stringify tests slightly
+
 ## **6.7.2**
 - [Fix] proper comma parsing of URL-encoded commas (#361)
 - [Fix] parses comma delimited array while having percent-encoded comma treated as normal text (#336)
