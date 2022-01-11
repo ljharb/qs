@@ -1,3 +1,9 @@
+## **6.10.3**
+- [Fix] `parse`: ignore `__proto__` keys (#428)
+- [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
+- [actions] reuse common workflows
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `object-inspect`, `tape`
+
 ## **6.10.2**
 - [Fix] `stringify`: actually fix cyclic references (#426)
 - [Fix] `stringify`: avoid encoding arrayformat comma when `encodeValuesOnly = true` (#424)
