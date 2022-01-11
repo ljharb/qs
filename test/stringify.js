@@ -714,16 +714,14 @@ test('stringify()', function (t) {
     });
 
     t.test('Edge cases and unknown formats', function (st) {
-        ['UFO1234', false, 1234, null, {}, []].forEach(
-            function (format) {
-                st['throws'](
-                    function () {
-                        qs.stringify({ a: 'b c' }, { format: format });
-                    },
-                    new TypeError('Unknown format option provided.')
-                );
-            }
-        );
+        ['UFO1234', false, 1234, null, {}, []].forEach(function (format) {
+            st['throws'](
+                function () {
+                    qs.stringify({ a: 'b c' }, { format: format });
+                },
+                new TypeError('Unknown format option provided.')
+            );
+        });
         st.end();
     });
 

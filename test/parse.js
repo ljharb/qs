@@ -140,6 +140,9 @@ test('parse()', function (t) {
     t.test('limits specific array indices to arrayLimit', function (st) {
         st.deepEqual(qs.parse('a[20]=a', { arrayLimit: 20 }), { a: ['a'] });
         st.deepEqual(qs.parse('a[21]=a', { arrayLimit: 20 }), { a: { 21: 'a' } });
+
+        st.deepEqual(qs.parse('a[20]=a'), { a: ['a'] });
+        st.deepEqual(qs.parse('a[21]=a'), { a: { 21: 'a' } });
         st.end();
     });
 
@@ -378,6 +381,7 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
         st.deepEqual(qs.parse('foo=bar', { ignoreQueryPrefix: true }), { foo: 'bar' });
         st.deepEqual(qs.parse('?foo=bar', { ignoreQueryPrefix: false }), { '?foo': 'bar' });
+
         st.end();
     });
 

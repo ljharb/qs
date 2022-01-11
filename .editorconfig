@@ -38,3 +38,6 @@ indent_size = off
 indent_style = off
 indent = off
 max_line_length = off
+
+[.nycrc]
+indent_style = tab

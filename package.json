@@ -59,15 +59,9 @@
         "tests-only": "nyc tape 'test/**/*.js'",
         "posttest": "aud --production",
         "readme": "evalmd README.md",
-        "postlint": "eclint check * lib/* test/* !dist/*",
-        "lint": "eslint .",
+        "postlint": "eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
+        "lint": "eslint --ext=js,mjs .",
         "dist": "mkdirp dist && browserify --standalone Qs lib/index.js > dist/qs.js"
     },
-    "license": "BSD-3-Clause",
-    "greenkeeper": {
-        "ignore": [
-            "iconv-lite",
-            "mkdirp"
-        ]
-    }
+    "license": "BSD-3-Clause"
 }

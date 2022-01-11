@@ -1,6 +1,6 @@
 {
     "name": "qs",
-    "repository": "hapijs/qs",
+    "repository": "ljharb/qs",
     "description": "query-string parser / stringifier with nesting support",
     "version": "6.10.3",
     "keywords": ["querystring", "query", "parser"],

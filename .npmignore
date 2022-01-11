@@ -15,4 +15,5 @@ coverage/
 bower.json
 component.json
 .npmignore
+
 .github/workflows
