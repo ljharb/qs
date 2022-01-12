@@ -15,5 +15,8 @@ coverage/
 bower.json
 component.json
 .npmignore
+.editorconfig
+.eslintignore
+.eslintrc
 
 .github/workflows
