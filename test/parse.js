@@ -889,10 +889,43 @@ test('parse()', function (t) {
 
 test('parses empty keys', function (t) {
     emptyTestCases.forEach(function (testCase) {
-        t.test('skips empty string key with ' + testCase.input, function (st) {
-            st.deepEqual(qs.parse(testCase.input), testCase.noEmptyKeys);
+        t.test('parses an object with empty string key with ' + testCase.input, function (st) {
+            st.deepEqual(qs.parse(testCase.input, { allowEmptyKeys: true }), testCase.withEmptyKeys);
+            st.deepEqual(qs.parse(testCase.stringifyOutput, { allowEmptyKeys: true }), testCase.withEmptyKeys);
 
             st.end();
         });
+
+        t.test('skips empty string key with ' + testCase.input, function (st) {
+            st.deepEqual(
+                qs.parse(testCase.input),
+                testCase.noEmptyKeys
+            );
+
+            st.deepEqual(
+                qs.parse(testCase.input, { allowEmptyKeys: false }),
+                testCase.noEmptyKeys
+            );
+
+            st.end();
+        });
+    });
+
+    t.test('edge case with object/arrays', function (st) {
+        st.deepEqual(
+            qs.parse('[][0]=2&[][1]=3', { allowEmptyKeys: true }),
+            { '': { '': ['2', '3'] } },
+            'array/object conversion',
+            { skip: 'TODO: figure out what this should do' }
+        );
+
+        st.deepEqual(
+            qs.parse('[][0]=2&[][1]=3&[a]=2', { allowEmptyKeys: true }),
+            { '': { '': ['2', '3'], a: '2' } },
+            'array/object conversion',
+            { skip: 'TODO: figure out what this should do' }
+        );
+
+        st.end();
     });
 });
