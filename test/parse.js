@@ -2306,6 +2306,50 @@ test('parses empty keys', function (t) {
 
             st.end();
         });
+
+        t.test('parses an object with empty string key with ' + testCase.input, function (st) {
+            st.deepEqual(qs.parse(testCase.input, { allowEmptyKeys: true }), testCase.withEmptyKeys, 'input');
+            st.deepEqual(qs.parse(testCase.stringifyOutput.indices, { allowEmptyKeys: true }), testCase.withEmptyKeys, 'indices stringify output');
+            st.deepEqual(qs.parse(testCase.stringifyOutput.brackets, { allowEmptyKeys: true }), testCase.withEmptyKeys, 'brackets stringify output');
+
+            st.end();
+        });
+
+        t.test('skips empty string key with ' + testCase.input + ' and `allowEmptyKeys: false`', function (st) {
+            st.deepEqual(qs.parse(testCase.input, { allowEmptyKeys: false }), testCase.noEmptyKeys);
+
+            st.end();
+        });
+    });
+
+    t.test('nested arrays under an empty key parse like they do under a non-empty key', function (st) {
+        st.deepEqual(qs.parse('[][0]=2&[][1]=3', { allowEmptyKeys: true }), { '': ['2', '3'] });
+        st.deepEqual(qs.parse('[][0]=2&[][1]=3&[a]=2', { allowEmptyKeys: true }), { '': { 0: '2', 1: '3', a: '2' } });
+
+        st.end();
+    });
+
+    t.test('an empty key with `parseArrays: false` is not an array index', function (st) {
+        st.deepEqual(qs.parse('=1', { allowEmptyKeys: true, parseArrays: false }), { '': '1' });
+        st.deepEqual(qs.parse('[a]=1', { allowEmptyKeys: true, parseArrays: false }), { '': { a: '1' } });
+        st.deepEqual(qs.parse('[]=1', { allowEmptyKeys: true, parseArrays: false }), { '': { 0: '1' } });
+
+        st.end();
+    });
+
+    t.test('a bare empty part does not affect combining an empty key', function (st) {
+        st.deepEqual(qs.parse('=a&&=b', { allowEmptyKeys: true }), { '': ['a', 'b'] });
+
+        st.end();
+    });
+
+    t.test('throws if `allowEmptyKeys` is not a boolean', function (st) {
+        st['throws'](
+            function () { qs.parse('', { allowEmptyKeys: 'yes' }); },
+            TypeError
+        );
+
+        st.end();
     });
 });
 
