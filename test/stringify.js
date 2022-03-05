@@ -6,6 +6,7 @@ var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
 var hasSymbols = require('has-symbols');
+var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 var hasBigInt = typeof BigInt === 'function';
 
 test('stringify()', function (t) {
@@ -951,4 +952,21 @@ test('stringify()', function (t) {
     });
 
     t.end();
+});
+
+test('stringifies empty keys', function (t) {
+    emptyTestCases.forEach(function (testCase) {
+        t.test('stringifies an object with empty string key with ' + testCase.input, function (st) {
+            st.deepEqual(qs.stringify(testCase.withEmptyKeys, { encode: false }), testCase.stringifyOutput);
+
+            st.end();
+        });
+    });
+
+    t.test('edge case with object/arrays', function (st) {
+        st.deepEqual(qs.stringify({ '': { '': [2, 3] } }, { encode: false }), '[][0]=2&[][1]=3');
+        st.deepEqual(qs.stringify({ '': { '': [2, 3], a: 2 } }, { encode: false }), '[][0]=2&[][1]=3&[a]=2');
+
+        st.end();
+    });
 });

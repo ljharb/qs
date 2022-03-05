@@ -6,6 +6,7 @@ var iconv = require('iconv-lite');
 var mockProperty = require('mock-property');
 var hasOverrideMistake = require('has-override-mistake')();
 var SaferBuffer = require('safer-buffer').Buffer;
+var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 
 var qs = require('../');
 var utils = require('../lib/utils');
@@ -884,4 +885,14 @@ test('parse()', function (t) {
     });
 
     t.end();
+});
+
+test('parses empty keys', function (t) {
+    emptyTestCases.forEach(function (testCase) {
+        t.test('skips empty string key with ' + testCase.input, function (st) {
+            st.deepEqual(qs.parse(testCase.input), testCase.noEmptyKeys);
+
+            st.end();
+        });
+    });
 });
