@@ -201,6 +201,21 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('should not allow overriding any array length', function (st) {
+        st.deepEqual(qs.parse('a=b&a=c&a.length=2', { allowDots: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b&a=c&a.length=2&a.foo=bar&a.bad=baz', { allowDots: true }), { a: { 0: 'b', 1: 'c', foo: 'bar', bad: 'baz' } });
+        st.end();
+    });
+
+    t.test('should not allow overriding any native array method', function (st) {
+        Object.getOwnPropertyNames(Array.prototype).forEach(function (key) {
+            var str = 'a=b&a=c&a.' + key + '=true';
+            st.deepEqual(qs.parse(str, { allowDots: true }), { a: ['b', 'c'] });
+        });
+
+        st.end();
+    });
+
     t.test('correctly prunes undefined values when converting an array to an object', function (st) {
         st.deepEqual(qs.parse('a[2]=b&a[99999999]=c'), { a: { 2: 'b', 99999999: 'c' } });
         st.end();
