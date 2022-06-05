@@ -410,6 +410,16 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('foo=', { comma: true }), { foo: '' });
         st.deepEqual(qs.parse('foo', { comma: true }), { foo: '' });
         st.deepEqual(qs.parse('foo', { comma: true, strictNullHandling: true }), { foo: null });
+
+        // test cases inversed from from stringify tests
+        st.deepEqual(qs.parse('a[0]=c'), { a: ['c'] });
+        st.deepEqual(qs.parse('a[]=c'), { a: ['c'] });
+        st.deepEqual(qs.parse('a[]=c', { comma: true }), { a: ['c'] });
+
+        st.deepEqual(qs.parse('a[0]=c&a[1]=d'), { a: ['c', 'd'] });
+        st.deepEqual(qs.parse('a[]=c&a[]=d'), { a: ['c', 'd'] });
+        st.deepEqual(qs.parse('a=c,d', { comma: true }), { a: ['c', 'd'] });
+
         st.end();
     });
 
