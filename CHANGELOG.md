@@ -1,3 +1,6 @@
+## **6.10.5**
+- [Fix] `stringify`: with `arrayFormat: comma`, properly include an explicit `[]` on a single-item array (#434)
+
 ## **6.10.4**
 - [Fix] `stringify`: with `arrayFormat: comma`, include an explicit `[]` on a single-item array (#441)
 - [meta] use `npmignore` to autogenerate an npmignore file
