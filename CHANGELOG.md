@@ -1,3 +1,8 @@
+## **6.10.4**
+- [Fix] `stringify`: with `arrayFormat: comma`, include an explicit `[]` on a single-item array (#441)
+- [meta] use `npmignore` to autogenerate an npmignore file
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `has-symbol`, `object-inspect`, `tape`
+
 ## **6.10.3**
 - [Fix] `parse`: ignore `__proto__` keys (#428)
 - [Robustness] `stringify`: avoid relying on a global `undefined` (#427)
