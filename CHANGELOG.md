@@ -1,3 +1,7 @@
+## **6.11.0
+- [New] [Fix] `stringify`: revert 0e903c0; add `commaRoundTrip` option (#442)
+- [readme] fix version badge
+
 ## **6.10.5**
 - [Fix] `stringify`: with `arrayFormat: comma`, properly include an explicit `[]` on a single-item array (#434)
 
