@@ -1,4 +1,4 @@
-# qs <sup>[![Version Badge][2]][1]</sup>
+# qs <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
 [![github actions][actions-image]][actions-url]
 [![coverage][codecov-image]][codecov-url]
