@@ -498,6 +498,44 @@ qs.stringify({ a: ['b', 'c', 'd'], e: 'f' }, { filter: ['a', 0, 2] });
 // 'a[0]=b&a[2]=d'
 ```
 
+You could also use `filter` to inject custom serialization for user defined types. Consider you're working with
+some api that expects query strings of the format for ranges:
+
+```
+https://domain.com/endpoint?range=30...70
+```
+
+For which you model as:
+
+```javascript
+class Range {
+    constructor(from, to) {
+        this.from = from;
+        this.to = to;
+    }
+}
+```
+
+You could _inject_ a custom serializer to handle values of this type:
+
+```javascript
+qs.stringify(
+    {
+        range: new Range(30, 70),
+    },
+    {
+        filter: (prefix, value) => {
+            if (value instanceof Range) {
+                return `${value.from}...${value.to}`;
+            }
+            // serialize the usual way
+            return value;
+        },
+    }
+);
+// range=30...70
+```
+
 ### Handling of `null` values
 
 By default, `null` values are treated like empty strings:
