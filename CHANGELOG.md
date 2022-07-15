@@ -1,4 +1,4 @@
-## **6.11.0
+## **6.11.0**
 - [New] [Fix] `stringify`: revert 0e903c0; add `commaRoundTrip` option (#442)
 - [readme] fix version badge
 
@@ -407,7 +407,7 @@
 - [New] add "encoder" and "decoder" options, for custom param encoding/decoding (#160)
 - [Fix] fix compacting of nested sparse arrays (#150)
 
-## **6.1.2
+## **6.1.2**
 - [Fix] follow `allowPrototypes` option during merge (#201, #200)
 - [Fix] chmod a-x
 - [Fix] support keys starting with brackets (#202, #200)
