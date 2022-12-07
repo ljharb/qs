@@ -238,7 +238,7 @@
 
 ## **6.5.3**
 - [Fix] `parse`: ignore `__proto__` keys (#428)
-- [Fix]` `utils.merge`: avoid a crash with a null target and a truthy non-array source
+- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source
 - [Fix] correctly parse nested arrays
 - [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
 - [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
@@ -291,7 +291,7 @@
 - [Fix] fix for an impossible situation: when the formatter is called with a non-string value
 - [Fix] use `safer-buffer` instead of `Buffer` constructor
 - [Fix] `utils.merge`: avoid a crash with a null target and an array source
-- [Fix]` `utils.merge`: avoid a crash with a null target and a truthy non-array source
+- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source
 - [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
 - [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
 - [Fix] when `parseArrays` is false, properly handle keys ending in `[]`
@@ -320,7 +320,7 @@
 - [Fix] `parse`: ignore `__proto__` keys (#428)
 - [Fix] fix for an impossible situation: when the formatter is called with a non-string value
 - [Fix] `utils.merge`: avoid a crash with a null target and an array source
-- [Fix]` `utils.merge`: avoid a crash with a null target and a truthy non-array source
+- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source
 - [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
 - [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
 - [Fix] when `parseArrays` is false, properly handle keys ending in `[]`
