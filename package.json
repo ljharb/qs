@@ -34,7 +34,7 @@
     },
     "devDependencies": {
         "@ljharb/eslint-config": "^21.0.0",
-        "aud": "^2.0.1",
+        "aud": "^2.0.2",
         "browserify": "^16.5.2",
         "eclint": "^2.8.1",
         "eslint": "=8.8.0",
