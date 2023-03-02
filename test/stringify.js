@@ -160,6 +160,13 @@ test('stringify()', function (t) {
             s2t.end();
         });
 
+        st.test('array with multiple items with a comma inside', function (s2t) {
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { encodeValuesOnly: true, arrayFormat: 'comma' }), 'a=c%2Cd,e');
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a=c%25%2Cd%2Ce');
+
+            s2t.end();
+        });
+
         st.end();
     });
 
