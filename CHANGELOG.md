@@ -1,3 +1,12 @@
+## **6.11.1**
+- [Fix] `stringify`: encode comma values more consistently (#463)
+- [readme] add usage of `filter` option for injecting custom serialization, i.e. of custom types (#447)
+- [meta] remove extraneous code backticks (#457)
+- [meta] fix changelog markdown
+- [actions] update checkout action
+- [actions] restrict action permissions
+- [Dev Deps] update `@ljharb/eslint-config`, `aud`, `object-inspect`, `tape`
+
 ## **6.11.0**
 - [New] [Fix] `stringify`: revert 0e903c0; add `commaRoundTrip` option (#442)
 - [readme] fix version badge
