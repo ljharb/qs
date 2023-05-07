@@ -1,10 +1,14 @@
 'use strict';
 
 var test = require('tape');
+var hasPropertyDescriptors = require('has-property-descriptors')();
+var iconv = require('iconv-lite');
+var mockProperty = require('mock-property');
+var hasOverrideMistake = require('has-override-mistake')();
+var SaferBuffer = require('safer-buffer').Buffer;
+
 var qs = require('../');
 var utils = require('../lib/utils');
-var iconv = require('iconv-lite');
-var SaferBuffer = require('safer-buffer').Buffer;
 
 test('parse()', function (t) {
     t.test('parses a simple string', function (st) {
@@ -597,6 +601,34 @@ test('parse()', function (t) {
             { toString: '' },
             'bare "toString" results in { toString: "" }'
         );
+
+        st.end();
+    });
+
+    t.test('does not crash when the global Object prototype is frozen', { skip: !hasPropertyDescriptors || !hasOverrideMistake }, function (st) {
+        // We can't actually freeze the global Object prototype as that will interfere with other tests, and once an object is frozen, it
+        // can't be unfrozen. Instead, we add a new non-writable property to simulate this.
+        st.teardown(mockProperty(Object.prototype, 'frozenProp', { value: 'foo', nonWritable: true, nonEnumerable: true }));
+
+        st['throws'](
+            function () {
+                var obj = {};
+                obj.frozenProp = 'bar';
+            },
+            // node < 6 has a different error message
+            /^TypeError: Cannot assign to read only property 'frozenProp' of (?:object '#<Object>'|#<Object>)/,
+            'regular assignment of an inherited non-writable property throws'
+        );
+
+        var parsed;
+        st.doesNotThrow(
+            function () {
+                parsed = qs.parse('frozenProp', { allowPrototypes: false });
+            },
+            'parsing a nonwritable Object.prototype property does not throw'
+        );
+
+        st.deepEqual(parsed, {}, 'bare "frozenProp" results in {}');
 
         st.end();
     });
