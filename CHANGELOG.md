@@ -1,3 +1,7 @@
+## **6.11.2**
+- [Fix] `parse`: Fix parsing when the global Object prototype is frozen (#473)
+- [Tests] add passing test cases with empty keys (#473)
+
 ## **6.11.1**
 - [Fix] `stringify`: encode comma values more consistently (#463)
 - [readme] add usage of `filter` option for injecting custom serialization, i.e. of custom types (#447)
