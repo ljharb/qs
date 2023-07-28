@@ -767,6 +767,77 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('calls decoder when parsing objects', function (st) {
+        var decoded = [];
+        st.deepEqual(qs.parse({
+            one: 1,
+            two: 'two',
+            three: true
+        }, {
+            decoder: function (str, _, __, type) {
+                decoded.push({ val: str, type: type });
+                if (type === 'key') {
+                    return str + '$';
+                }
+                return str;
+            }
+        }), {
+            one$: 1,
+            two$: 'two',
+            three$: true
+        });
+        st.deepEqual(decoded, [
+            { val: 'one', type: 'key' },
+            { val: 1, type: 'value' },
+            { val: 'two', type: 'key' },
+            { val: 'two', type: 'value' },
+            { val: 'three', type: 'key' },
+            { val: true, type: 'value' }
+        ]);
+        st.end();
+    });
+
+    t.test('can parse object with custom encoding', function (st) {
+        var keywords = {
+            'true': true
+        };
+        st.deepEqual(qs.parse({
+            maintYear: '2018',
+            maintMonth: '5',
+            fields: [
+                'id',
+                'regname',
+                'price'
+            ],
+            notRenewed: 'true'
+        }, {
+            decoder: function (str, _, __, type) {
+                if (str in keywords) {
+                    return keywords[str];
+                }
+                if (type === 'value') {
+                    var parsed = parseFloat(str);
+                    if (isNaN(parsed)) {
+                        return str;
+                    }
+                    return parsed;
+
+                }
+                return str;
+            }
+        }), {
+            maintYear: 2018,
+            maintMonth: 5,
+            fields: [
+                'id',
+                'regname',
+                'price'
+            ],
+            notRenewed: true
+        });
+        st.end();
+    });
+
     t.test('receives the default decoder as a second argument', function (st) {
         st.plan(1);
         qs.parse('a', {
