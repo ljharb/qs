@@ -801,7 +801,8 @@ test('parse()', function (t) {
         var keywords = {
             'true': true
         };
-        st.deepEqual(qs.parse({
+        st.deepEqual(
+            qs.parse({
             maintYear: '2018',
             maintMonth: '5',
             fields: [
@@ -810,7 +811,8 @@ test('parse()', function (t) {
                 'price'
             ],
             notRenewed: 'true'
-        }, {
+        },
+        {
             decoder: function (str, _, __, type) {
                 if (str in keywords) {
                     return keywords[str];
@@ -825,7 +827,8 @@ test('parse()', function (t) {
                 }
                 return str;
             }
-        }), {
+        }),
+        {
             maintYear: 2018,
             maintMonth: 5,
             fields: [
