@@ -365,8 +365,14 @@ test('parse()', function (t) {
 
     t.test('allows overriding array limit', function (st) {
         st.deepEqual(qs.parse('a[0]=b', { arrayLimit: -1 }), { a: { 0: 'b' } });
+        st.deepEqual(qs.parse('a[0]=b', { arrayLimit: 0 }), { a: ['b'] });
+
         st.deepEqual(qs.parse('a[-1]=b', { arrayLimit: -1 }), { a: { '-1': 'b' } });
+        st.deepEqual(qs.parse('a[-1]=b', { arrayLimit: 0 }), { a: { '-1': 'b' } });
+
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayLimit: -1 }), { a: { 0: 'b', 1: 'c' } });
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayLimit: 0 }), { a: { 0: 'b', 1: 'c' } });
+
         st.end();
     });
 
