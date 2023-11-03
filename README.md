@@ -1,3 +1,7 @@
+<p align="center">
+    <img alt="qs" src="./logos/banner_default.png" width="800" />
+</p>
+
 # qs <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
 [![github actions][actions-image]][actions-url]
@@ -661,3 +665,9 @@ The maintainers of qs and thousands of other packages are working with Tidelift 
 [codecov-url]: https://app.codecov.io/gh/ljharb/qs/
 [actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/qs
 [actions-url]: https://github.com/ljharb/qs/actions
+
+## Acknowledgements
+
+qs logo by [NUMI](https://github.com/numi-hq/open-design):
+
+[<img src="https://raw.githubusercontent.com/numi-hq/open-design/main/assets/numi-lockup.png" alt="NUMI Logo" style="width: 200px;"/>](https://numi.tech/?ref=qs)
