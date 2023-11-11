@@ -301,6 +301,23 @@ assert.deepEqual(primitiveValues, { a: '15', b: 'true', c: 'null' });
 
 If you wish to auto-convert values which look like numbers, booleans, and other values into their primitive counterparts, you can use the [query-types Express JS middleware](https://github.com/xpepermint/query-types) which will auto-convert all request query parameters.
 
+
+### Parsing empty keys
+
+By default, empty keys are omitted after parsing:
+
+```javascript
+var obj = qs.parse("=1&=2");
+assert.deepEqual(obj, {});
+```
+
+It is possible to include empty keys by using `allowEmptyKeys` flag:
+
+```javascript
+var obj = qs.parse("=1&=2", { allowEmptyKeys: true });
+assert.deepEqual(obj, { "": ["1","2"] });
+```
+
 ### Stringifying
 
 [](#preventEval)

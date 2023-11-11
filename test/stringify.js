@@ -958,6 +958,7 @@ test('stringifies empty keys', function (t) {
     emptyTestCases.forEach(function (testCase) {
         t.test('stringifies an object with empty string key with ' + testCase.input, function (st) {
             st.deepEqual(qs.stringify(testCase.withEmptyKeys, { encode: false }), testCase.stringifyOutput);
+            st.deepEqual(qs.stringify(testCase.noEmptyKeys, { encode: false }), testCase.stringifyOutputNoEmpty);
 
             st.end();
         });
