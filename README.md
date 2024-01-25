@@ -1,9 +1,11 @@
+<p align="center">
+    <img alt="qs" src="./logos/banner_default.png" width="800" />
+</p>
+
 # qs <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
 [![github actions][actions-image]][actions-url]
 [![coverage][codecov-image]][codecov-url]
-[![dependency status][deps-svg]][deps-url]
-[![dev dependency status][dev-deps-svg]][dev-deps-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
@@ -375,14 +377,14 @@ var decoded = qs.parse('x=z', { decoder: function (str, defaultDecoder, charset,
 
 Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
 
-When arrays are stringified, by default they are given explicit indices:
+When arrays are stringified, they follow the `arrayFormat` option, which defaults to `indices`:
 
 ```javascript
 qs.stringify({ a: ['b', 'c', 'd'] });
 // 'a[0]=b&a[1]=c&a[2]=d'
 ```
 
-You may override this by setting the `indices` option to `false`:
+You may override this by setting the `indices` option to `false`, or to be more explicit, the `arrayFormat` option to `repeat`:
 
 ```javascript
 qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false });
@@ -661,3 +663,9 @@ The maintainers of qs and thousands of other packages are working with Tidelift 
 [codecov-url]: https://app.codecov.io/gh/ljharb/qs/
 [actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/qs
 [actions-url]: https://github.com/ljharb/qs/actions
+
+## Acknowledgements
+
+qs logo by [NUMI](https://github.com/numi-hq/open-design):
+
+[<img src="https://raw.githubusercontent.com/numi-hq/open-design/main/assets/numi-lockup.png" alt="NUMI Logo" style="width: 200px;"/>](https://numi.tech/?ref=qs)
