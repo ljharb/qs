@@ -149,6 +149,12 @@ var withDots = qs.parse('a.b=c', { allowDots: true });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
+Option `allowEmptyArrays` can be used to allowing empty array values in object
+```javascript
+var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
+assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
+```
+
 If you have to deal with legacy browsers or services, there's
 also support for decoding percent-encoded octets as iso-8859-1:
 
@@ -418,6 +424,12 @@ You may override this to use dot notation by setting the `allowDots` option to `
 ```javascript
 qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
 // 'a.b.c=d&a.b.e=f'
+```
+
+You may allow empty array values by setting the `allowEmptyArrays` option to `true`:
+```javascript
+qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true });
+// 'foo[]&bar=baz'
 ```
 
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
