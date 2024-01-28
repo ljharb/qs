@@ -78,6 +78,92 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('decode dot keys correctly', function (st) {
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: false, decodeDotInKeys: false }),
+            { 'name%2Eobj.first': 'John', 'name%2Eobj.last': 'Doe' },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name.obj.first=John&name.obj.last=Doe', { allowDots: true, decodeDotInKeys: false }),
+            { name: { obj: { first: 'John', last: 'Doe' } } },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: true, decodeDotInKeys: false }),
+            { 'name%2Eobj': { first: 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: true, decodeDotInKeys: true }),
+            { 'name.obj': { first: 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys true'
+        );
+
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { allowDots: false, decodeDotInKeys: false }
+            ),
+            { 'name%2Eobj%2Esubobject.first%2Egodly%2Ename': 'John', 'name%2Eobj%2Esubobject.last': 'Doe' },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse(
+                'name.obj.subobject.first.godly.name=John&name.obj.subobject.last=Doe',
+                { allowDots: true, decodeDotInKeys: false }
+            ),
+            { name: { obj: { subobject: { first: { godly: { name: 'John' } }, last: 'Doe' } } } },
+            'with allowDots true and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should decode dot in key of object, and allow enabling dot notation when decodeDotInKeys is set to true and allowDots is undefined', function (st) {
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { decodeDotInKeys: true }
+            ),
+            { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+            'with allowDots undefined and decodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should throw when decodeDotInKeys is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 0 }); },
+            TypeError
+        );
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: null }); },
+            TypeError
+        );
+
+        st.end();
+    });
+
     t.test('allows empty arrays in obj values', function (st) {
         st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: true }), { foo: [], bar: 'baz' });
         st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: false }), { foo: [''], bar: 'baz' });

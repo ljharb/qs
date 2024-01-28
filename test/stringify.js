@@ -64,6 +64,128 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes dot in key of object when encodeDotInKeys and allowDots is provided', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: false }
+            ),
+            'name.obj%5Bfirst%5D=John&name.obj%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: false }
+            ),
+            'name.obj.first=John&name.obj.last=Doe',
+            'with allowDots true and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%5Bfirst%5D=John&name%252Eobj%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj.first=John&name%252Eobj.last=Doe',
+            'with allowDots true and encodeDotInKeys true'
+        );
+
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: false }
+            ),
+            'name.obj.subobject%5Bfirst.godly.name%5D=John&name.obj.subobject%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: false }
+            ),
+            'name.obj.subobject.first.godly.name=John&name.obj.subobject.last=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject%5Bfirst.godly.name%5D=John&name%252Eobj%252Esubobject%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+            'with allowDots true and encodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should encode dot in key of object, and automatically set allowDots to `true` when encodeDotInKeys is true and allowDots in undefined', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+            'with allowDots undefined and encodeDotInKeys true'
+        );
+        st.end();
+    });
+
+    t.test('should encode dot in key of object when encodeDotInKeys and allowDots is provided, and nothing else when encodeValuesOnly is provided', function (st) {
+        st.equal(
+            qs.stringify({ 'name.obj': { first: 'John', last: 'Doe' } }, {
+                encodeDotInKeys: true, allowDots: true, encodeValuesOnly: true
+            }),
+            'name%2Eobj.first=John&name%2Eobj.last=Doe'
+        );
+
+        st.equal(
+            qs.stringify({ 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } }, { allowDots: true, encodeDotInKeys: true, encodeValuesOnly: true }),
+            'name%2Eobj%2Esubobject.first%2Egodly%2Ename=John&name%2Eobj%2Esubobject.last=Doe'
+        );
+
+        st.end();
+    });
+
+    t.test('should throw when encodeDotInKeys is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: 0 }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: null }); },
+            TypeError
+        );
+
+        st.end();
+    });
+
     t.test('adds query prefix', function (st) {
         st.equal(qs.stringify({ a: 'b' }, { addQueryPrefix: true }), '?a=b');
         st.end();
