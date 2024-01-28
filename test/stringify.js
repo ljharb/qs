@@ -138,6 +138,16 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('omits blanks when asked', function (st) {
+        st.equal(qs.stringify({ a: 'b', c: '', d: '  ' }, { skipBlanks: true }), 'a=b');
+        st.end();
+    });
+
+    t.test('omits nested blanks when asked', function (st) {
+        st.equal(qs.stringify({ a: { b: 'c', d: '' } }, { skipBlanks: true }), 'a%5Bb%5D=c');
+        st.end();
+    });
+
     t.test('omits array indices when asked', function (st) {
         st.equal(qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false }), 'a=b&a=c&a=d');
 
