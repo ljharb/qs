@@ -140,6 +140,45 @@ test('stringify()', function (t) {
 
     t.test('omits array indices when asked', function (st) {
         st.equal(qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false }), 'a=b&a=c&a=d');
+
+        st.end();
+    });
+
+    t.test('omits object key/value pair when value is empty array', function (st) {
+        st.equal(qs.stringify({ a: [], b: 'zz' }), 'b=zz');
+
+        st.end();
+    });
+
+    t.test('should not omit object key/value pair when value is empty array and when asked', function (st) {
+        st.equal(qs.stringify({ a: [], b: 'zz' }), 'b=zz');
+        st.equal(qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: false }), 'b=zz');
+        st.equal(qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: true }), 'a[]&b=zz');
+
+        st.end();
+    });
+
+    t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: 0 }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: null }); },
+            TypeError
+        );
+
         st.end();
     });
 

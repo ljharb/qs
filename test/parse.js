@@ -72,6 +72,37 @@ test('parse()', function (t) {
     t.test('allows enabling dot notation', function (st) {
         st.deepEqual(qs.parse('a.b=c'), { 'a.b': 'c' });
         st.deepEqual(qs.parse('a.b=c', { allowDots: true }), { a: { b: 'c' } });
+
+        st.end();
+    });
+
+    t.test('allows empty arrays in obj values', function (st) {
+        st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: true }), { foo: [], bar: 'baz' });
+        st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: false }), { foo: [''], bar: 'baz' });
+
+        st.end();
+    });
+
+    t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: 0 }); },
+            TypeError
+        );
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: null }); },
+            TypeError
+        );
+
         st.end();
     });
 
