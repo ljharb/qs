@@ -6,6 +6,8 @@ var iconv = require('iconv-lite');
 var mockProperty = require('mock-property');
 var hasOverrideMistake = require('has-override-mistake')();
 var SaferBuffer = require('safer-buffer').Buffer;
+var v = require('es-value-fixtures');
+var inspect = require('object-inspect');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 
 var qs = require('../');
@@ -932,4 +934,42 @@ test('parses empty keys', function (t) {
             st.end();
         });
     });
+});
+
+test('`duplicates` option', function (t) {
+    v.nonStrings.concat('not a valid option').forEach(function (invalidOption) {
+        if (typeof invalidOption !== 'undefined') {
+            t['throws'](
+                function () { qs.parse('', { duplicates: invalidOption }); },
+                TypeError,
+                'throws on invalid option: ' + inspect(invalidOption)
+            );
+        }
+    });
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz'),
+        { foo: ['bar', 'baz'] },
+        'duplicates: default, combine'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'combine' }),
+        { foo: ['bar', 'baz'] },
+        'duplicates: combine'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'first' }),
+        { foo: 'bar' },
+        'duplicates: first'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'last' }),
+        { foo: 'baz' },
+        'duplicates: last'
+    );
+
+    t.end();
 });

@@ -157,6 +157,14 @@ var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
 assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
 ```
 
+Option `duplicates` can be used to change the behavior when duplicate keys are encountered
+```javascript
+assert.deepEqual(qs.parse('foo=bar&foo=baz'), { foo: ['bar', 'baz'] });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'combine' }), { foo: ['bar', 'baz'] });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'first' }), { foo: 'bar' });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'last' }), { foo: 'baz' });
+```
+
 If you have to deal with legacy browsers or services, there's also support for decoding percent-encoded octets as iso-8859-1:
 
 ```javascript
