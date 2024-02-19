@@ -358,6 +358,12 @@ test('parse()', function (t) {
             'keeps "b[]" as a literal key'
         );
 
+        st.deepEqual(
+            qs.parse({ 'a[b[]]': 'c' }),
+            { a: { 'b[]': 'c' } },
+            'keeps "b[]" as a literal key with object input'
+        );
+
         // Nested with an array push on the outer level
         st.deepEqual(
             qs.parse('list[][x[]]=y'),
