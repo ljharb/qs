@@ -55,7 +55,9 @@ var nullObject = qs.parse('a[hasOwnProperty]=b', { plainObjects: true });
 assert.deepEqual(nullObject, { a: { hasOwnProperty: 'b' } });
 ```
 
-By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties. *WARNING* It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten. Always be careful with this option.
+By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties.
+*WARNING* It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten.
+Always be careful with this option.
 
 ```javascript
 var protoObject = qs.parse('a[hasOwnProperty]=b', { allowPrototypes: true });
@@ -82,8 +84,8 @@ assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
 });
 ```
 
-By default, when nesting objects **qs** will only parse up to 5 children deep. This means if you attempt to parse a string like
-`'a[b][c][d][e][f][g][h][i]=j'` your resulting object will be:
+By default, when nesting objects **qs** will only parse up to 5 children deep.
+This means if you attempt to parse a string like `'a[b][c][d][e][f][g][h][i]=j'` your resulting object will be:
 
 ```javascript
 var expected = {
@@ -155,32 +157,30 @@ var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
 assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
 ```
 
-If you have to deal with legacy browsers or services, there's
-also support for decoding percent-encoded octets as iso-8859-1:
+Option `duplicates` can be used to change the behavior when duplicate keys are encountered
+```javascript
+assert.deepEqual(qs.parse('foo=bar&foo=baz'), { foo: ['bar', 'baz'] });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'combine' }), { foo: ['bar', 'baz'] });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'first' }), { foo: 'bar' });
+assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'last' }), { foo: 'baz' });
+```
+
+If you have to deal with legacy browsers or services, there's also support for decoding percent-encoded octets as iso-8859-1:
 
 ```javascript
 var oldCharset = qs.parse('a=%A7', { charset: 'iso-8859-1' });
 assert.deepEqual(oldCharset, { a: '§' });
 ```
 
-Some services add an initial `utf8=✓` value to forms so that old
-Internet Explorer versions are more likely to submit the form as
-utf-8. Additionally, the server can check the value against wrong
-encodings of the checkmark character and detect that a query string
-or `application/x-www-form-urlencoded` body was *not* sent as
-utf-8, eg. if the form had an `accept-charset` parameter or the
-containing page had a different character set.
+Some services add an initial `utf8=✓` value to forms so that old Internet Explorer versions are more likely to submit the form as utf-8.
+Additionally, the server can check the value against wrong encodings of the checkmark character and detect that a query string or `application/x-www-form-urlencoded` body was *not* sent as utf-8, eg. if the form had an `accept-charset` parameter or the containing page had a different character set.
 
 **qs** supports this mechanism via the `charsetSentinel` option.
-If specified, the `utf8` parameter will be omitted from the
-returned object. It will be used to switch to `iso-8859-1`/`utf-8`
-mode depending on how the checkmark is encoded.
+If specified, the `utf8` parameter will be omitted from the returned object.
+It will be used to switch to `iso-8859-1`/`utf-8` mode depending on how the checkmark is encoded.
 
-**Important**: When you specify both the `charset` option and the
-`charsetSentinel` option, the `charset` will be overridden when
-the request contains a `utf8` parameter from which the actual
-charset can be deduced. In that sense the `charset` will behave
-as the default charset rather than the authoritative charset.
+**Important**: When you specify both the `charset` option and the `charsetSentinel` option, the `charset` will be overridden when the request contains a `utf8` parameter from which the actual charset can be deduced.
+In that sense the `charset` will behave as the default charset rather than the authoritative charset.
 
 ```javascript
 var detectedAsUtf8 = qs.parse('utf8=%E2%9C%93&a=%C3%B8', {
@@ -197,8 +197,7 @@ var detectedAsIso8859_1 = qs.parse('utf8=%26%2310003%3B&a=%F8', {
 assert.deepEqual(detectedAsIso8859_1, { a: 'ø' });
 ```
 
-If you want to decode the `&#...;` syntax to the actual character,
-you can specify the `interpretNumericEntities` option as well:
+If you want to decode the `&#...;` syntax to the actual character, you can specify the `interpretNumericEntities` option as well:
 
 ```javascript
 var detectedAsIso8859_1 = qs.parse('a=%26%239786%3B', {
@@ -208,8 +207,7 @@ var detectedAsIso8859_1 = qs.parse('a=%26%239786%3B', {
 assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
 ```
 
-It also works when the charset has been detected in `charsetSentinel`
-mode.
+It also works when the charset has been detected in `charsetSentinel` mode.
 
 ### Parsing Arrays
 
@@ -227,9 +225,8 @@ var withIndexes = qs.parse('a[1]=c&a[0]=b');
 assert.deepEqual(withIndexes, { a: ['b', 'c'] });
 ```
 
-Note that the only difference between an index in an array and a key in an object is that the value between the brackets must be a number
-to create an array. When creating arrays with specific indices, **qs** will compact a sparse array to only the existing values preserving
-their order:
+Note that the only difference between an index in an array and a key in an object is that the value between the brackets must be a number to create an array.
+When creating arrays with specific indices, **qs** will compact a sparse array to only the existing values preserving their order:
 
 ```javascript
 var noSparse = qs.parse('a[1]=b&a[15]=c');
@@ -253,8 +250,9 @@ var withIndexedEmptyString = qs.parse('a[0]=b&a[1]=&a[2]=c');
 assert.deepEqual(withIndexedEmptyString, { a: ['b', '', 'c'] });
 ```
 
-**qs** will also limit specifying indices in an array to a maximum index of `20`. Any array members with an index of greater than `20` will
-instead be converted to an object with the index as the key. This is needed to handle cases when someone sent, for example, `a[999999999]` and it will take significant time to iterate over this huge array.
+**qs** will also limit specifying indices in an array to a maximum index of `20`.
+Any array members with an index of greater than `20` will instead be converted to an object with the index as the key.
+This is needed to handle cases when someone sent, for example, `a[999999999]` and it will take significant time to iterate over this huge array.
 
 ```javascript
 var withMaxIndex = qs.parse('a[100]=b');
@@ -298,7 +296,8 @@ assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 
 ### Parsing primitive/scalar values (numbers, booleans, null, etc)
 
-By default, all values are parsed as strings. This behavior will not change and is explained in [issue #91](https://github.com/ljharb/qs/issues/91).
+By default, all values are parsed as strings.
+This behavior will not change and is explained in [issue #91](https://github.com/ljharb/qs/issues/91).
 
 ```javascript
 var primitiveValues = qs.parse('a=15&b=true&c=null');
@@ -381,7 +380,8 @@ var decoded = qs.parse('x=z', { decoder: function (str, defaultDecoder, charset,
 }})
 ```
 
-Examples beyond this point will be shown as though the output is not URI encoded for clarity. Please note that the return values in these cases *will* be URI encoded during real usage.
+Examples beyond this point will be shown as though the output is not URI encoded for clarity.
+Please note that the return values in these cases *will* be URI encoded during real usage.
 
 When arrays are stringified, they follow the `arrayFormat` option, which defaults to `indices`:
 
@@ -487,8 +487,8 @@ assert.equal(qs.stringify({ a: 'c', z: 'y', b : 'f' }, { sort: alphabeticalSort 
 ```
 
 Finally, you can use the `filter` option to restrict which keys will be included in the stringified output.
-If you pass a function, it will be called for each key to obtain the replacement value. Otherwise, if you
-pass an array, it will be used to select properties and array indices for stringification:
+If you pass a function, it will be called for each key to obtain the replacement value.
+Otherwise, if you pass an array, it will be used to select properties and array indices for stringification:
 
 ```javascript
 function filterFunc(prefix, value) {
@@ -512,8 +512,8 @@ qs.stringify({ a: ['b', 'c', 'd'], e: 'f' }, { filter: ['a', 0, 2] });
 // 'a[0]=b&a[2]=d'
 ```
 
-You could also use `filter` to inject custom serialization for user defined types. Consider you're working with
-some api that expects query strings of the format for ranges:
+You could also use `filter` to inject custom serialization for user defined types.
+Consider you're working with some api that expects query strings of the format for ranges:
 
 ```
 https://domain.com/endpoint?range=30...70
@@ -559,7 +559,8 @@ var withNull = qs.stringify({ a: null, b: '' });
 assert.equal(withNull, 'a=&b=');
 ```
 
-Parsing does not distinguish between parameters with and without equal signs. Both are converted to empty strings.
+Parsing does not distinguish between parameters with and without equal signs.
+Both are converted to empty strings.
 
 ```javascript
 var equalsInsensitive = qs.parse('a&b=');
@@ -588,25 +589,21 @@ var nullsSkipped = qs.stringify({ a: 'b', c: null}, { skipNulls: true });
 assert.equal(nullsSkipped, 'a=b');
 ```
 
-If you're communicating with legacy systems, you can switch to `iso-8859-1`
-using the `charset` option:
+If you're communicating with legacy systems, you can switch to `iso-8859-1` using the `charset` option:
 
 ```javascript
 var iso = qs.stringify({ æ: 'æ' }, { charset: 'iso-8859-1' });
 assert.equal(iso, '%E6=%E6');
 ```
 
-Characters that don't exist in `iso-8859-1` will be converted to numeric
-entities, similar to what browsers do:
+Characters that don't exist in `iso-8859-1` will be converted to numeric entities, similar to what browsers do:
 
 ```javascript
 var numeric = qs.stringify({ a: '☺' }, { charset: 'iso-8859-1' });
 assert.equal(numeric, 'a=%26%239786%3B');
 ```
 
-You can use the `charsetSentinel` option to announce the character by
-including an `utf8=✓` parameter with the proper encoding if the checkmark,
-similar to what Ruby on Rails and others do when submitting forms.
+You can use the `charsetSentinel` option to announce the character by including an `utf8=✓` parameter with the proper encoding if the checkmark, similar to what Ruby on Rails and others do when submitting forms.
 
 ```javascript
 var sentinel = qs.stringify({ a: '☺' }, { charsetSentinel: true });
@@ -618,8 +615,7 @@ assert.equal(isoSentinel, 'utf8=%26%2310003%3B&a=%E6');
 
 ### Dealing with special character sets
 
-By default the encoding and decoding of characters is done in `utf-8`,
-and `iso-8859-1` support is also built in via the `charset` parameter.
+By default the encoding and decoding of characters is done in `utf-8`, and `iso-8859-1` support is also built in via the `charset` parameter.
 
 If you wish to encode querystrings to a different character set (i.e.
 [Shift JIS](https://en.wikipedia.org/wiki/Shift_JIS)) you can use the
@@ -658,7 +654,9 @@ Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/se
 
 Available as part of the Tidelift Subscription
 
-The maintainers of qs and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-qs?utm_source=npm-qs&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+The maintainers of qs and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications.
+Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use.
+[Learn more.](https://tidelift.com/subscription/pkg/npm-qs?utm_source=npm-qs&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 [package-url]: https://npmjs.org/package/qs
 [npm-version-svg]: https://versionbadg.es/ljharb/qs.svg
