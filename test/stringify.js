@@ -6,6 +6,7 @@ var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
 var hasSymbols = require('has-symbols');
+var mockProperty = require('mock-property');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 var hasBigInt = typeof BigInt === 'function';
 
@@ -677,10 +678,11 @@ test('stringify()', function (t) {
     });
 
     t.test('skips properties that are part of the object prototype', function (st) {
-        Object.prototype.crash = 'test';
+        st.intercept(Object.prototype, 'crash', { value: 'test' });
+
         st.equal(qs.stringify({ a: 'b' }), 'a=b');
         st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
-        delete Object.prototype.crash;
+
         st.end();
     });
 
@@ -704,10 +706,12 @@ test('stringify()', function (t) {
     });
 
     t.test('does not blow up when Buffer global is missing', function (st) {
-        var tempBuffer = global.Buffer;
-        delete global.Buffer;
+        var restore = mockProperty(global, 'Buffer', { 'delete': true });
+
         var result = qs.stringify({ a: 'b', c: 'd' });
-        global.Buffer = tempBuffer;
+
+        restore();
+
         st.equal(result, 'a=b&c=d');
         st.end();
     });
