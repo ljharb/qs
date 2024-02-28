@@ -47,6 +47,7 @@
         "has-symbols": "^1.0.3",
         "iconv-lite": "^0.5.1",
         "in-publish": "^2.0.1",
+        "jackspeak": "=2.1.1",
         "mkdirp": "^0.5.5",
         "mock-property": "^1.0.3",
         "npmignore": "^0.3.1",
