@@ -11,6 +11,7 @@
         "url": "https://github.com/sponsors/ljharb"
     },
     "main": "lib/index.js",
+    "sideEffects": false,
     "contributors": [
         {
             "name": "Jordan Harband",
