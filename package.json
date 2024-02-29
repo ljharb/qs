@@ -31,7 +31,7 @@
         "node": ">=0.6"
     },
     "dependencies": {
-        "side-channel": "^1.0.5"
+        "side-channel": "^1.0.6"
     },
     "devDependencies": {
         "@ljharb/eslint-config": "^21.1.0",
