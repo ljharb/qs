@@ -151,6 +151,14 @@ var withDots = qs.parse('a.b=c', { allowDots: true });
 assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
+Option `decodeDotInKeys` can be used to decode dots in keys
+Note: it implies `allowDots`, so `parse` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
+
+```javascript
+var withDots = qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { decodeDotInKeys: true });
+assert.deepEqual(withDots, { 'name.obj': { first: 'John', last: 'Doe' }});
+```
+
 Option `allowEmptyArrays` can be used to allowing empty array values in object
 ```javascript
 var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
@@ -424,6 +432,14 @@ You may override this to use dot notation by setting the `allowDots` option to `
 ```javascript
 qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
 // 'a.b.c=d&a.b.e=f'
+```
+
+You may encode the dot notation in the keys of object with option `encodeDotInKeys` by setting it to `true`:
+Note: it implies `allowDots`, so `stringify` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
+Caveat: when `encodeValuesOnly` is `true` as well as `encodeDotInKeys`, only dots in keys and nothing else will be encoded.
+```javascript
+qs.stringify({ "name.obj": { "first": "John", "last": "Doe" } }, { allowDots: true, encodeDotInKeys: true })
+// 'name%252Eobj.first=John&name%252Eobj.last=Doe'
 ```
 
 You may allow empty array values by setting the `allowEmptyArrays` option to `true`:
