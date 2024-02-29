@@ -884,12 +884,26 @@ test('stringify()', function (t) {
     });
 
     t.test('receives the default encoder as a second argument', function (st) {
+        st.plan(8);
+
+        qs.stringify({ a: 1, b: new Date(), c: true, d: [1] }, {
+            encoder: function (str) {
+                st.match(typeof str, /^(?:string|number|boolean)$/);
+            }
+        });
+
+        st.end();
+    });
+
+    t.test('receives the default encoder as a second argument', function (st) {
         st.plan(2);
+
         qs.stringify({ a: 1 }, {
             encoder: function (str, defaultEncoder) {
                 st.equal(defaultEncoder, utils.encode);
             }
         });
+
         st.end();
     });
 
