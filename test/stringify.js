@@ -889,6 +889,7 @@ test('stringify()', function (t) {
         qs.stringify({ a: 1, b: new Date(), c: true, d: [1] }, {
             encoder: function (str) {
                 st.match(typeof str, /^(?:string|number|boolean)$/);
+                return '';
             }
         });
 
