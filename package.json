@@ -43,7 +43,7 @@
         "evalmd": "^0.0.19",
         "for-each": "^0.3.3",
         "glob": "=10.3.7",
-        "has-override-mistake": "^1.0.0",
+        "has-override-mistake": "^1.0.1",
         "has-property-descriptors": "^1.0.2",
         "has-symbols": "^1.0.3",
         "iconv-lite": "^0.5.1",
