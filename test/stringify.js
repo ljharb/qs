@@ -6,6 +6,7 @@ var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
 var hasSymbols = require('has-symbols');
+var mockProperty = require('mock-property');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 var hasBigInt = typeof BigInt === 'function';
 
@@ -61,6 +62,128 @@ test('stringify()', function (t) {
             qs.stringify({ a: [three] }, { encodeValuesOnly: true, encoder: encodeWithN, arrayFormat: 'brackets' }),
             'a[]=3n'
         );
+        st.end();
+    });
+
+    t.test('encodes dot in key of object when encodeDotInKeys and allowDots is provided', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: false }
+            ),
+            'name.obj%5Bfirst%5D=John&name.obj%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: false }
+            ),
+            'name.obj.first=John&name.obj.last=Doe',
+            'with allowDots true and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%5Bfirst%5D=John&name%252Eobj%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': { first: 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj.first=John&name%252Eobj.last=Doe',
+            'with allowDots true and encodeDotInKeys true'
+        );
+
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: false }
+            ),
+            'name.obj.subobject%5Bfirst.godly.name%5D=John&name.obj.subobject%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: false }
+            ),
+            'name.obj.subobject.first.godly.name=John&name.obj.subobject.last=Doe',
+            'with allowDots false and encodeDotInKeys false'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject%5Bfirst.godly.name%5D=John&name%252Eobj%252Esubobject%5Blast%5D=Doe',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+            'with allowDots true and encodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should encode dot in key of object, and automatically set allowDots to `true` when encodeDotInKeys is true and allowDots in undefined', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+                { encodeDotInKeys: true }
+            ),
+            'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+            'with allowDots undefined and encodeDotInKeys true'
+        );
+        st.end();
+    });
+
+    t.test('should encode dot in key of object when encodeDotInKeys and allowDots is provided, and nothing else when encodeValuesOnly is provided', function (st) {
+        st.equal(
+            qs.stringify({ 'name.obj': { first: 'John', last: 'Doe' } }, {
+                encodeDotInKeys: true, allowDots: true, encodeValuesOnly: true
+            }),
+            'name%2Eobj.first=John&name%2Eobj.last=Doe'
+        );
+
+        st.equal(
+            qs.stringify({ 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } }, { allowDots: true, encodeDotInKeys: true, encodeValuesOnly: true }),
+            'name%2Eobj%2Esubobject.first%2Egodly%2Ename=John&name%2Eobj%2Esubobject.last=Doe'
+        );
+
+        st.end();
+    });
+
+    t.test('should throw when encodeDotInKeys is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: 0 }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: null }); },
+            TypeError
+        );
+
         st.end();
     });
 
@@ -140,6 +263,45 @@ test('stringify()', function (t) {
 
     t.test('omits array indices when asked', function (st) {
         st.equal(qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false }), 'a=b&a=c&a=d');
+
+        st.end();
+    });
+
+    t.test('omits object key/value pair when value is empty array', function (st) {
+        st.equal(qs.stringify({ a: [], b: 'zz' }), 'b=zz');
+
+        st.end();
+    });
+
+    t.test('should not omit object key/value pair when value is empty array and when asked', function (st) {
+        st.equal(qs.stringify({ a: [], b: 'zz' }), 'b=zz');
+        st.equal(qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: false }), 'b=zz');
+        st.equal(qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: true }), 'a[]&b=zz');
+
+        st.end();
+    });
+
+    t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: 0 }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: null }); },
+            TypeError
+        );
+
         st.end();
     });
 
@@ -516,10 +678,11 @@ test('stringify()', function (t) {
     });
 
     t.test('skips properties that are part of the object prototype', function (st) {
-        Object.prototype.crash = 'test';
+        st.intercept(Object.prototype, 'crash', { value: 'test' });
+
         st.equal(qs.stringify({ a: 'b' }), 'a=b');
         st.equal(qs.stringify({ a: { b: 'c' } }), 'a%5Bb%5D=c');
-        delete Object.prototype.crash;
+
         st.end();
     });
 
@@ -543,10 +706,12 @@ test('stringify()', function (t) {
     });
 
     t.test('does not blow up when Buffer global is missing', function (st) {
-        var tempBuffer = global.Buffer;
-        delete global.Buffer;
+        var restore = mockProperty(global, 'Buffer', { 'delete': true });
+
         var result = qs.stringify({ a: 'b', c: 'd' });
-        global.Buffer = tempBuffer;
+
+        restore();
+
         st.equal(result, 'a=b&c=d');
         st.end();
     });
@@ -719,12 +884,27 @@ test('stringify()', function (t) {
     });
 
     t.test('receives the default encoder as a second argument', function (st) {
+        st.plan(8);
+
+        qs.stringify({ a: 1, b: new Date(), c: true, d: [1] }, {
+            encoder: function (str) {
+                st.match(typeof str, /^(?:string|number|boolean)$/);
+                return '';
+            }
+        });
+
+        st.end();
+    });
+
+    t.test('receives the default encoder as a second argument', function (st) {
         st.plan(2);
+
         qs.stringify({ a: 1 }, {
             encoder: function (str, defaultEncoder) {
                 st.equal(defaultEncoder, utils.encode);
             }
         });
+
         st.end();
     });
 

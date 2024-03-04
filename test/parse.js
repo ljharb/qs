@@ -6,6 +6,8 @@ var iconv = require('iconv-lite');
 var mockProperty = require('mock-property');
 var hasOverrideMistake = require('has-override-mistake')();
 var SaferBuffer = require('safer-buffer').Buffer;
+var v = require('es-value-fixtures');
+var inspect = require('object-inspect');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
 
 var qs = require('../');
@@ -37,41 +39,142 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('arrayFormat: brackets allows only explicit arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'brackets' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
+    t.test('comma: false', function (st) {
+        st.deepEqual(qs.parse('a[]=b&a[]=c'), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c'), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b,c'), { a: 'b,c' });
+        st.deepEqual(qs.parse('a=b&a=c'), { a: ['b', 'c'] });
         st.end();
     });
 
-    t.test('arrayFormat: indices allows only indexed arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'indices' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.end();
-    });
-
-    t.test('arrayFormat: comma allows only comma-separated arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'comma' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.end();
-    });
-
-    t.test('arrayFormat: repeat allows only repeated values', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'repeat' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
+    t.test('comma: true', function (st) {
+        st.deepEqual(qs.parse('a[]=b&a[]=c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b,c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b&a=c', { comma: true }), { a: ['b', 'c'] });
         st.end();
     });
 
     t.test('allows enabling dot notation', function (st) {
         st.deepEqual(qs.parse('a.b=c'), { 'a.b': 'c' });
         st.deepEqual(qs.parse('a.b=c', { allowDots: true }), { a: { b: 'c' } });
+
+        st.end();
+    });
+
+    t.test('decode dot keys correctly', function (st) {
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: false, decodeDotInKeys: false }),
+            { 'name%2Eobj.first': 'John', 'name%2Eobj.last': 'Doe' },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name.obj.first=John&name.obj.last=Doe', { allowDots: true, decodeDotInKeys: false }),
+            { name: { obj: { first: 'John', last: 'Doe' } } },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: true, decodeDotInKeys: false }),
+            { 'name%2Eobj': { first: 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: true, decodeDotInKeys: true }),
+            { 'name.obj': { first: 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys true'
+        );
+
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { allowDots: false, decodeDotInKeys: false }
+            ),
+            { 'name%2Eobj%2Esubobject.first%2Egodly%2Ename': 'John', 'name%2Eobj%2Esubobject.last': 'Doe' },
+            'with allowDots false and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse(
+                'name.obj.subobject.first.godly.name=John&name.obj.subobject.last=Doe',
+                { allowDots: true, decodeDotInKeys: false }
+            ),
+            { name: { obj: { subobject: { first: { godly: { name: 'John' } }, last: 'Doe' } } } },
+            'with allowDots true and decodeDotInKeys false'
+        );
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+            'with allowDots true and decodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should decode dot in key of object, and allow enabling dot notation when decodeDotInKeys is set to true and allowDots is undefined', function (st) {
+        st.deepEqual(
+            qs.parse(
+                'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
+                { decodeDotInKeys: true }
+            ),
+            { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
+            'with allowDots undefined and decodeDotInKeys true'
+        );
+
+        st.end();
+    });
+
+    t.test('should throw when decodeDotInKeys is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 0 }); },
+            TypeError
+        );
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: null }); },
+            TypeError
+        );
+
+        st.end();
+    });
+
+    t.test('allows empty arrays in obj values', function (st) {
+        st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: true }), { foo: [], bar: 'baz' });
+        st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: false }), { foo: [''], bar: 'baz' });
+
+        st.end();
+    });
+
+    t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: 'foobar' }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: 0 }); },
+            TypeError
+        );
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: NaN }); },
+            TypeError
+        );
+
+        st['throws'](
+            function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: null }); },
+            TypeError
+        );
+
         st.end();
     });
 
@@ -327,14 +430,14 @@ test('parse()', function (t) {
     });
 
     t.test('should not throw when a native prototype has an enumerable property', function (st) {
-        Object.prototype.crash = '';
-        Array.prototype.crash = '';
+        st.intercept(Object.prototype, 'crash', { value: '' });
+        st.intercept(Array.prototype, 'crash', { value: '' });
+
         st.doesNotThrow(qs.parse.bind(null, 'a=b'));
         st.deepEqual(qs.parse('a=b'), { a: 'b' });
         st.doesNotThrow(qs.parse.bind(null, 'a[][b]=c'));
         st.deepEqual(qs.parse('a[][b]=c'), { a: [{ b: 'c' }] });
-        delete Object.prototype.crash;
-        delete Array.prototype.crash;
+
         st.end();
     });
 
@@ -510,10 +613,12 @@ test('parse()', function (t) {
     });
 
     t.test('does not blow up when Buffer global is missing', function (st) {
-        var tempBuffer = global.Buffer;
-        delete global.Buffer;
+        var restore = mockProperty(global, 'Buffer', { 'delete': true });
+
         var result = qs.parse('a=b&c=d');
-        global.Buffer = tempBuffer;
+
+        restore();
+
         st.deepEqual(result, { a: 'b', c: 'd' });
         st.end();
     });
@@ -901,4 +1006,42 @@ test('parses empty keys', function (t) {
             st.end();
         });
     });
+});
+
+test('`duplicates` option', function (t) {
+    v.nonStrings.concat('not a valid option').forEach(function (invalidOption) {
+        if (typeof invalidOption !== 'undefined') {
+            t['throws'](
+                function () { qs.parse('', { duplicates: invalidOption }); },
+                TypeError,
+                'throws on invalid option: ' + inspect(invalidOption)
+            );
+        }
+    });
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz'),
+        { foo: ['bar', 'baz'] },
+        'duplicates: default, combine'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'combine' }),
+        { foo: ['bar', 'baz'] },
+        'duplicates: combine'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'first' }),
+        { foo: 'bar' },
+        'duplicates: first'
+    );
+
+    t.deepEqual(
+        qs.parse('foo=bar&foo=baz', { duplicates: 'last' }),
+        { foo: 'baz' },
+        'duplicates: last'
+    );
+
+    t.end();
 });
