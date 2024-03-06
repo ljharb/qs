@@ -1,3 +1,26 @@
+## **6.12.0**
+
+- [New] `parse`/`stringify`: add `decodeDotInKeys`/`encodeDotKeys` options (#488)
+- [New] `parse`: add `duplicates` option
+- [New] `parse`/`stringify`: add `allowEmptyArrays` option to allow [] in object values (#487)
+- [Refactor] `parse`/`stringify`: move allowDots config logic to its own variable
+- [Refactor] `stringify`: move option-handling code into `normalizeStringifyOptions`
+- [readme] update readme, add logos (#484)
+- [readme] `stringify`: clarify default `arrayFormat` behavior
+- [readme] fix line wrapping
+- [readme] remove dead badges
+- [Deps] update `side-channel`
+- [meta] make the dist build 50% smaller
+- [meta] add `sideEffects` flag
+- [meta] run build in prepack, not prepublish
+- [Tests] `parse`: remove useless tests; add coverage
+- [Tests] `stringify`: increase coverage
+- [Tests] use `mock-property`
+- [Tests] `stringify`: improve coverage
+- [Dev Deps] update `@ljharb/eslint-config `, `aud`, `has-override-mistake`, `has-property-descriptors`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Dev Deps] pin `glob`, since v10.3.8+ requires a broken `jackspeak`
+- [Dev Deps] pin `jackspeak` since 2.1.2+ depends on npm aliases, which kill the install process in npm < 6
+
 ## **6.11.2**
 - [Fix] `parse`: Fix parsing when the global Object prototype is frozen (#473)
 - [Tests] add passing test cases with empty keys (#473)
