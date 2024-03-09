@@ -39,35 +39,19 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('arrayFormat: brackets allows only explicit arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'brackets' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'brackets' }), { a: ['b', 'c'] });
+    t.test('comma: false', function (st) {
+        st.deepEqual(qs.parse('a[]=b&a[]=c'), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c'), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b,c'), { a: 'b,c' });
+        st.deepEqual(qs.parse('a=b&a=c'), { a: ['b', 'c'] });
         st.end();
     });
 
-    t.test('arrayFormat: indices allows only indexed arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'indices' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'indices' }), { a: ['b', 'c'] });
-        st.end();
-    });
-
-    t.test('arrayFormat: comma allows only comma-separated arrays', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'comma' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'comma' }), { a: ['b', 'c'] });
-        st.end();
-    });
-
-    t.test('arrayFormat: repeat allows only repeated values', function (st) {
-        st.deepEqual(qs.parse('a[]=b&a[]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
-        st.deepEqual(qs.parse('a=b,c', { arrayFormat: 'repeat' }), { a: 'b,c' });
-        st.deepEqual(qs.parse('a=b&a=c', { arrayFormat: 'repeat' }), { a: ['b', 'c'] });
+    t.test('comma: true', function (st) {
+        st.deepEqual(qs.parse('a[]=b&a[]=c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b,c', { comma: true }), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=b&a=c', { comma: true }), { a: ['b', 'c'] });
         st.end();
     });
 
@@ -446,14 +430,14 @@ test('parse()', function (t) {
     });
 
     t.test('should not throw when a native prototype has an enumerable property', function (st) {
-        Object.prototype.crash = '';
-        Array.prototype.crash = '';
+        st.intercept(Object.prototype, 'crash', { value: '' });
+        st.intercept(Array.prototype, 'crash', { value: '' });
+
         st.doesNotThrow(qs.parse.bind(null, 'a=b'));
         st.deepEqual(qs.parse('a=b'), { a: 'b' });
         st.doesNotThrow(qs.parse.bind(null, 'a[][b]=c'));
         st.deepEqual(qs.parse('a[][b]=c'), { a: [{ b: 'c' }] });
-        delete Object.prototype.crash;
-        delete Array.prototype.crash;
+
         st.end();
     });
 
@@ -629,10 +613,12 @@ test('parse()', function (t) {
     });
 
     t.test('does not blow up when Buffer global is missing', function (st) {
-        var tempBuffer = global.Buffer;
-        delete global.Buffer;
+        var restore = mockProperty(global, 'Buffer', { 'delete': true });
+
         var result = qs.parse('a=b&c=d');
-        global.Buffer = tempBuffer;
+
+        restore();
+
         st.deepEqual(result, { a: 'b', c: 'd' });
         st.end();
     });
