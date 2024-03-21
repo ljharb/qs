@@ -85,7 +85,8 @@
             "bower.json",
             "component.json",
             ".github/workflows",
-            "logos"
+            "logos",
+            "tea.yaml"
         ]
     }
 }
