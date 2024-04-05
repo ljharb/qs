@@ -108,6 +108,11 @@ test('parse()', function (t) {
             { 'name.obj.subobject': { 'first.godly.name': 'John', last: 'Doe' } },
             'with allowDots true and decodeDotInKeys true'
         );
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe'),
+            { 'name%2Eobj.first': 'John', 'name%2Eobj.last': 'Doe' },
+            'with allowDots and decodeDotInKeys undefined'
+        );
 
         st.end();
     });
