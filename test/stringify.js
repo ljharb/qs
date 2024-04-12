@@ -163,7 +163,17 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('should throw when encodeDotInKeys is not of type boolean', function (st) {
+    t.test('throws when `commaRoundTrip` is not a boolean', function (st) {
+        st['throws'](
+            function () { qs.stringify({}, { commaRoundTrip: 'not a boolean' }); },
+            TypeError,
+            'throws when `commaRoundTrip` is not a boolean'
+        );
+
+        st.end();
+    });
+
+    t.test('throws when `encodeDotInKeys` is not a boolean', function (st) {
         st['throws'](
             function () { qs.stringify({ a: [], b: 'zz' }, { encodeDotInKeys: 'foobar' }); },
             TypeError
@@ -1214,6 +1224,27 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: [, [, , [, , , { c: [, '1'] }]]] }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a[1][2][3][c][1]=1');
         st.equal(qs.stringify({ a: [, [, , [, , , { c: [, '1'] }]]] }, { encodeValuesOnly: true, arrayFormat: 'brackets' }), 'a[][][][c][]=1');
         st.equal(qs.stringify({ a: [, [, , [, , , { c: [, '1'] }]]] }, { encodeValuesOnly: true, arrayFormat: 'repeat' }), 'a[c]=1');
+
+        st.end();
+    });
+
+    t.test('encodes a very long string', function (st) {
+        var chars = [];
+        var expected = [];
+        for (var i = 0; i < 5e3; i++) {
+            chars.push(' ' + i);
+
+            expected.push('%20' + i);
+        }
+
+        var obj = {
+            foo: chars.join('')
+        };
+
+        st.equal(
+            qs.stringify(obj, { arrayFormat: 'bracket', charset: 'utf-8' }),
+            'foo=' + expected.join('')
+        );
 
         st.end();
     });
