@@ -1,3 +1,9 @@
+## **6.12.1**
+- [Fix] `parse`: Disable `decodeDotInKeys` by default to restore previous behavior (#501)
+- [Performance] `utils`: Optimize performance under large data volumes, reduce memory usage, and speed up processing (#502)
+- [Refactor] `utils`: use `+=`
+- [Tests] increase coverage
+
 ## **6.12.0**
 
 - [New] `parse`/`stringify`: add `decodeDotInKeys`/`encodeDotKeys` options (#488)
