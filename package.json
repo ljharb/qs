@@ -10,7 +10,10 @@
     "funding": {
         "url": "https://github.com/sponsors/ljharb"
     },
-    "main": "lib/index.js",
+    "main": "dist/qs.js",
+    "files": [
+        "dist"
+    ],
     "sideEffects": false,
     "contributors": [
         {
