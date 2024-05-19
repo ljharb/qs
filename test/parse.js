@@ -571,6 +571,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses url-encoded brackets holds array of arrays when having two parts of strings with comma as array divider', function (st) {
+        st.deepEqual(qs.parse('foo%5B%5D=1,2,3&foo%5B%5D=4,5,6', { comma: true }), { foo: [['1', '2', '3'], ['4', '5', '6']] });
+        st.deepEqual(qs.parse('foo%5B%5D=1,2,3&foo%5B%5D=', { comma: true }), { foo: [['1', '2', '3'], ''] });
+        st.deepEqual(qs.parse('foo%5B%5D=1,2,3&foo%5B%5D=,', { comma: true }), { foo: [['1', '2', '3'], ['', '']] });
+        st.deepEqual(qs.parse('foo%5B%5D=1,2,3&foo%5B%5D=a', { comma: true }), { foo: [['1', '2', '3'], 'a'] });
+
+        st.end();
+    });
+
     t.test('parses comma delimited array while having percent-encoded comma treated as normal text', function (st) {
         st.deepEqual(qs.parse('foo=a%2Cb', { comma: true }), { foo: 'a,b' });
         st.deepEqual(qs.parse('foo=a%2C%20b,d', { comma: true }), { foo: ['a, b', 'd'] });
