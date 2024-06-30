@@ -36,7 +36,7 @@
     "devDependencies": {
         "@browserify/envify": "^6.0.0",
         "@browserify/uglifyify": "^6.0.0",
-        "@ljharb/eslint-config": "^21.1.0",
+        "@ljharb/eslint-config": "^21.1.1",
         "aud": "^2.0.4",
         "browserify": "^16.5.2",
         "bundle-collapser": "^1.4.0",
@@ -58,11 +58,11 @@
         "module-deps": "^6.2.3",
         "npmignore": "^0.3.1",
         "nyc": "^10.3.2",
-        "object-inspect": "^1.13.1",
+        "object-inspect": "^1.13.2",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.7.5",
+        "tape": "^5.8.1",
         "unassertify": "^3.0.1"
     },
     "scripts": {
