@@ -1,3 +1,7 @@
+## **6.12.2**
+ - [Fix] `parse`: parse encoded square brackets (#506)
+ - [readme] add CII best practices badge
+
 ## **6.12.1**
 - [Fix] `parse`: Disable `decodeDotInKeys` by default to restore previous behavior (#501)
 - [Performance] `utils`: Optimize performance under large data volumes, reduce memory usage, and speed up processing (#502)
