@@ -183,6 +183,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('allowEmptyArrays + strictNullHandling', function (st) {
+        st.deepEqual(
+            qs.parse('testEmptyArray[]', { strictNullHandling: true, allowEmptyArrays: true }),
+            { testEmptyArray: [] }
+        );
+
+        st.end();
+    });
+
     t.deepEqual(qs.parse('a[b]=c'), { a: { b: 'c' } }, 'parses a single nested string');
     t.deepEqual(qs.parse('a[b][c]=d'), { a: { b: { c: 'd' } } }, 'parses a double nested string');
     t.deepEqual(

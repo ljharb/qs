@@ -315,6 +315,18 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allowEmptyArrays + strictNullHandling', function (st) {
+        st.equal(
+            qs.stringify(
+                { testEmptyArray: [] },
+                { strictNullHandling: true, allowEmptyArrays: true }
+            ),
+            'testEmptyArray[]'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value with one item vs multiple items', function (st) {
         st.test('non-array item', function (s2t) {
             s2t.equal(qs.stringify({ a: 'c' }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a=c');
