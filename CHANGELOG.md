@@ -1,3 +1,7 @@
+## **6.12.3**
+- [Fix] `parse`: properly account for `strictNullHandling` when `allowEmptyArrays`
+- [meta] fix changelog indentation
+
 ## **6.12.2**
 - [Fix] `parse`: parse encoded square brackets (#506)
 - [readme] add CII best practices badge
