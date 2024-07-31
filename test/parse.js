@@ -1068,3 +1068,103 @@ test('`duplicates` option', function (t) {
 
     t.end();
 });
+
+test('qs strictDepth option - throw cases', function (t) {
+    t.test('throws an exception when depth exceeds the limit with strictDepth: true', function (st) {
+        st['throws'](
+            function () {
+                qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1, strictDepth: true });
+            },
+            RangeError,
+            'Should throw RangeError'
+        );
+        st.end();
+    });
+
+    t.test('throws an exception for multiple nested arrays with strictDepth: true', function (st) {
+        st['throws'](
+            function () {
+                qs.parse('a[0][1][2][3][4]=b', { depth: 3, strictDepth: true });
+            },
+            RangeError,
+            'Should throw RangeError'
+        );
+        st.end();
+    });
+
+    t.test('throws an exception for nested objects and arrays with strictDepth: true', function (st) {
+        st['throws'](
+            function () {
+                qs.parse('a[b][c][0][d][e]=f', { depth: 3, strictDepth: true });
+            },
+            RangeError,
+            'Should throw RangeError'
+        );
+        st.end();
+    });
+
+    t.test('throws an exception for different types of values with strictDepth: true', function (st) {
+        st['throws'](
+            function () {
+                qs.parse('a[b][c][d][e]=true&a[b][c][d][f]=42', { depth: 3, strictDepth: true });
+            },
+            RangeError,
+            'Should throw RangeError'
+        );
+        st.end();
+    });
+
+});
+
+test('qs strictDepth option - non-throw cases', function (t) {
+    t.test('when depth is 0 and strictDepth true, do not throw', function (st) {
+        st.doesNotThrow(
+            function () {
+                qs.parse('a[b][c][d][e]=true&a[b][c][d][f]=42', { depth: 0, strictDepth: true });
+            },
+            RangeError,
+            'Should not throw RangeError'
+        );
+        st.end();
+    });
+
+    t.test('parses successfully when depth is within the limit with strictDepth: true', function (st) {
+        st.doesNotThrow(
+            function () {
+                var result = qs.parse('a[b]=c', { depth: 1, strictDepth: true });
+                st.deepEqual(result, { a: { b: 'c' } }, 'Should parse correctly');
+            }
+        );
+        st.end();
+    });
+
+    t.test('does not throw an exception when depth exceeds the limit with strictDepth: false', function (st) {
+        st.doesNotThrow(
+            function () {
+                var result = qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1 });
+                st.deepEqual(result, { a: { b: { '[c][d][e][f][g][h][i]': 'j' } } }, 'Should parse with depth limit');
+            }
+        );
+        st.end();
+    });
+
+    t.test('parses successfully when depth is within the limit with strictDepth: false', function (st) {
+        st.doesNotThrow(
+            function () {
+                var result = qs.parse('a[b]=c', { depth: 1 });
+                st.deepEqual(result, { a: { b: 'c' } }, 'Should parse correctly');
+            }
+        );
+        st.end();
+    });
+
+    t.test('does not throw when depth is exactly at the limit with strictDepth: true', function (st) {
+        st.doesNotThrow(
+            function () {
+                var result = qs.parse('a[b][c]=d', { depth: 2, strictDepth: true });
+                st.deepEqual(result, { a: { b: { c: 'd' } } }, 'Should parse correctly');
+            }
+        );
+        st.end();
+    });
+});
