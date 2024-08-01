@@ -1,3 +1,7 @@
+## **6.13.0**
+- [New] `parse`: add `strictDepth` option (#511)
+- [Tests] use `npm audit` instead of `aud`
+
 ## **6.12.3**
 - [Fix] `parse`: properly account for `strictNullHandling` when `allowEmptyArrays`
 - [meta] fix changelog indentation
