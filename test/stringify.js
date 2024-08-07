@@ -1254,7 +1254,7 @@ test('stringify()', function (t) {
         };
 
         st.equal(
-            qs.stringify(obj, { arrayFormat: 'bracket', charset: 'utf-8' }),
+            qs.stringify(obj, { arrayFormat: 'brackets', charset: 'utf-8' }),
             'foo=' + expected.join('')
         );
 
