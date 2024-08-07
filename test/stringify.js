@@ -1295,4 +1295,16 @@ test('stringifies empty keys', function (t) {
 
         st.end();
     });
+
+    t.test('stringifies non-string keys', function (st) {
+        var actual = qs.stringify({ a: 'b', 'false': {} }, {
+            filter: ['a', false],
+            allowDots: true,
+            encodeDotInKeys: true
+        });
+
+        st.equal(actual, 'a=b', 'stringifies correctly');
+
+        st.end();
+    });
 });
