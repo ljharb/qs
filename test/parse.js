@@ -998,6 +998,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('interpretNumericEntities with comma:true and iso charset does not crash', function (st) {
+        st.deepEqual(
+            qs.parse('b&a[]=1,' + urlEncodedNumSmiley, { comma: true, charset: 'iso-8859-1', interpretNumericEntities: true }),
+            { b: '', a: ['1,☺'] }
+        );
+
+        st.end();
+    });
+
     t.test('does not interpret %uXXXX syntax in iso-8859-1 mode', function (st) {
         st.deepEqual(qs.parse('%u263A=%u263A', { charset: 'iso-8859-1' }), { '%u263A': '%u263A' });
         st.end();
