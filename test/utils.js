@@ -38,8 +38,8 @@ test('merge()', function (t) {
     func.bar = 'baz';
     t.deepEqual(
         utils.merge({ foo: 'bar' }, func),
-        { foo: 'bar', 'function f() {}': true },
-        'functions can not be merge sources'
+        { foo: 'bar', bar: 'baz' },
+        'functions can be merge sources'
     );
 
     t.test(
