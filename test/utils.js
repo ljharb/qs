@@ -28,6 +28,20 @@ test('merge()', function (t) {
     var noOptionsNonObjectSource = utils.merge({ foo: 'baz' }, 'bar');
     t.deepEqual(noOptionsNonObjectSource, { foo: 'baz', bar: true });
 
+    var func = function f() {};
+    t.deepEqual(
+        utils.merge(func, { foo: 'bar' }),
+        [func, { foo: 'bar' }],
+        'functions can not be merged into'
+    );
+
+    func.bar = 'baz';
+    t.deepEqual(
+        utils.merge({ foo: 'bar' }, func),
+        { foo: 'bar', 'function f() {}': true },
+        'functions can not be merge sources'
+    );
+
     t.test(
         'avoids invoking array setters unnecessarily',
         { skip: typeof Object.defineProperty !== 'function' },
