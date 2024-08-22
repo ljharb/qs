@@ -1298,7 +1298,7 @@ test('stringifies empty keys', function (t) {
 
     t.test('stringifies non-string keys', function (st) {
         var actual = qs.stringify({ a: 'b', 'false': {} }, {
-            filter: ['a', false],
+            filter: ['a', false, null],
             allowDots: true,
             encodeDotInKeys: true
         });
