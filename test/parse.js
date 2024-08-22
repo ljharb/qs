@@ -9,6 +9,7 @@ var SaferBuffer = require('safer-buffer').Buffer;
 var v = require('es-value-fixtures');
 var inspect = require('object-inspect');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
+var hasProto = require('has-proto')();
 
 var qs = require('../');
 var utils = require('../lib/utils');
@@ -691,9 +692,8 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('parses null objects correctly', { skip: !Object.create }, function (st) {
-        var a = Object.create(null);
-        a.b = 'c';
+    t.test('parses null objects correctly', { skip: !hasProto }, function (st) {
+        var a = { __proto__: null, b: 'c' };
 
         st.deepEqual(qs.parse(a), { b: 'c' });
         var result = qs.parse({ a: a });
@@ -870,17 +870,25 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('can return null objects', { skip: !Object.create }, function (st) {
-        var expected = Object.create(null);
-        expected.a = Object.create(null);
-        expected.a.b = 'c';
-        expected.a.hasOwnProperty = 'd';
+    t.test('can return null objects', { skip: !hasProto }, function (st) {
+        var expected = {
+            __proto__: null,
+            a: {
+                __proto__: null,
+                b: 'c',
+                hasOwnProperty: 'd'
+            }
+        };
         st.deepEqual(qs.parse('a[b]=c&a[hasOwnProperty]=d', { plainObjects: true }), expected);
-        st.deepEqual(qs.parse(null, { plainObjects: true }), Object.create(null));
-        var expectedArray = Object.create(null);
-        expectedArray.a = Object.create(null);
-        expectedArray.a[0] = 'b';
-        expectedArray.a.c = 'd';
+        st.deepEqual(qs.parse(null, { plainObjects: true }), { __proto__: null });
+        var expectedArray = {
+            __proto__: null,
+            a: {
+                __proto__: null,
+                0: 'b',
+                c: 'd'
+            }
+        };
         st.deepEqual(qs.parse('a[]=b&a[c]=d', { plainObjects: true }), expectedArray);
         st.end();
     });

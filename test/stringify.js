@@ -8,7 +8,8 @@ var SaferBuffer = require('safer-buffer').Buffer;
 var hasSymbols = require('has-symbols');
 var mockProperty = require('mock-property');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
-var hasBigInt = typeof BigInt === 'function';
+var hasProto = require('has-proto')();
+var hasBigInt = require('has-bigints')();
 
 test('stringify()', function (t) {
     t.test('stringifies a querystring object', function (st) {
@@ -650,10 +651,8 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('stringifies a null object', { skip: !Object.create }, function (st) {
-        var obj = Object.create(null);
-        obj.a = 'b';
-        st.equal(qs.stringify(obj), 'a=b');
+    t.test('stringifies a null object', { skip: !hasProto }, function (st) {
+        st.equal(qs.stringify({ __proto__: null, a: 'b' }), 'a=b');
         st.end();
     });
 
@@ -665,11 +664,8 @@ test('stringify()', function (t) {
         st.end();
     });
 
-    t.test('stringifies an object with a null object as a child', { skip: !Object.create }, function (st) {
-        var obj = { a: Object.create(null) };
-
-        obj.a.b = 'c';
-        st.equal(qs.stringify(obj), 'a%5Bb%5D=c');
+    t.test('stringifies an object with a null object as a child', { skip: !hasProto }, function (st) {
+        st.equal(qs.stringify({ a: { __proto__: null, b: 'c' } }), 'a%5Bb%5D=c');
         st.end();
     });
 
