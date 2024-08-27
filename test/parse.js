@@ -782,6 +782,11 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('params containing brackets within brackets', function (st) {
+        st.deepEqual(qs.parse({ 'a[b[]]': 'c' }), { a: { "b[]": 'c' } });
+        st.end();
+    });
+
     t.test('add keys to objects', function (st) {
         st.deepEqual(
             qs.parse('a[b]=c&a=d'),
