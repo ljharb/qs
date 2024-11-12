@@ -118,7 +118,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should decode dot in key of object, and allow enabling dot notation when decodeDotInKeys is set to true and allowDots is undefined', function (st) {
+    t.test('decodes dot in key of object, and allow enabling dot notation when decodeDotInKeys is set to true and allowDots is undefined', function (st) {
         st.deepEqual(
             qs.parse(
                 'name%252Eobj%252Esubobject.first%252Egodly%252Ename=John&name%252Eobj%252Esubobject.last=Doe',
@@ -131,7 +131,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should throw when decodeDotInKeys is not of type boolean', function (st) {
+    t.test('throws when decodeDotInKeys is not of type boolean', function (st) {
         st['throws'](
             function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 'foobar' }); },
             TypeError
@@ -161,7 +161,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
+    t.test('throws when allowEmptyArrays is not of type boolean', function (st) {
         st['throws'](
             function () { qs.parse('foo[]&bar=baz', { allowEmptyArrays: 'foobar' }); },
             TypeError
@@ -444,7 +444,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should not throw when a native prototype has an enumerable property', function (st) {
+    t.test('does not throw when a native prototype has an enumerable property', function (st) {
         st.intercept(Object.prototype, 'crash', { value: '' });
         st.intercept(Array.prototype, 'crash', { value: '' });
 
@@ -965,7 +965,7 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('should ignore an utf8 sentinel with an unknown value', function (st) {
+    t.test('ignores an utf8 sentinel with an unknown value', function (st) {
         st.deepEqual(qs.parse('utf8=foo&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { charsetSentinel: true, charset: 'utf-8' }), { ø: 'ø' });
         st.end();
     });
@@ -1035,6 +1035,95 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parameter limit tests', function (st) {
+        st.test('does not throw error when within parameter limit', function (sst) {
+            var result = qs.parse('a=1&b=2&c=3', { parameterLimit: 5, throwOnLimitExceeded: true });
+            sst.deepEqual(result, { a: '1', b: '2', c: '3' }, 'parses without errors');
+            sst.end();
+        });
+
+        st.test('throws error when throwOnLimitExceeded is present but not boolean', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a=1&b=2&c=3&d=4&e=5&f=6', { parameterLimit: 3, throwOnLimitExceeded: 'true' });
+                },
+                new TypeError('`throwOnLimitExceeded` option must be a boolean'),
+                'throws error when throwOnLimitExceeded is present and not boolean'
+            );
+            sst.end();
+        });
+
+        st.test('throws error when parameter limit exceeded', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a=1&b=2&c=3&d=4&e=5&f=6', { parameterLimit: 3, throwOnLimitExceeded: true });
+                },
+                new RangeError('Parameter limit exceeded. Only 3 parameters allowed.'),
+                'throws error when parameter limit is exceeded'
+            );
+            sst.end();
+        });
+
+        st.test('silently truncates when throwOnLimitExceeded is not given', function (sst) {
+            var result = qs.parse('a=1&b=2&c=3&d=4&e=5', { parameterLimit: 3 });
+            sst.deepEqual(result, { a: '1', b: '2', c: '3' }, 'parses and truncates silently');
+            sst.end();
+        });
+
+        st.test('silently truncates when parameter limit exceeded without error', function (sst) {
+            var result = qs.parse('a=1&b=2&c=3&d=4&e=5', { parameterLimit: 3, throwOnLimitExceeded: false });
+            sst.deepEqual(result, { a: '1', b: '2', c: '3' }, 'parses and truncates silently');
+            sst.end();
+        });
+
+        st.test('allows unlimited parameters when parameterLimit set to Infinity', function (sst) {
+            var result = qs.parse('a=1&b=2&c=3&d=4&e=5&f=6', { parameterLimit: Infinity });
+            sst.deepEqual(result, { a: '1', b: '2', c: '3', d: '4', e: '5', f: '6' }, 'parses all parameters without truncation');
+            sst.end();
+        });
+
+        st.end();
+    });
+
+    t.test('array limit tests', function (st) {
+        st.test('does not throw error when array is within limit', function (sst) {
+            var result = qs.parse('a[]=1&a[]=2&a[]=3', { arrayLimit: 5, throwOnLimitExceeded: true });
+            sst.deepEqual(result, { a: ['1', '2', '3'] }, 'parses array without errors');
+            sst.end();
+        });
+
+        st.test('throws error when throwOnLimitExceeded is present but not boolean for array limit', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[]=1&a[]=2&a[]=3&a[]=4', { arrayLimit: 3, throwOnLimitExceeded: 'true' });
+                },
+                new TypeError('`throwOnLimitExceeded` option must be a boolean'),
+                'throws error when throwOnLimitExceeded is present and not boolean for array limit'
+            );
+            sst.end();
+        });
+
+        st.test('throws error when array limit exceeded', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[]=1&a[]=2&a[]=3&a[]=4', { arrayLimit: 3, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 3 elements allowed in an array.'),
+                'throws error when array limit is exceeded'
+            );
+            sst.end();
+        });
+
+        st.test('converts array to object if length is greater than limit', function (sst) {
+            var result = qs.parse('a[1]=1&a[2]=2&a[3]=3&a[4]=4&a[5]=5&a[6]=6', { arrayLimit: 5 });
+
+            sst.deepEqual(result, { a: { 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6' } }, 'parses into object if array length is greater than limit');
+            sst.end();
+        });
+
+        st.end();
+    });
+
     t.end();
 });
 
@@ -1093,7 +1182,7 @@ test('qs strictDepth option - throw cases', function (t) {
                 qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1, strictDepth: true });
             },
             RangeError,
-            'Should throw RangeError'
+            'throws RangeError'
         );
         st.end();
     });
@@ -1104,7 +1193,7 @@ test('qs strictDepth option - throw cases', function (t) {
                 qs.parse('a[0][1][2][3][4]=b', { depth: 3, strictDepth: true });
             },
             RangeError,
-            'Should throw RangeError'
+            'throws RangeError'
         );
         st.end();
     });
@@ -1115,7 +1204,7 @@ test('qs strictDepth option - throw cases', function (t) {
                 qs.parse('a[b][c][0][d][e]=f', { depth: 3, strictDepth: true });
             },
             RangeError,
-            'Should throw RangeError'
+            'throws RangeError'
         );
         st.end();
     });
@@ -1126,7 +1215,7 @@ test('qs strictDepth option - throw cases', function (t) {
                 qs.parse('a[b][c][d][e]=true&a[b][c][d][f]=42', { depth: 3, strictDepth: true });
             },
             RangeError,
-            'Should throw RangeError'
+            'throws RangeError'
         );
         st.end();
     });
@@ -1140,7 +1229,7 @@ test('qs strictDepth option - non-throw cases', function (t) {
                 qs.parse('a[b][c][d][e]=true&a[b][c][d][f]=42', { depth: 0, strictDepth: true });
             },
             RangeError,
-            'Should not throw RangeError'
+            'does not throw RangeError'
         );
         st.end();
     });
@@ -1149,7 +1238,7 @@ test('qs strictDepth option - non-throw cases', function (t) {
         st.doesNotThrow(
             function () {
                 var result = qs.parse('a[b]=c', { depth: 1, strictDepth: true });
-                st.deepEqual(result, { a: { b: 'c' } }, 'Should parse correctly');
+                st.deepEqual(result, { a: { b: 'c' } }, 'parses correctly');
             }
         );
         st.end();
@@ -1159,7 +1248,7 @@ test('qs strictDepth option - non-throw cases', function (t) {
         st.doesNotThrow(
             function () {
                 var result = qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1 });
-                st.deepEqual(result, { a: { b: { '[c][d][e][f][g][h][i]': 'j' } } }, 'Should parse with depth limit');
+                st.deepEqual(result, { a: { b: { '[c][d][e][f][g][h][i]': 'j' } } }, 'parses with depth limit');
             }
         );
         st.end();
@@ -1169,7 +1258,7 @@ test('qs strictDepth option - non-throw cases', function (t) {
         st.doesNotThrow(
             function () {
                 var result = qs.parse('a[b]=c', { depth: 1 });
-                st.deepEqual(result, { a: { b: 'c' } }, 'Should parse correctly');
+                st.deepEqual(result, { a: { b: 'c' } }, 'parses correctly');
             }
         );
         st.end();
@@ -1179,7 +1268,7 @@ test('qs strictDepth option - non-throw cases', function (t) {
         st.doesNotThrow(
             function () {
                 var result = qs.parse('a[b][c]=d', { depth: 2, strictDepth: true });
-                st.deepEqual(result, { a: { b: { c: 'd' } } }, 'Should parse correctly');
+                st.deepEqual(result, { a: { b: { c: 'd' } } }, 'parses correctly');
             }
         );
         st.end();

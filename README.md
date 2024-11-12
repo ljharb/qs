@@ -135,6 +135,18 @@ var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
+If you want an error to be thrown whenever the a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+```javascript
+try {
+    qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
+} catch (err) {
+    assert(err instanceof Error);
+    assert.strictEqual(err.message, 'Parameter limit exceeded. Only 3 parameters allowed.');
+}
+```
+
+When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `parameterLimit` and ignore the rest without throwing an error.
+
 To bypass the leading question mark, use `ignoreQueryPrefix`:
 
 ```javascript
@@ -285,6 +297,18 @@ This limit can be overridden by passing an `arrayLimit` option:
 var withArrayLimit = qs.parse('a[1]=b', { arrayLimit: 0 });
 assert.deepEqual(withArrayLimit, { a: { '1': 'b' } });
 ```
+
+If you want to throw an error whenever the array limit is exceeded, set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+```javascript
+try {
+    qs.parse('a[1]=b', { arrayLimit: 0, throwOnLimitExceeded: true });
+} catch (err) {
+    assert(err instanceof Error);
+    assert.strictEqual(err.message, 'Array limit exceeded. Only 0 elements allowed in an array.');
+}
+```
+
+When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `arrayLimit` and if the limit is exceeded, the array will instead be converted to an object with the index as the key
 
 To disable array parsing entirely, set `parseArrays` to `false`.
 
