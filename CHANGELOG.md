@@ -1,3 +1,15 @@
+## **6.13.1**
+[Fix] `stringify`: avoid a crash when a `filter` key is `null`
+[Fix] `utils.merge`: functions should not be stringified into keys
+[Fix] `parse`: avoid a crash with interpretNumericEntities: true, comma: true, and iso charset
+[Fix] `stringify`: ensure a non-string `filter` does not crash
+[Refactor] use `__proto__` syntax instead of `Object.create` for null objects
+[Refactor] misc cleanup
+[Tests] `utils.merge`: add some coverage
+[Tests] fix a test case
+[actions] split out node 10-20, and 20+
+[Dev Deps] update `es-value-fixtures`, `mock-property`, `object-inspect`, `tape`
+
 ## **6.13.0**
 - [New] `parse`: add `strictDepth` option (#511)
 - [Tests] use `npm audit` instead of `aud`
