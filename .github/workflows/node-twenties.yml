@@ -12,3 +12,10 @@ jobs:
       range: '>= 20'
       type: minors
       command: npm run tests-only
+
+  node:
+    name: 'node >= 20'
+    needs: [tests]
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
