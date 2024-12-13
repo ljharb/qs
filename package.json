@@ -31,7 +31,7 @@
         "node": ">=0.6"
     },
     "dependencies": {
-        "side-channel": "^1.0.6"
+        "side-channel": "^1.1.0"
     },
     "devDependencies": {
         "@browserify/envify": "^6.0.0",
