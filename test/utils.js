@@ -4,6 +4,8 @@ var test = require('tape');
 var inspect = require('object-inspect');
 var SaferBuffer = require('safer-buffer').Buffer;
 var forEach = require('for-each');
+var v = require('es-value-fixtures');
+
 var utils = require('../lib/utils');
 
 test('merge()', function (t) {
@@ -133,6 +135,104 @@ test('combine()', function (t) {
     t.end();
 });
 
+test('decode', function (t) {
+    t.equal(
+        utils.decode('a+b'),
+        'a b',
+        'decodes + to space'
+    );
+
+    t.equal(
+        utils.decode('name%2Eobj'),
+        'name.obj',
+        'decodes a string'
+    );
+    t.equal(
+        utils.decode('name%2Eobj%2Efoo', null, 'iso-8859-1'),
+        'name.obj.foo',
+        'decodes a string in iso-8859-1'
+    );
+
+    t.end();
+});
+
+test('encode', function (t) {
+    forEach(v.nullPrimitives, function (nullish) {
+        t['throws'](
+            function () { utils.encode(nullish); },
+            TypeError,
+            inspect(nullish) + ' is not a string'
+        );
+    });
+
+    t.equal(utils.encode(''), '', 'empty string returns itself');
+    t.deepEqual(utils.encode([]), [], 'empty array returns itself');
+    t.deepEqual(utils.encode({ length: 0 }), { length: 0 }, 'empty arraylike returns itself');
+
+    t.test('symbols', { skip: !v.hasSymbols }, function (st) {
+        st.equal(utils.encode(Symbol('x')), 'Symbol%28x%29', 'symbol is encoded');
+
+        st.end();
+    });
+
+    t.equal(
+        utils.encode('(abc)'),
+        '%28abc%29',
+        'encodes parentheses'
+    );
+    t.equal(
+        utils.encode({ toString: function () { return '(abc)'; } }),
+        '%28abc%29',
+        'toStrings and encodes parentheses'
+    );
+
+    t.equal(
+        utils.encode('abc 123 💩', null, 'iso-8859-1'),
+        'abc%20123%20%26%2355357%3B%26%2356489%3B',
+        'encodes in iso-8859-1'
+    );
+
+    var longString = '';
+    var expectedString = '';
+    for (var i = 0; i < 1500; i++) {
+        longString += ' ';
+        expectedString += '%20';
+    }
+
+    t.equal(
+        utils.encode(longString),
+        expectedString,
+        'encodes a long string'
+    );
+
+    t.equal(
+        utils.encode('\x28\x29'),
+        '%28%29',
+        'encodes parens normally'
+    );
+    t.equal(
+        utils.encode('\x28\x29', null, null, null, 'RFC1738'),
+        '()',
+        'does not encode parens in RFC1738'
+    );
+
+    // todo RFC1738 format
+
+    t.equal(
+        utils.encode('Āက豈'),
+        '%C4%80%E1%80%80%EF%A4%80',
+        'encodes multibyte chars'
+    );
+
+    t.equal(
+        utils.encode('\uD83D \uDCA9'),
+        '%F0%9F%90%A0%F0%BA%90%80',
+        'encodes lone surrogates'
+    );
+
+    t.end();
+});
+
 test('isBuffer()', function (t) {
     forEach([null, undefined, true, false, '', 'abc', 42, 0, NaN, {}, [], function () {}, /a/g], function (x) {
         t.equal(utils.isBuffer(x), false, inspect(x) + ' is not a buffer');
@@ -146,5 +246,17 @@ test('isBuffer()', function (t) {
 
     var buffer = Buffer.from && Buffer.alloc ? Buffer.from('abc') : new Buffer('abc');
     t.equal(utils.isBuffer(buffer), true, 'real Buffer instance is a buffer');
+    t.end();
+});
+
+test('isRegExp()', function (t) {
+    t.equal(utils.isRegExp(/a/g), true, 'RegExp is a RegExp');
+    t.equal(utils.isRegExp(new RegExp('a', 'g')), true, 'new RegExp is a RegExp');
+    t.equal(utils.isRegExp(new Date()), false, 'Date is not a RegExp');
+
+    forEach(v.primitives, function (primitive) {
+        t.equal(utils.isRegExp(primitive), false, inspect(primitive) + ' is not a RegExp');
+    });
+
     t.end();
 });
