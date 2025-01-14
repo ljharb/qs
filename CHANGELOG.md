@@ -1,3 +1,13 @@
+## **6.14.0**
+- [New] `parse`: add `throwOnParameterLimitExceeded` option (#517)
+- [Refactor] `parse`: use `utils.combine` more
+- [patch] `parse`: add explicit `throwOnLimitExceeded` default
+- [actions] use shared action; re-add finishers
+- [meta] Fix changelog formatting bug
+- [Deps] update `side-channel`
+- [Dev Deps] update `es-value-fixtures`, `has-bigints`, `has-proto`, `has-symbols`
+- [Tests] increase coverage
+
 ## **6.13.1**
 - [Fix] `stringify`: avoid a crash when a `filter` key is `null`
 - [Fix] `utils.merge`: functions should not be stringified into keys
