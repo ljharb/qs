@@ -1293,13 +1293,17 @@ test('stringifies empty keys', function (t) {
     });
 
     t.test('stringifies non-string keys', function (st) {
-        var actual = qs.stringify({ a: 'b', 'false': {} }, {
-            filter: ['a', false, null],
+        var S = Object('abc');
+        S.toString = function () {
+            return 'd';
+        };
+        var actual = qs.stringify({ a: 'b', 'false': {}, 1e+22: 'c', d: 'e' }, {
+            filter: ['a', false, null, 10000000000000000000000, S],
             allowDots: true,
             encodeDotInKeys: true
         });
 
-        st.equal(actual, 'a=b', 'stringifies correctly');
+        st.equal(actual, 'a=b&1e%2B22=c&d=e', 'stringifies correctly');
 
         st.end();
     });
