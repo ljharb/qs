@@ -996,6 +996,20 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('handles a custom decoder returning `null`, with a string key of `null`', function (st) {
+        st.deepEqual(
+            qs.parse('null=1&ToNull=2', {
+                decoder: function (str, defaultDecoder, charset) {
+                    return str === 'ToNull' ? null : defaultDecoder(str, defaultDecoder, charset);
+                }
+            }),
+            { 'null': '1' },
+            '"null" key is not overridden by `null` decoder result'
+        );
+
+        st.end();
+    });
+
     t.test('does not interpret numeric entities in iso-8859-1 when `interpretNumericEntities` is absent', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1' }), { foo: '&#9786;' });
         st.end();
