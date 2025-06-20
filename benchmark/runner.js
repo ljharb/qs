@@ -2,7 +2,7 @@
 
 const Benchmark = require('benchmark');
 const { table } = require('table');
-const chalk = require('chalk');
+const colors = require('colors');
 const fs = require('fs');
 const path = require('path');
 
@@ -47,12 +47,12 @@ class BenchmarkRunner {
             this.suite
                 .on('start', () => {
                     if (this.options.verbose) {
-                        console.log(chalk.blue('🚀 Starting benchmarks...'));
+                        console.log(colors.blue('🚀 Starting benchmarks...'));
                     }
                 })
                 .on('cycle', (event) => {
                     if (this.options.verbose) {
-                        console.log(chalk.gray(String(event.target)));
+                        console.log(colors.gray(String(event.target)));
                     }
                 })
                 .on('complete', () => {
@@ -99,7 +99,7 @@ class BenchmarkRunner {
     }
 
     _printConsoleReport() {
-        console.log(chalk.green('\n📊 Benchmark Results\n'));
+        console.log(colors.green('\n📊 Benchmark Results\n'));
         
         const tableData = [
             ['Test Name', 'Ops/sec', 'RME', 'Samples', 'Status']
@@ -125,13 +125,13 @@ class BenchmarkRunner {
 
     _compareWithBaseline(currentReport) {
         if (!fs.existsSync(this.options.baseline)) {
-            console.log(chalk.yellow('⚠️  Baseline file not found, skipping comparison'));
+            console.log(colors.yellow('⚠️  Baseline file not found, skipping comparison'));
             return;
         }
 
         try {
             const baseline = JSON.parse(fs.readFileSync(this.options.baseline, 'utf8'));
-            console.log(chalk.blue('\n📈 Performance Comparison\n'));
+            console.log(colors.blue('\n📈 Performance Comparison\n'));
 
             const comparisonData = [
                 ['Test Name', 'Current', 'Baseline', 'Change', 'Status']
@@ -158,7 +158,7 @@ class BenchmarkRunner {
 
             console.log(table(comparisonData));
         } catch (error) {
-            console.log(chalk.red(`❌ Error comparing with baseline: ${error.message}`));
+            console.log(colors.red(`❌ Error comparing with baseline: ${error.message}`));
         }
     }
 }

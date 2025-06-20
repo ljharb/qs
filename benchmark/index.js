@@ -3,7 +3,7 @@
 
 const runParseBenchmarks = require('./parse');
 const runStringifyBenchmarks = require('./stringify');
-const chalk = require('chalk');
+const colors = require('colors');
 const fs = require('fs');
 const path = require('path');
 
@@ -11,11 +11,11 @@ async function main() {
     const args = process.argv.slice(2);
     const options = parseArgs(args);
 
-    console.log(chalk.blue.bold('🚀 QS Library Benchmarks'));
-    console.log(chalk.gray(`Node.js ${process.version} on ${process.platform}-${process.arch}\n`));
+    console.log(colors.blue.bold('🚀 QS Library Benchmarks'));
+    console.log(colors.gray(`Node.js ${process.version} on ${process.platform}-${process.arch}\n`));
 
     if (options.baseline) {
-        console.log(chalk.yellow(`📊 Comparing against baseline: ${options.baseline}\n`));
+        console.log(colors.yellow(`📊 Comparing against baseline: ${options.baseline}\n`));
     }
 
     try {
@@ -34,14 +34,14 @@ async function main() {
             generateSummaryReport();
         }
 
-        console.log(chalk.green('✅ Benchmarks completed successfully!'));
+        console.log(colors.green('✅ Benchmarks completed successfully!'));
         
         if (options.save) {
             saveBaseline();
         }
 
     } catch (error) {
-        console.error(chalk.red('❌ Benchmark failed:'), error.message);
+        console.error(colors.red('❌ Benchmark failed:'), error.message);
         process.exit(1);
     }
 }
@@ -81,7 +81,7 @@ function parseArgs(args) {
                 process.exit(0);
             default:
                 if (arg.startsWith('--')) {
-                    console.error(chalk.red(`Unknown option: ${arg}`));
+                    console.error(colors.red(`Unknown option: ${arg}`));
                     printHelp();
                     process.exit(1);
                 }
@@ -93,12 +93,12 @@ function parseArgs(args) {
 
 function printHelp() {
     console.log(`
-${chalk.blue.bold('QS Benchmark Suite')}
+${colors.blue.bold('QS Benchmark Suite')}
 
-${chalk.yellow('Usage:')}
+${colors.yellow('Usage:')}
   node benchmark/index.js [options]
 
-${chalk.yellow('Options:')}
+${colors.yellow('Options:')}
   --parse              Run only parse benchmarks
   --stringify          Run only stringify benchmarks
   --baseline FILE      Compare results against baseline file
@@ -106,14 +106,14 @@ ${chalk.yellow('Options:')}
   --no-summary         Skip summary report
   --help               Show this help
 
-${chalk.yellow('Examples:')}
+${colors.yellow('Examples:')}
   node benchmark/index.js                           # Run all benchmarks
   node benchmark/index.js --parse                   # Run only parse benchmarks
   node benchmark/index.js --baseline baseline.json  # Compare with baseline
   node benchmark/index.js --save-baseline           # Save as new baseline
   STRESS_TEST=1 node benchmark/index.js             # Include stress tests
 
-${chalk.yellow('Environment Variables:')}
+${colors.yellow('Environment Variables:')}
   STRESS_TEST=1        Include stress test scenarios
 `);
 }
@@ -129,7 +129,7 @@ function generateSummaryReport() {
 
     if (files.length === 0) return;
 
-    console.log(chalk.blue('\n📈 Performance Trend (Last 5 Runs)\n'));
+    console.log(colors.blue('\n📈 Performance Trend (Last 5 Runs)\n'));
 
     const trends = {};
     files.forEach(file => {
@@ -164,7 +164,7 @@ function saveBaseline() {
     const baselinePath = path.join(__dirname, 'baseline.json');
     
     fs.copyFileSync(path.join(resultsDir, latest), baselinePath);
-    console.log(chalk.green(`💾 Baseline saved to ${baselinePath}`));
+    console.log(colors.green(`💾 Baseline saved to ${baselinePath}`));
 }
 
 if (require.main === module) {
