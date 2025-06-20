@@ -65,4 +65,16 @@ export default [
 		files: ['eslint.config.mjs'],
 		...x,
 	})),
+
+	{
+		files: ['benchmark/**'],
+		languageOptions: {
+			ecmaVersion: 'latest',
+			sourceType: 'module',
+		},
+		rules: {
+			indent: ['error', 'tab'],
+			'no-console': 'off',
+		},
+	},
 ];

@@ -38,6 +38,7 @@
         "@browserify/envify": "^6.0.0",
         "@browserify/uglifyify": "^6.0.0",
         "@ljharb/eslint-config": "^22.2.5",
+        "benchmark": "^2.1.4",
         "browserify": "^16.5.2",
         "bundle-collapser": "^1.4.0",
         "common-shakeify": "~1.0.0",
@@ -62,6 +63,7 @@
         "npmignore": "^0.3.6",
         "nyc": "^10.3.2",
         "object-inspect": "^1.14.0",
+        "pargs": "^1.8.1",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
         "safer-buffer": "^2.1.2",
@@ -79,12 +81,14 @@
         "postlint": "eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
         "prelint": "evalmd --eslint README.md",
         "lint": "eslint .",
+        "benchmark": "node benchmark/index.mjs",
         "dist": "mkdirp dist && browserify --standalone Qs -g unassertify -g @browserify/envify -g [@browserify/uglifyify --mangle.keep_fnames --compress.keep_fnames --format.indent_level=1 --compress.arrows=false --compress.passes=4 --compress.typeofs=false] -p common-shakeify -p bundle-collapser/plugin lib/index.js > dist/qs.js"
     },
     "license": "BSD-3-Clause",
     "publishConfig": {
         "ignore": [
             "!dist/*",
+            "benchmark",
             "bower.json",
             "component.json",
             ".github/workflows",
