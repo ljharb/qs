@@ -5,7 +5,7 @@ This directory contains a comprehensive benchmarking infrastructure for the `qs`
 ## Features
 
 - 🚀 **Comprehensive Test Coverage**: Parse and stringify operations across various scenarios
-- 📊 **Cross-Node Version Testing**: Automated testing on Node.js 16, 18, 20, and 22
+- 📊 **Cross-Node Version Testing**: Automated testing from Node.js 0.8 through current versions
 - 📈 **Regression Detection**: Compare performance against baselines
 - 🔄 **CI Integration**: Automated benchmarks on every PR and push
 - 📋 **Detailed Reporting**: Visual tables with performance metrics
