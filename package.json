@@ -83,6 +83,7 @@
     "publishConfig": {
         "ignore": [
             "!dist/*",
+            "benchmark",
             "bower.json",
             "component.json",
             ".github/workflows",
