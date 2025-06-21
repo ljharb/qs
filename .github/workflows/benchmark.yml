@@ -1,0 +1,81 @@
+name: Performance Benchmark
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get full history for comparison
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Install benchmark dependencies
+      - name: Install benchmark dependencies
+        run: cd benchmark && npm ci
+
+      # For PRs: Run benchmarks on both the base branch and the PR branch
+      - name: Compare with base branch
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          # Save current branch name to go back later
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+          # Create directories for results
+          mkdir -p /tmp/qs-benchmark/base
+          mkdir -p /tmp/qs-benchmark/pr
+
+          echo "==== Running benchmarks on base branch ===="
+          # Check out the base branch
+          git checkout origin/${{ github.base_ref }}
+          # Install dependencies (in case they changed)
+          npm ci
+          cd benchmark && npm ci && cd ..
+          # Run benchmarks and save results
+          node benchmark/index.js
+          cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/base/results.json
+
+          echo "==== Running benchmarks on PR branch ===="
+          # Go back to PR branch
+          git checkout $CURRENT_BRANCH
+          # Install dependencies again for PR
+          npm ci
+          cd benchmark && npm ci && cd ..
+          # Run benchmarks and save results
+          node benchmark/index.js
+          cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/pr/results.json
+
+          # Compare benchmark results using the comparison script
+          node benchmark/compare-benchmarks.js \
+            /tmp/qs-benchmark/base/results.json \
+            /tmp/qs-benchmark/pr/results.json \
+            -10 # 10% slowdown threshold
+
+      # For pushes to main: Run benchmarks and save as baseline
+      - name: Run benchmarks on main branch
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          # Run benchmarks
+          node benchmark/index.js
+          
+          # Save latest as baseline for future comparisons
+          echo "Saving latest benchmark as baseline..."
+          latest_result=$(ls -t benchmark/results/benchmark-*.json | head -n 1)
+          cp $latest_result benchmark/baseline.json 
+          echo "Baseline saved to benchmark/baseline.json"
