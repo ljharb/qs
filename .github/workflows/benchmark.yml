@@ -17,18 +17,12 @@ jobs:
         with:
           fetch-depth: 0  # Get full history for comparison
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
       - name: Install dependencies
-        run: npm ci
+        uses: ljharb/actions/node/install@main
 
       # Install benchmark dependencies
       - name: Install benchmark dependencies
-        run: cd benchmark && npm ci
+        run: cd benchmark && npm install
 
       # For PRs: Run benchmarks on both the base branch and the PR branch
       - name: Compare with base branch
@@ -45,8 +39,8 @@ jobs:
           # Check out the base branch
           git checkout origin/${{ github.base_ref }}
           # Install dependencies (in case they changed)
-          npm ci
-          cd benchmark && npm ci && cd ..
+          npm install
+          cd benchmark && npm install && cd ..
           # Run benchmarks and save results
           node benchmark/index.js
           cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/base/results.json
@@ -55,8 +49,8 @@ jobs:
           # Go back to PR branch
           git checkout $CURRENT_BRANCH
           # Install dependencies again for PR
-          npm ci
-          cd benchmark && npm ci && cd ..
+          npm install
+          cd benchmark && npm install && cd ..
           # Run benchmarks and save results
           node benchmark/index.js
           cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/pr/results.json
@@ -73,9 +67,9 @@ jobs:
         run: |
           # Run benchmarks
           node benchmark/index.js
-          
+
           # Save latest as baseline for future comparisons
           echo "Saving latest benchmark as baseline..."
           latest_result=$(ls -t benchmark/results/benchmark-*.json | head -n 1)
-          cp $latest_result benchmark/baseline.json 
+          cp $latest_result benchmark/baseline.json
           echo "Baseline saved to benchmark/baseline.json"
