@@ -1,0 +1,160 @@
+{
+  "timestamp": "2025-06-24T15:18:02.620Z",
+  "nodeVersion": "v20.10.0",
+  "platform": "linux-x64",
+  "results": [
+    {
+      "name": "Stringify simple object",
+      "hz": 976109.2038787514,
+      "rme": 1.4366934996007836,
+      "mean": 0.0000010244755361657426,
+      "sample": 89,
+      "fastest": true,
+      "slowest": false
+    },
+    {
+      "name": "Stringify nested object",
+      "hz": 194985.4588845839,
+      "rme": 1.4795812503560726,
+      "mean": 0.000005128587566070358,
+      "sample": 91,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify arrays",
+      "hz": 114848.53681820467,
+      "rme": 1.0304037149913832,
+      "mean": 0.00000870712007052309,
+      "sample": 94,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify mixed object",
+      "hz": 59549.669724762505,
+      "rme": 0.7216230963328606,
+      "mean": 0.000016792704386472365,
+      "sample": 91,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify large object",
+      "hz": 16029.81031807559,
+      "rme": 0.8349993480545844,
+      "mean": 0.00006238376999834967,
+      "sample": 94,
+      "fastest": false,
+      "slowest": true
+    },
+    {
+      "name": "Stringify array indices format",
+      "hz": 113602.64926783308,
+      "rme": 0.373741414185561,
+      "mean": 0.000008802611615529928,
+      "sample": 94,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify array brackets format",
+      "hz": 117192.3740575468,
+      "rme": 0.6084953120963555,
+      "mean": 0.000008532978430055137,
+      "sample": 96,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify array repeat format",
+      "hz": 127845.939039929,
+      "rme": 0.874105890944508,
+      "mean": 0.000007821914466033049,
+      "sample": 94,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify array comma format",
+      "hz": 295392.78285483853,
+      "rme": 0.9042362757667536,
+      "mean": 0.0000033853230615028887,
+      "sample": 93,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify with allowDots",
+      "hz": 205293.44623108386,
+      "rme": 1.4258567729056548,
+      "mean": 0.000004871076102811256,
+      "sample": 92,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify without encoding",
+      "hz": 154230.07211793793,
+      "rme": 1.735820829004054,
+      "mean": 0.000006483819830125682,
+      "sample": 91,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify with query prefix",
+      "hz": 768363.2047420949,
+      "rme": 0.9492095133249806,
+      "mean": 0.000001301467839464873,
+      "sample": 96,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify with custom delimiter",
+      "hz": 597488.6919134173,
+      "rme": 0.9812478112745247,
+      "mean": 0.0000016736718427215205,
+      "sample": 93,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify null values",
+      "hz": 930733.0625960926,
+      "rme": 0.8599816731412604,
+      "mean": 0.0000010744219155712609,
+      "sample": 92,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify with strictNullHandling",
+      "hz": 646752.215555868,
+      "rme": 0.699192956942562,
+      "mean": 0.0000015461872042301766,
+      "sample": 97,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify with skipNulls",
+      "hz": 728271.5695564854,
+      "rme": 1.2819874334336552,
+      "mean": 0.0000013731141538437319,
+      "sample": 97,
+      "fastest": false,
+      "slowest": false
+    },
+    {
+      "name": "Stringify special characters",
+      "hz": 606082.0112197315,
+      "rme": 1.437039782903162,
+      "mean": 0.0000016499417265124139,
+      "sample": 88,
+      "fastest": false,
+      "slowest": false
+    }
+  ]
+}

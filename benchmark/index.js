@@ -1,53 +1,99 @@
 #!/usr/bin/env node
 'use strict';
 
-const runParseBenchmarks = require('./parse');
-const runStringifyBenchmarks = require('./stringify');
-const colors = require('colors');
-const fs = require('fs');
-const path = require('path');
+var runParseBenchmarks = require('./parse');
+var runStringifyBenchmarks = require('./stringify');
+var colors = require('colors');
+var fs = require('fs');
+var path = require('path');
 
-async function main() {
-    const args = process.argv.slice(2);
-    const options = parseArgs(args);
+// Load polyfills for older Node.js versions
+require('./polyfills');
+
+function main(callback) {
+    var args = process.argv.slice(2);
+    var options = parseArgs(args);
 
     console.log(colors.blue.bold('🚀 QS Library Benchmarks'));
-    console.log(colors.gray(`Node.js ${process.version} on ${process.platform}-${process.arch}\n`));
+    console.log(colors.gray('Node.js ' + process.version + ' on ' + process.platform + '-' + process.arch + '\n'));
 
     if (options.baseline) {
-        console.log(colors.yellow(`📊 Comparing against baseline: ${options.baseline}\n`));
+        console.log(colors.yellow('📊 Comparing against baseline: ' + options.baseline + '\n'));
     }
 
-    try {
+    // Step 1: Run parse benchmarks if needed
+    function runParse() {
         if (options.parse || options.all) {
-            await runParseBenchmarks();
-            console.log('\n' + '='.repeat(60) + '\n');
+            runParseBenchmarks(function(err) {
+                if (err) {
+                    return handleError(err);
+                }
+                console.log('\n' + repeatString('=', 60) + '\n');
+                runStringify();
+            });
+        } else {
+            runStringify();
         }
+    }
 
+    // Step 2: Run stringify benchmarks if needed
+    function runStringify() {
         if (options.stringify || options.all) {
-            await runStringifyBenchmarks();
-            console.log('\n' + '='.repeat(60) + '\n');
+            runStringifyBenchmarks(function(err) {
+                if (err) {
+                    return handleError(err);
+                }
+                console.log('\n' + repeatString('=', 60) + '\n');
+                finalize();
+            });
+        } else {
+            finalize();
         }
+    }
 
+    // Step 3: Finalize benchmarks
+    function finalize() {
         // Generate summary report
         if (options.summary) {
             generateSummaryReport();
         }
 
         console.log(colors.green('✅ Benchmarks completed successfully!'));
-        
+
         if (options.save) {
             saveBaseline();
         }
 
-    } catch (error) {
-        console.error(colors.red('❌ Benchmark failed:'), error.message);
-        process.exit(1);
+        if (callback) callback(null);
     }
+
+    // Handle errors
+    function handleError(error) {
+        console.error(colors.red('❌ Benchmark failed:'), error.message);
+        if (callback) callback(error);
+        else process.exit(1);
+    }
+
+    // Start the process
+    runParse();
+}
+
+// Helper function for repeating strings (replacement for String.repeat)
+function repeatString(str, count) {
+    if (typeof String.prototype.repeat === 'function') {
+        return str.repeat(count);
+    }
+
+    var result = '';
+    while (count > 0) {
+        result += str;
+        count--;
+    }
+    return result;
 }
 
 function parseArgs(args) {
-    const options = {
+    var options = {
         all: true,
         parse: false,
         stringify: false,
@@ -56,8 +102,8 @@ function parseArgs(args) {
         save: false
     };
 
-    for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
+    for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
         switch (arg) {
             case '--parse':
                 options.parse = true;
@@ -68,7 +114,10 @@ function parseArgs(args) {
                 options.all = false;
                 break;
             case '--baseline':
-                options.baseline = args[++i];
+                if (i + 1 < args.length) {
+                    options.baseline = args[i + 1];
+                    i++;
+                }
                 break;
             case '--save-baseline':
                 options.save = true;
@@ -80,8 +129,8 @@ function parseArgs(args) {
                 printHelp();
                 process.exit(0);
             default:
-                if (arg.startsWith('--')) {
-                    console.error(colors.red(`Unknown option: ${arg}`));
+                if (arg.indexOf('--') === 0) {
+                    console.error(colors.red('Unknown option: ' + arg));
                     printHelp();
                     process.exit(1);
                 }
@@ -92,84 +141,112 @@ function parseArgs(args) {
 }
 
 function printHelp() {
-    console.log(`
-${colors.blue.bold('QS Benchmark Suite')}
-
-${colors.yellow('Usage:')}
-  node benchmark/index.js [options]
-
-${colors.yellow('Options:')}
-  --parse              Run only parse benchmarks
-  --stringify          Run only stringify benchmarks
-  --baseline FILE      Compare results against baseline file
-  --save-baseline      Save current results as baseline
-  --no-summary         Skip summary report
-  --help               Show this help
-
-${colors.yellow('Examples:')}
-  node benchmark/index.js                           # Run all benchmarks
-  node benchmark/index.js --parse                   # Run only parse benchmarks
-  node benchmark/index.js --baseline baseline.json  # Compare with baseline
-  node benchmark/index.js --save-baseline           # Save as new baseline
-  STRESS_TEST=1 node benchmark/index.js             # Include stress tests
-
-${colors.yellow('Environment Variables:')}
-  STRESS_TEST=1        Include stress test scenarios
-`);
+    console.log(
+        '\n' + colors.blue.bold('QS Benchmark Suite') +
+        '\n\n' + colors.yellow('Usage:') +
+        '\n  node benchmark/index.js [options]' +
+        '\n\n' + colors.yellow('Options:') +
+        '\n  --parse              Run only parse benchmarks' +
+        '\n  --stringify          Run only stringify benchmarks' +
+        '\n  --baseline FILE      Compare results against baseline file' +
+        '\n  --save-baseline      Save current results as baseline' +
+        '\n  --no-summary         Skip summary report' +
+        '\n  --help               Show this help' +
+        '\n\n' + colors.yellow('Examples:') +
+        '\n  node benchmark/index.js                           # Run all benchmarks' +
+        '\n  node benchmark/index.js --parse                   # Run only parse benchmarks' +
+        '\n  node benchmark/index.js --baseline baseline.json  # Compare with baseline' +
+        '\n  node benchmark/index.js --save-baseline           # Save as new baseline' +
+        '\n  STRESS_TEST=1 node benchmark/index.js             # Include stress tests' +
+        '\n\n' + colors.yellow('Environment Variables:') +
+        '\n  STRESS_TEST=1        Include stress test scenarios' +
+        '\n'
+    );
 }
 
 function generateSummaryReport() {
-    const resultsDir = path.join(__dirname, 'results');
+    var resultsDir = path.join(__dirname, 'results');
     if (!fs.existsSync(resultsDir)) return;
 
-    const files = fs.readdirSync(resultsDir)
-        .filter(f => f.startsWith('benchmark-') && f.endsWith('.json'))
-        .sort()
-        .slice(-5); // Last 5 runs
+    var files = fs.readdirSync(resultsDir)
+        .filter(function(f) {
+            return f.indexOf('benchmark-') === 0 && f.indexOf('.json') === f.length - 5;
+        })
+        .sort();
+
+    // Get the last 5 runs
+    if (files.length > 5) {
+        files = files.slice(files.length - 5);
+    }
 
     if (files.length === 0) return;
 
     console.log(colors.blue('\n📈 Performance Trend (Last 5 Runs)\n'));
 
-    const trends = {};
-    files.forEach(file => {
-        const data = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
-        data.results.forEach(result => {
+    var trends = {};
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var data = JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8'));
+
+        for (var j = 0; j < data.results.length; j++) {
+            var result = data.results[j];
             if (!trends[result.name]) trends[result.name] = [];
             trends[result.name].push(result.hz);
-        });
-    });
+        }
+    }
 
-    Object.entries(trends).forEach(([testName, values]) => {
-        if (values.length < 2) return;
-        
-        const latest = values[values.length - 1];
-        const previous = values[values.length - 2];
-        const change = ((latest - previous) / previous * 100).toFixed(2);
-        const trend = change > 5 ? '📈' : change < -5 ? '📉' : '➖';
-        
-        console.log(`${trend} ${testName}: ${change >= 0 ? '+' : ''}${change}%`);
-    });
+    for (var testName in trends) {
+        if (trends.hasOwnProperty(testName)) {
+            var values = trends[testName];
+            if (values.length < 2) continue;
+
+            var latest = values[values.length - 1];
+            var previous = values[values.length - 2];
+            var change = ((latest - previous) / previous * 100).toFixed(2);
+            var trend;
+
+            if (change > 5) {
+                trend = '📈';
+            } else if (change < -5) {
+                trend = '📉';
+            } else {
+                trend = '➖';
+            }
+
+            var changeText = (change >= 0 ? '+' : '') + change + '%';
+            console.log(trend + ' ' + testName + ': ' + changeText);
+        }
+    }
 }
 
 function saveBaseline() {
-    const resultsDir = path.join(__dirname, 'results');
-    const files = fs.readdirSync(resultsDir)
-        .filter(f => f.startsWith('benchmark-') && f.endsWith('.json'))
+    var resultsDir = path.join(__dirname, 'results');
+    var files = fs.readdirSync(resultsDir)
+        .filter(function(f) {
+            return f.indexOf('benchmark-') === 0 && f.indexOf('.json') === f.length - 5;
+        })
         .sort();
-    
+
     if (files.length === 0) return;
-    
-    const latest = files[files.length - 1];
-    const baselinePath = path.join(__dirname, 'baseline.json');
-    
-    fs.copyFileSync(path.join(resultsDir, latest), baselinePath);
-    console.log(colors.green(`💾 Baseline saved to ${baselinePath}`));
+
+    var latest = files[files.length - 1];
+    var baselinePath = path.join(__dirname, 'baseline.json');
+
+    // Copy file - Node.js 0.8 doesn't have fs.copyFileSync
+    var content = fs.readFileSync(path.join(resultsDir, latest));
+    fs.writeFileSync(baselinePath, content);
+
+    console.log(colors.green('💾 Baseline saved to ' + baselinePath));
 }
 
 if (require.main === module) {
-    main().catch(console.error);
+    main(function(err) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+    });
 }
 
-module.exports = { main };
+module.exports = { main: main };
 

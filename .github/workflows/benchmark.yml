@@ -11,65 +11,42 @@ jobs:
     name: Run Performance Benchmarks
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [0.8, 0.9, 0.10, 0.11, 0.12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      fail-fast: false
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Get full history for comparison
+          fetch-depth: 0
 
       - name: Install dependencies
         uses: ljharb/actions/node/install@main
+        with:
+          node-version: ${{ matrix.node-version }}
 
-      # Install benchmark dependencies
       - name: Install benchmark dependencies
         run: cd benchmark && npm install
 
-      # For PRs: Run benchmarks on both the base branch and the PR branch
-      - name: Compare with base branch
+      # For PRs: Run benchmarks and compare against committed baseline
+      - name: Run benchmarks and compare against baseline
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          # Save current branch name to go back later
-          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "==== Running benchmarks and comparing against baseline ===="
+          # Run benchmarks using the compare script that uses the committed baseline
+          npm run benchmark:compare
 
-          # Create directories for results
-          mkdir -p /tmp/qs-benchmark/base
-          mkdir -p /tmp/qs-benchmark/pr
+          # Print the Node.js version for debugging
+          echo "Benchmark completed on Node.js version: $(node --version)"
 
-          echo "==== Running benchmarks on base branch ===="
-          # Check out the base branch
-          git checkout origin/${{ github.base_ref }}
-          # Install dependencies (in case they changed)
-          npm install
-          cd benchmark && npm install && cd ..
-          # Run benchmarks and save results
-          node benchmark/index.js
-          cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/base/results.json
-
-          echo "==== Running benchmarks on PR branch ===="
-          # Go back to PR branch
-          git checkout $CURRENT_BRANCH
-          # Install dependencies again for PR
-          npm install
-          cd benchmark && npm install && cd ..
-          # Run benchmarks and save results
-          node benchmark/index.js
-          cp benchmark/results/$(ls -t benchmark/results/benchmark-*.json | head -n 1) /tmp/qs-benchmark/pr/results.json
-
-          # Compare benchmark results using the comparison script
-          node benchmark/compare-benchmarks.js \
-            /tmp/qs-benchmark/base/results.json \
-            /tmp/qs-benchmark/pr/results.json \
-            -10 # 10% slowdown threshold
-
-      # For pushes to main: Run benchmarks and save as baseline
+      # For pushes to main: Run benchmarks against the committed baseline
       - name: Run benchmarks on main branch
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          # Run benchmarks
-          node benchmark/index.js
+          # Run benchmarks against the committed baseline
+          npm run benchmark:compare
 
-          # Save latest as baseline for future comparisons
-          echo "Saving latest benchmark as baseline..."
-          latest_result=$(ls -t benchmark/results/benchmark-*.json | head -n 1)
-          cp $latest_result benchmark/baseline.json
-          echo "Baseline saved to benchmark/baseline.json"
+          # Print the Node.js version for debugging
+          echo "Benchmark completed on Node.js version: $(node --version)"

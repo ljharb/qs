@@ -2,14 +2,6 @@
   "name": "qs-benchmarks",
   "private": true,
   "description": "Benchmarking suite for qs library",
-  "scripts": {
-    "benchmark": "cd benchmark && npm install && node index.js",
-    "benchmark:parse": "cd benchmark && npm install && node index.js --parse",
-    "benchmark:stringify": "cd benchmark && npm install && node index.js --stringify",
-    "benchmark:baseline": "cd benchmark && npm install && node index.js --save-baseline",
-    "benchmark:compare": "cd benchmark && npm install && node index.js --baseline baseline.json",
-    "benchmark:stress": "cd benchmark && npm install && STRESS_TEST=1 node index.js"
-  },
   "dependencies": {
     "benchmark": "^2.1.4",
     "table": "^6.8.1",
