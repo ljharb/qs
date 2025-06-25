@@ -231,7 +231,7 @@ module.exports = {
     // Helper functions
     generateQuery: function (type, size) {
         size = size || 'medium';
-        const queries = {
+        var queries = {
             simple: simpleQueries,
             nested: nestedQueries,
             array: arrayQueries,
