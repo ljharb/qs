@@ -34,6 +34,7 @@ assert.equal(str, 'a=c');
 ### Parsing Objects
 
 [](#preventEval)
+
 ```javascript
 qs.parse(string, [options]);
 ```
@@ -44,8 +45,8 @@ For example, the string `'foo[bar]=baz'` converts to:
 ```javascript
 assert.deepEqual(qs.parse('foo[bar]=baz'), {
     foo: {
-        bar: 'baz'
-    }
+        bar: 'baz',
+    },
 });
 ```
 
@@ -57,7 +58,7 @@ assert.deepEqual(nullObject, { a: { hasOwnProperty: 'b' } });
 ```
 
 By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties.
-*WARNING* It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten.
+_WARNING_ It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten.
 Always be careful with this option.
 
 ```javascript
@@ -69,7 +70,7 @@ URI encoded strings work too:
 
 ```javascript
 assert.deepEqual(qs.parse('a%5Bb%5D=c'), {
-    a: { b: 'c' }
+    a: { b: 'c' },
 });
 ```
 
@@ -79,9 +80,9 @@ You can also nest your objects, like `'foo[bar][baz]=foobarbaz'`:
 assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
     foo: {
         bar: {
-            baz: 'foobarbaz'
-        }
-    }
+            baz: 'foobarbaz',
+        },
+    },
 });
 ```
 
@@ -96,13 +97,13 @@ var expected = {
                 d: {
                     e: {
                         f: {
-                            '[g][h][i]': 'j'
-                        }
-                    }
-                }
-            }
-        }
-    }
+                            '[g][h][i]': 'j',
+                        },
+                    },
+                },
+            },
+        },
+    },
 };
 var string = 'a[b][c][d][e][f][g][h][i]=j';
 assert.deepEqual(qs.parse(string), expected);
@@ -136,6 +137,7 @@ assert.deepEqual(limited, { a: 'b' });
 ```
 
 If you want an error to be thrown whenever the a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+
 ```javascript
 try {
     qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
@@ -180,16 +182,18 @@ Note: it implies `allowDots`, so `parse` will error if you set `decodeDotInKeys`
 
 ```javascript
 var withDots = qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { decodeDotInKeys: true });
-assert.deepEqual(withDots, { 'name.obj': { first: 'John', last: 'Doe' }});
+assert.deepEqual(withDots, { 'name.obj': { first: 'John', last: 'Doe' } });
 ```
 
 Option `allowEmptyArrays` can be used to allowing empty array values in object
+
 ```javascript
 var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
 assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
 ```
 
 Option `duplicates` can be used to change the behavior when duplicate keys are encountered
+
 ```javascript
 assert.deepEqual(qs.parse('foo=bar&foo=baz'), { foo: ['bar', 'baz'] });
 assert.deepEqual(qs.parse('foo=bar&foo=baz', { duplicates: 'combine' }), { foo: ['bar', 'baz'] });
@@ -205,7 +209,7 @@ assert.deepEqual(oldCharset, { a: '§' });
 ```
 
 Some services add an initial `utf8=✓` value to forms so that old Internet Explorer versions are more likely to submit the form as utf-8.
-Additionally, the server can check the value against wrong encodings of the checkmark character and detect that a query string or `application/x-www-form-urlencoded` body was *not* sent as utf-8, eg. if the form had an `accept-charset` parameter or the containing page had a different character set.
+Additionally, the server can check the value against wrong encodings of the checkmark character and detect that a query string or `application/x-www-form-urlencoded` body was _not_ sent as utf-8, eg. if the form had an `accept-charset` parameter or the containing page had a different character set.
 
 **qs** supports this mechanism via the `charsetSentinel` option.
 If specified, the `utf8` parameter will be omitted from the returned object.
@@ -217,14 +221,14 @@ In that sense the `charset` will behave as the default charset rather than the a
 ```javascript
 var detectedAsUtf8 = qs.parse('utf8=%E2%9C%93&a=%C3%B8', {
     charset: 'iso-8859-1',
-    charsetSentinel: true
+    charsetSentinel: true,
 });
 assert.deepEqual(detectedAsUtf8, { a: 'ø' });
 
 // Browsers encode the checkmark as &#10003; when submitting as iso-8859-1:
 var detectedAsIso8859_1 = qs.parse('utf8=%26%2310003%3B&a=%F8', {
     charset: 'utf-8',
-    charsetSentinel: true
+    charsetSentinel: true,
 });
 assert.deepEqual(detectedAsIso8859_1, { a: 'ø' });
 ```
@@ -234,7 +238,7 @@ If you want to decode the `&#...;` syntax to the actual character, you can speci
 ```javascript
 var detectedAsIso8859_1 = qs.parse('a=%26%239786%3B', {
     charset: 'iso-8859-1',
-    interpretNumericEntities: true
+    interpretNumericEntities: true,
 });
 assert.deepEqual(detectedAsIso8859_1, { a: '☺' });
 ```
@@ -288,17 +292,18 @@ This is needed to handle cases when someone sent, for example, `a[999999999]` an
 
 ```javascript
 var withMaxIndex = qs.parse('a[100]=b');
-assert.deepEqual(withMaxIndex, { a: { '100': 'b' } });
+assert.deepEqual(withMaxIndex, { a: { 100: 'b' } });
 ```
 
 This limit can be overridden by passing an `arrayLimit` option:
 
 ```javascript
 var withArrayLimit = qs.parse('a[1]=b', { arrayLimit: 0 });
-assert.deepEqual(withArrayLimit, { a: { '1': 'b' } });
+assert.deepEqual(withArrayLimit, { a: { 1: 'b' } });
 ```
 
 If you want to throw an error whenever the array limit is exceeded, set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+
 ```javascript
 try {
     qs.parse('a[1]=b', { arrayLimit: 0, throwOnLimitExceeded: true });
@@ -314,14 +319,14 @@ To disable array parsing entirely, set `parseArrays` to `false`.
 
 ```javascript
 var noParsingArrays = qs.parse('a[]=b', { parseArrays: false });
-assert.deepEqual(noParsingArrays, { a: { '0': 'b' } });
+assert.deepEqual(noParsingArrays, { a: { 0: 'b' } });
 ```
 
 If you mix notations, **qs** will merge the two items into an object:
 
 ```javascript
 var mixedNotation = qs.parse('a[0]=b&a[b]=c');
-assert.deepEqual(mixedNotation, { a: { '0': 'b', b: 'c' } });
+assert.deepEqual(mixedNotation, { a: { 0: 'b', b: 'c' } });
 ```
 
 You can also create arrays of objects:
@@ -332,10 +337,12 @@ assert.deepEqual(arraysOfObjects, { a: [{ b: 'c' }] });
 ```
 
 Some people use comma to join array, **qs** can parse it:
+
 ```javascript
-var arraysOfObjects = qs.parse('a=b,c', { comma: true })
-assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
+var arraysOfObjects = qs.parse('a=b,c', { comma: true });
+assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] });
 ```
+
 (_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
 
 ### Parsing primitive/scalar values (numbers, booleans, null, etc)
@@ -353,6 +360,7 @@ If you wish to auto-convert values which look like numbers, booleans, and other 
 ### Stringifying
 
 [](#preventEval)
+
 ```javascript
 qs.stringify(object, [options]);
 ```
@@ -372,21 +380,24 @@ assert.equal(unencoded, 'a[b]=c');
 ```
 
 Encoding can be disabled for keys by setting the `encodeValuesOnly` option to `true`:
+
 ```javascript
-var encodedValues = qs.stringify(
-    { a: 'b', c: ['d', 'e=f'], f: [['g'], ['h']] },
-    { encodeValuesOnly: true }
-);
-assert.equal(encodedValues,'a=b&c[0]=d&c[1]=e%3Df&f[0][0]=g&f[1][0]=h');
+var encodedValues = qs.stringify({ a: 'b', c: ['d', 'e=f'], f: [['g'], ['h']] }, { encodeValuesOnly: true });
+assert.equal(encodedValues, 'a=b&c[0]=d&c[1]=e%3Df&f[0][0]=g&f[1][0]=h');
 ```
 
 This encoding can also be replaced by a custom encoding method set as `encoder` option:
 
 ```javascript
-var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str) {
-    // Passed in values `a`, `b`, `c`
-    return // Return encoded string
-}})
+var encoded = qs.stringify(
+    { a: { b: 'c' } },
+    {
+        encoder: function (str) {
+            // Passed in values `a`, `b`, `c`
+            return; // Return encoded string
+        },
+    }
+);
 ```
 
 _(Note: the `encoder` option does not apply if `encode` is `false`)_
@@ -394,38 +405,47 @@ _(Note: the `encoder` option does not apply if `encode` is `false`)_
 Analogue to the `encoder` there is a `decoder` option for `parse` to override decoding of properties and values:
 
 ```javascript
-var decoded = qs.parse('x=z', { decoder: function (str) {
-    // Passed in values `x`, `z`
-    return // Return decoded string
-}})
+var decoded = qs.parse('x=z', {
+    decoder: function (str) {
+        // Passed in values `x`, `z`
+        return; // Return decoded string
+    },
+});
 ```
 
 You can encode keys and values using different logic by using the type argument provided to the encoder:
 
 ```javascript
-var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, defaultEncoder, charset, type) {
-    if (type === 'key') {
-        return // Encoded key
-    } else if (type === 'value') {
-        return // Encoded value
+var encoded = qs.stringify(
+    { a: { b: 'c' } },
+    {
+        encoder: function (str, defaultEncoder, charset, type) {
+            if (type === 'key') {
+                return; // Encoded key
+            } else if (type === 'value') {
+                return; // Encoded value
+            }
+        },
     }
-}})
+);
 ```
 
 The type argument is also provided to the decoder:
 
 ```javascript
-var decoded = qs.parse('x=z', { decoder: function (str, defaultDecoder, charset, type) {
-    if (type === 'key') {
-        return // Decoded key
-    } else if (type === 'value') {
-        return // Decoded value
-    }
-}})
+var decoded = qs.parse('x=z', {
+    decoder: function (str, defaultDecoder, charset, type) {
+        if (type === 'key') {
+            return; // Decoded key
+        } else if (type === 'value') {
+            return; // Decoded value
+        }
+    },
+});
 ```
 
 Examples beyond this point will be shown as though the output is not URI encoded for clarity.
-Please note that the return values in these cases *will* be URI encoded during real usage.
+Please note that the return values in these cases _will_ be URI encoded during real usage.
 
 When arrays are stringified, they follow the `arrayFormat` option, which defaults to `indices`:
 
@@ -444,13 +464,13 @@ qs.stringify({ a: ['b', 'c', 'd'] }, { indices: false });
 You may use the `arrayFormat` option to specify the format of the output array:
 
 ```javascript
-qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'indices' })
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'indices' });
 // 'a[0]=b&a[1]=c'
-qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'brackets' })
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'brackets' });
 // 'a[]=b&a[]=c'
-qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' })
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'repeat' });
 // 'a=b&a=c'
-qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
+qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' });
 // 'a=b,c'
 ```
 
@@ -473,12 +493,14 @@ qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
 You may encode the dot notation in the keys of object with option `encodeDotInKeys` by setting it to `true`:
 Note: it implies `allowDots`, so `stringify` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
 Caveat: when `encodeValuesOnly` is `true` as well as `encodeDotInKeys`, only dots in keys and nothing else will be encoded.
+
 ```javascript
-qs.stringify({ "name.obj": { "first": "John", "last": "Doe" } }, { allowDots: true, encodeDotInKeys: true })
+qs.stringify({ 'name.obj': { first: 'John', last: 'Doe' } }, { allowDots: true, encodeDotInKeys: true });
 // 'name%252Eobj.first=John&name%252Eobj.last=Doe'
 ```
 
 You may allow empty array values by setting the `allowEmptyArrays` option to `true`:
+
 ```javascript
 qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true });
 // 'foo[]&bar=baz'
@@ -496,8 +518,8 @@ Key with no values (such as an empty object or array) will return nothing:
 assert.equal(qs.stringify({ a: [] }), '');
 assert.equal(qs.stringify({ a: {} }), '');
 assert.equal(qs.stringify({ a: [{}] }), '');
-assert.equal(qs.stringify({ a: { b: []} }), '');
-assert.equal(qs.stringify({ a: { b: {}} }), '');
+assert.equal(qs.stringify({ a: { b: [] } }), '');
+assert.equal(qs.stringify({ a: { b: {} } }), '');
 ```
 
 Properties that are set to `undefined` will be omitted entirely:
@@ -524,7 +546,14 @@ If you only want to override the serialization of `Date` objects, you can provid
 var date = new Date(7);
 assert.equal(qs.stringify({ a: date }), 'a=1970-01-01T00:00:00.007Z'.replace(/:/g, '%3A'));
 assert.equal(
-    qs.stringify({ a: date }, { serializeDate: function (d) { return d.getTime(); } }),
+    qs.stringify(
+        { a: date },
+        {
+            serializeDate: function (d) {
+                return d.getTime();
+            },
+        }
+    ),
     'a=7'
 );
 ```
@@ -535,7 +564,7 @@ You may use the `sort` option to affect the order of parameter keys:
 function alphabeticalSort(a, b) {
     return a.localeCompare(b);
 }
-assert.equal(qs.stringify({ a: 'c', z: 'y', b : 'f' }, { sort: alphabeticalSort }), 'a=c&b=f&z=y');
+assert.equal(qs.stringify({ a: 'c', z: 'y', b: 'f' }, { sort: alphabeticalSort }), 'a=c&b=f&z=y');
 ```
 
 Finally, you can use the `filter` option to restrict which keys will be included in the stringified output.
@@ -637,7 +666,7 @@ assert.deepEqual(parsedStrictNull, { a: null, b: '' });
 To completely skip rendering keys with `null` values, use the `skipNulls` flag:
 
 ```javascript
-var nullsSkipped = qs.stringify({ a: 'b', c: null}, { skipNulls: true });
+var nullsSkipped = qs.stringify({ a: 'b', c: null }, { skipNulls: true });
 assert.equal(nullsSkipped, 'a=b');
 ```
 
@@ -689,7 +718,7 @@ assert.deepEqual(obj, { a: 'こんにちは！' });
 
 ### RFC 3986 and RFC 1738 space encoding
 
-RFC3986 used as default option and encodes ' ' to *%20* which is backward compatible.
+RFC3986 used as default option and encodes ' ' to _%20_ which is backward compatible.
 In the same time, output can be stringified as per RFC1738 with ' ' equal to '+'.
 
 ```
