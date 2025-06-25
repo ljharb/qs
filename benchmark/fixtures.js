@@ -220,16 +220,16 @@ module.exports = {
 };
 
 module.exports = {
-    simpleQueries,
-    nestedQueries,
-    arrayQueries,
-    edgeCaseQueries,
-    realWorldQueries,
-    stressTestQueries,
-    testObjects,
+    simpleQueries: simpleQueries,
+    nestedQueries: nestedQueries,
+    arrayQueries: arrayQueries,
+    edgeCaseQueries: edgeCaseQueries,
+    realWorldQueries: realWorldQueries,
+    stressTestQueries: stressTestQueries,
+    testObjects: testObjects,
 
     // Helper functions
-    generateQuery: (type, size) => {
+    generateQuery: function (type, size) {
         size = size || 'medium';
         const queries = {
             simple: simpleQueries,
@@ -243,7 +243,7 @@ module.exports = {
         return queries[type] && queries[type][size] ? queries[type][size] : simpleQueries.medium;
     },
 
-    generateObject: (type) => {
+    generateObject: function (type) {
         return testObjects[type] || testObjects.simple;
     },
 };
