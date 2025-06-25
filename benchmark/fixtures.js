@@ -227,7 +227,8 @@ module.exports = {
     testObjects,
 
     // Helper functions
-    generateQuery: (type, size = 'medium') => {
+    generateQuery: (type, size) => {
+        size = size || 'medium';
         const queries = {
             simple: simpleQueries,
             nested: nestedQueries,

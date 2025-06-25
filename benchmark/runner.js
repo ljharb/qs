@@ -9,15 +9,19 @@ var path = require('path');
 require('./polyfills');
 
 function table(data) {
-    return data.map(row => row.join('\t')).join('\n');
-};
+    return data
+        .map(function (row) {
+            return row.join('\t');
+        })
+        .join('\n');
+}
 function BenchmarkRunner(options) {
     options = options || {};
 
     this.options = {
         outputDir: options.outputDir || path.join(__dirname, 'results'),
         baseline: options.baseline || null,
-        verbose: options.verbose || false
+        verbose: options.verbose || false,
     };
 
     // Copy any other options
@@ -36,12 +40,12 @@ function BenchmarkRunner(options) {
     }
 }
 
-BenchmarkRunner.prototype.add = function(name, fn, options) {
+BenchmarkRunner.prototype.add = function (name, fn, options) {
     options = options || {};
     var self = this;
 
     var completeOptions = {
-        onComplete: function(event) {
+        onComplete: function (event) {
             var benchmark = event.target;
             self.results.push({
                 name: benchmark.name,
@@ -50,9 +54,9 @@ BenchmarkRunner.prototype.add = function(name, fn, options) {
                 mean: benchmark.stats.mean,
                 sample: benchmark.stats.sample.length,
                 fastest: false,
-                slowest: false
+                slowest: false,
             });
-        }
+        },
     };
 
     // Copy any other options
@@ -66,42 +70,42 @@ BenchmarkRunner.prototype.add = function(name, fn, options) {
     return this;
 };
 
-BenchmarkRunner.prototype.run = function(callback) {
+BenchmarkRunner.prototype.run = function (callback) {
     var self = this;
 
     // For backward compatibility, if no callback is provided, return a Promise
     if (!callback && typeof Promise !== 'undefined') {
-        return new Promise(function(resolve, reject) {
-            self._runWithCallbacks(function(err, results) {
+        return new Promise(function (resolve, reject) {
+            self._runWithCallbacks(function (err, results) {
                 if (err) return reject(err);
                 resolve(results);
             });
         });
     }
 
-    return this._runWithCallbacks(callback || function() {});
+    return this._runWithCallbacks(callback || function () {});
 };
 
-BenchmarkRunner.prototype._runWithCallbacks = function(callback) {
+BenchmarkRunner.prototype._runWithCallbacks = function (callback) {
     var self = this;
 
     this.suite
-        .on('start', function() {
+        .on('start', function () {
             if (self.options.verbose) {
                 console.log(colors.blue('🚀 Starting benchmarks...'));
             }
         })
-        .on('cycle', function(event) {
+        .on('cycle', function (event) {
             if (self.options.verbose) {
                 console.log(colors.gray(String(event.target)));
             }
         })
-        .on('complete', function() {
+        .on('complete', function () {
             self._markFastestSlowest();
             self._generateReport();
             callback(null, self.results);
         })
-        .on('error', function(err) {
+        .on('error', function (err) {
             callback(err);
         })
         .run({ async: true });
@@ -109,17 +113,17 @@ BenchmarkRunner.prototype._runWithCallbacks = function(callback) {
     return this;
 };
 
-BenchmarkRunner.prototype._markFastestSlowest = function() {
+BenchmarkRunner.prototype._markFastestSlowest = function () {
     if (this.results.length === 0) return;
 
-    var sorted = this.results.slice().sort(function(a, b) {
+    var sorted = this.results.slice().sort(function (a, b) {
         return b.hz - a.hz;
     });
     sorted[0].fastest = true;
     sorted[sorted.length - 1].slowest = true;
 };
 
-BenchmarkRunner.prototype._generateReport = function() {
+BenchmarkRunner.prototype._generateReport = function () {
     var timestamp = new Date().toISOString();
     var nodeVersion = process.version;
     var platform = process.platform + '-' + process.arch;
@@ -132,7 +136,7 @@ BenchmarkRunner.prototype._generateReport = function() {
         timestamp: timestamp,
         nodeVersion: nodeVersion,
         platform: platform,
-        results: this.results
+        results: this.results,
     };
 
     var jsonPath = path.join(this.options.outputDir, 'benchmark-' + Date.now() + '.json');
@@ -144,33 +148,24 @@ BenchmarkRunner.prototype._generateReport = function() {
     }
 };
 
-BenchmarkRunner.prototype._printConsoleReport = function() {
+BenchmarkRunner.prototype._printConsoleReport = function () {
     console.log(colors.green('\n📊 Benchmark Results\n'));
 
-    var tableData = [
-        ['Test Name', 'Ops/sec', 'RME', 'Samples', 'Status']
-    ];
+    var tableData = [['Test Name', 'Ops/sec', 'RME', 'Samples', 'Status']];
 
     for (var i = 0; i < this.results.length; i++) {
         var result = this.results[i];
         var opsPerSec = result.hz.toLocaleString('en-US', { maximumFractionDigits: 0 });
         var rme = '±' + result.rme.toFixed(2) + '%';
-        var status = result.fastest ? '🚀 Fastest' :
-                    result.slowest ? '🐌 Slowest' : '';
+        var status = result.fastest ? '🚀 Fastest' : result.slowest ? '🐌 Slowest' : '';
 
-        tableData.push([
-            result.name,
-            opsPerSec,
-            rme,
-            result.sample.toString(),
-            status
-        ]);
+        tableData.push([result.name, opsPerSec, rme, result.sample.toString(), status]);
     }
 
     console.log(table(tableData));
 };
 
-BenchmarkRunner.prototype._compareWithBaseline = function(currentReport) {
+BenchmarkRunner.prototype._compareWithBaseline = function (currentReport) {
     if (!fs.existsSync(this.options.baseline)) {
         console.log(colors.yellow('⚠️  Baseline file not found, skipping comparison'));
         return;
@@ -180,9 +175,7 @@ BenchmarkRunner.prototype._compareWithBaseline = function(currentReport) {
         var baseline = JSON.parse(fs.readFileSync(this.options.baseline, 'utf8'));
         console.log(colors.blue('\n📈 Performance Comparison\n'));
 
-        var comparisonData = [
-            ['Test Name', 'Current', 'Baseline', 'Change', 'Status']
-        ];
+        var comparisonData = [['Test Name', 'Current', 'Baseline', 'Change', 'Status']];
 
         for (var i = 0; i < currentReport.results.length; i++) {
             var current = currentReport.results[i];
@@ -197,28 +190,23 @@ BenchmarkRunner.prototype._compareWithBaseline = function(currentReport) {
 
             if (!baselineResult) continue;
 
-            var change = ((current.hz - baselineResult.hz) / baselineResult.hz * 100).toFixed(2);
+            var change = (((current.hz - baselineResult.hz) / baselineResult.hz) * 100).toFixed(2);
             var changeStr = (change >= 0 ? '+' : '') + change + '%';
-            var status = Math.abs(change) < 5 ? '➖ No change' :
-                        change > 5 ? '✅ Improved' :
-                        '⚠️ Regression';
+            var status = Math.abs(change) < 5 ? '➖ No change' : change > 5 ? '✅ Improved' : '⚠️ Regression';
 
             comparisonData.push([
                 current.name,
                 current.hz.toLocaleString('en-US', { maximumFractionDigits: 0 }),
                 baselineResult.hz.toLocaleString('en-US', { maximumFractionDigits: 0 }),
                 changeStr,
-                status
+                status,
             ]);
         }
 
         console.log(table(comparisonData));
     } catch (error) {
-        console.log(colors.red('❌ Error comparing with baseline: ' + error.message));
+        console.error(colors.red('❌ Error comparing with baseline: ' + error.message));
     }
 };
 
 module.exports = BenchmarkRunner;
-
-module.exports = BenchmarkRunner;
-

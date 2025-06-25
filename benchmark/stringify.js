@@ -2,7 +2,7 @@
 
 var BenchmarkRunner = require('./runner');
 var fixtures = require('./fixtures');
-var qs = require('../lib/index');
+var qs = require('../lib');
 
 // Ensure polyfills are loaded
 require('./polyfills');
