@@ -1,7 +1,6 @@
 'use strict';
 
 var Benchmark = require('benchmark');
-var table = require('table').table;
 var colors = require('colors');
 var fs = require('fs');
 var path = require('path');
@@ -9,6 +8,9 @@ var path = require('path');
 // Load polyfills for older Node.js versions
 require('./polyfills');
 
+function table(data) {
+    return data.map(row => row.join('\t')).join('\n');
+};
 function BenchmarkRunner(options) {
     options = options || {};
 

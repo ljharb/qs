@@ -237,7 +237,7 @@ module.exports = {
             stress: stressTestQueries
         };
 
-        return queries[type]?.[size] || simpleQueries.medium;
+        return (queries[type] && queries[type][size]) ? queries[type][size] : simpleQueries.medium;
     },
 
     generateObject: (type) => {

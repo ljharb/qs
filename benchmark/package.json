@@ -4,7 +4,6 @@
   "description": "Benchmarking suite for qs library",
   "dependencies": {
     "benchmark": "^2.1.4",
-    "table": "^6.8.1",
     "colors": "=1.4.0"
   }
 }
