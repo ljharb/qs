@@ -1,0 +1,65 @@
+name: Performance Benchmark
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    matrix:
+        runs-on: ubuntu-latest
+        outputs:
+            latest: ${{ steps.set-matrix.outputs.requireds }}
+            nonlatest: ${{ steps.set-matrix.outputs.optionals }}
+        steps:
+            - uses: ljharb/actions/node/matrix@main
+              id: set-matrix
+              with:
+                  versionsAsRoot: true
+                  type: majors
+                  preset: '>= 0.8'
+
+    benchmark:
+        needs: [matrix]
+        name: Run Performance Benchmarks
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ${{ fromJson(needs.matrix.outputs.latest) }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Install dependencies
+              uses: ljharb/actions/node/install@main
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install benchmark dependencies
+              run: cd benchmark && npm install
+
+            # For PRs: Run benchmarks and compare against committed baseline
+            - name: Run benchmarks and compare against baseline
+              if: ${{ github.event_name == 'pull_request' }}
+              run: |
+                  echo "==== Running benchmarks and comparing against baseline ===="
+                  # Run benchmarks using the compare script that uses the committed baseline
+                  npm run benchmark:compare
+
+                  # Print the Node.js version for debugging
+                  echo "Benchmark completed on Node.js version: $(node --version)"
+
+            # For pushes to main: Run benchmarks against the committed baseline
+            - name: Run benchmarks on main branch
+              if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+              run: |
+                  # Run benchmarks against the committed baseline
+                  npm run benchmark:compare
+
+                  # Print the Node.js version for debugging
+                  echo "Benchmark completed on Node.js version: $(node --version)"

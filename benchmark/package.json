@@ -1,0 +1,15 @@
+{
+    "name": "qs-benchmarks",
+    "private": true,
+    "description": "Benchmarking suite for qs library",
+    "dependencies": {
+        "array-includes": "^3.1.9",
+        "array.from": "^1.1.6",
+        "benchmark": "^2.1.4",
+        "colors": "=1.4.0",
+        "es6-shim": "^0.35.8",
+        "object.entries": "^1.1.9",
+        "object.fromentries": "^2.0.8",
+        "string.prototype.repeat": "^1.0.0"
+    }
+}

@@ -1,0 +1,169 @@
+{
+    "timestamp": "2025-06-24T14:33:27.757Z",
+    "nodeVersion": "v20.10.0",
+    "platform": "linux-x64",
+    "results": [
+        {
+            "name": "Parse simple tiny query",
+            "hz": 339368.57646296266,
+            "rme": 1.5877642145574582,
+            "mean": 0.000002946648774681518,
+            "sample": 93,
+            "fastest": true,
+            "slowest": false
+        },
+        {
+            "name": "Parse simple small query",
+            "hz": 166303.78950936385,
+            "rme": 1.0841983813030203,
+            "mean": 0.000006013092082569137,
+            "sample": 89,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse simple medium query",
+            "hz": 38462.85790917391,
+            "rme": 1.4113066897602626,
+            "mean": 0.000025999108083996187,
+            "sample": 89,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse simple large query",
+            "hz": 8062.515205586793,
+            "rme": 1.057628921792131,
+            "mean": 0.00012403077383433221,
+            "sample": 93,
+            "fastest": false,
+            "slowest": true
+        },
+        {
+            "name": "Parse shallow nested",
+            "hz": 169808.09843727067,
+            "rme": 0.8811370835416009,
+            "mean": 0.000005889000637795923,
+            "sample": 93,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse medium nested",
+            "hz": 132794.2803924927,
+            "rme": 0.6406034191302279,
+            "mean": 0.0000075304448131678215,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse deep nested",
+            "hz": 72472.98755695937,
+            "rme": 0.6823000589684686,
+            "mean": 0.00001379824447300535,
+            "sample": 97,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse simple array",
+            "hz": 193669.5397470639,
+            "rme": 0.5945380745133809,
+            "mean": 0.000005163434587111731,
+            "sample": 99,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse indexed array",
+            "hz": 111618.07377058547,
+            "rme": 1.389286676498194,
+            "mean": 0.00000895912253471918,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse mixed array/object",
+            "hz": 79964.95688603172,
+            "rme": 1.4153317502720602,
+            "mean": 0.000012505477886084874,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse e-commerce query",
+            "hz": 55869.88938147373,
+            "rme": 0.8232662184894164,
+            "mean": 0.00001789872883356015,
+            "sample": 86,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse form data",
+            "hz": 64758.34859642685,
+            "rme": 1.0831317727449514,
+            "mean": 0.000015442024413438744,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse API query",
+            "hz": 50796.577670369334,
+            "rme": 1.792982399893066,
+            "mean": 0.00001968636561481031,
+            "sample": 95,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse empty values",
+            "hz": 249045.98363261085,
+            "rme": 0.9984244240955832,
+            "mean": 0.000004015322734436007,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse special characters",
+            "hz": 326350.9418241071,
+            "rme": 0.8537521124373892,
+            "mean": 0.000003064186039760132,
+            "sample": 92,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse with allowDots",
+            "hz": 188545.89300983382,
+            "rme": 0.9810731436902679,
+            "mean": 0.0000053037485146804226,
+            "sample": 97,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse with comma arrays",
+            "hz": 324909.63376456907,
+            "rme": 0.6122238240837989,
+            "mean": 0.0000030777788531952375,
+            "sample": 93,
+            "fastest": false,
+            "slowest": false
+        },
+        {
+            "name": "Parse with depth limit",
+            "hz": 77198.2278999816,
+            "rme": 1.1472932485238967,
+            "mean": 0.000012953665222673309,
+            "sample": 98,
+            "fastest": false,
+            "slowest": false
+        }
+    ]
+}

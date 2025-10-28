@@ -77,12 +77,19 @@
         "readme": "evalmd README.md",
         "postlint": "eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
         "lint": "eslint --ext=js,mjs .",
+        "benchmark": "cd benchmark && npm install && node .",
+        "benchmark:parse": "npm run benchmark -- --parse",
+        "benchmark:stringify": "npm run benchmark -- --stringify",
+        "benchmark:baseline": "npm run benchmark -- --save-baseline",
+        "benchmark:compare": "npm run benchmark -- --baseline benchmark/baseline.json",
+        "benchmark:stress": "STRESS_TEST=1 npm run benchmark",
         "dist": "mkdirp dist && browserify --standalone Qs -g unassertify -g @browserify/envify -g [@browserify/uglifyify --mangle.keep_fnames --compress.keep_fnames --format.indent_level=1 --compress.arrows=false --compress.passes=4 --compress.typeofs=false] -p common-shakeify -p bundle-collapser/plugin lib/index.js > dist/qs.js"
     },
     "license": "BSD-3-Clause",
     "publishConfig": {
         "ignore": [
             "!dist/*",
+            "benchmark",
             "bower.json",
             "component.json",
             ".github/workflows",
