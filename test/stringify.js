@@ -328,6 +328,42 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allowEmptyArrays with different arrayFormat options', function (st) {
+        var testObj = { a: [], b: 'test' };
+
+        st.equal(
+            qs.stringify(testObj, { allowEmptyArrays: true, arrayFormat: 'indices' }),
+            'a[]&b=test',
+            'indices format should use brackets for empty arrays'
+        );
+
+        st.equal(
+            qs.stringify(testObj, { allowEmptyArrays: true, arrayFormat: 'brackets' }),
+            'a[]&b=test',
+            'brackets format should use brackets for empty arrays'
+        );
+
+        st.equal(
+            qs.stringify(testObj, { allowEmptyArrays: true, arrayFormat: 'repeat' }),
+            'a&b=test',
+            'repeat format should not add brackets or equals for empty arrays'
+        );
+
+        st.equal(
+            qs.stringify(testObj, { allowEmptyArrays: true, arrayFormat: 'comma' }),
+            'a=&b=test',
+            'comma format should use equals with empty value for empty arrays'
+        );
+
+        st.equal(
+            qs.stringify(testObj, { allowEmptyArrays: true, arrayFormat: 'comma', commaRoundTrip: true }),
+            'a[]&b=test',
+            'comma format with commaRoundTrip should use brackets for empty arrays'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value with one item vs multiple items', function (st) {
         st.test('non-array item', function (s2t) {
             s2t.equal(qs.stringify({ a: 'c' }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a=c');
