@@ -54,6 +54,7 @@
         "iconv-lite": "^0.5.1",
         "in-publish": "^2.0.1",
         "jackspeak": "=2.1.1",
+        "jiti": "^0.0.0",
         "mkdirp": "^0.5.5",
         "mock-property": "^1.1.0",
         "module-deps": "^6.2.3",
