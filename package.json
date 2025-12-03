@@ -36,7 +36,7 @@
     "devDependencies": {
         "@browserify/envify": "^6.0.0",
         "@browserify/uglifyify": "^6.0.0",
-        "@ljharb/eslint-config": "^22.0.1",
+        "@ljharb/eslint-config": "^22.0.2",
         "browserify": "^16.5.2",
         "bundle-collapser": "^1.4.0",
         "common-shakeify": "~1.0.0",
