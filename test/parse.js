@@ -251,6 +251,31 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses keys with literal [] inside a bracket group (#493)', function (st) {
+        // A bracket pair inside a bracket group should be treated literally as part of the key
+        st.deepEqual(
+            qs.parse('search[withbracket[]]=foobar'),
+            { search: { 'withbracket[]': 'foobar' } },
+            'treats inner [] literally when inside a bracket group'
+        );
+
+        // Single-level variant
+        st.deepEqual(
+            qs.parse('a[b[]]=c'),
+            { a: { 'b[]': 'c' } },
+            'keeps "b[]" as a literal key'
+        );
+
+        // Nested with an array push on the outer level
+        st.deepEqual(
+            qs.parse('list[][x[]]=y'),
+            { list: [{ 'x[]': 'y' }] },
+            'preserves inner [] while still treating outer [] as array push'
+        );
+
+        st.end();
+    });
+
     t.test('allows to specify array indices', function (st) {
         st.deepEqual(qs.parse('a[1]=c&a[0]=b&a[2]=d'), { a: ['b', 'c', 'd'] });
         st.deepEqual(qs.parse('a[1]=c&a[0]=b'), { a: ['b', 'c'] });
