@@ -248,6 +248,12 @@ Note that keys with bracket notation (`[]`) always combine into arrays, regardle
 assert.deepEqual(qs.parse('a=1&a=2&b[]=1&b[]=2', { duplicates: 'last' }), { a: '2', b: ['1', '2'] });
 ```
 
+With `duplicates: 'last'`, a key that switches between plain and bracket (or, with `allowDots`, dot) notation keeps only the last group of values:
+```javascript
+assert.deepEqual(qs.parse('a[]=1&a[]=2&a=3', { duplicates: 'last' }), { a: '3' });
+assert.deepEqual(qs.parse('a=1&a[]=2&a[]=3', { duplicates: 'last' }), { a: ['2', '3'] });
+```
+
 If you have to deal with legacy browsers or services, there's also support for decoding percent-encoded octets as iso-8859-1:
 
 ```javascript
