@@ -58,7 +58,7 @@
         "mkdirp": "^0.5.5",
         "mock-property": "^1.1.0",
         "module-deps": "^6.2.3",
-        "npmignore": "^0.3.2",
+        "npmignore": "^0.3.5",
         "nyc": "^10.3.2",
         "object-inspect": "^1.13.4",
         "qs-iconv": "^1.0.4",
