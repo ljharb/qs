@@ -1,3 +1,12 @@
+## **6.14.1**
+- [Fix] ensure arrayLength applies to `[]` notation as well
+- [Fix] `parse`: when a custom decoder returns `null` for a key, ignore that key
+- [Refactor] `parse`: extract key segment splitting helper
+- [meta] add threat model
+- [actions] add workflow permissions
+- [Tests] `stringify`: increase coverage
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `npmignore`, `es-value-fixtures`, `for-each`, `object-inspect`
+
 ## **6.14.0**
 - [New] `parse`: add `throwOnParameterLimitExceeded` option (#517)
 - [Refactor] `parse`: use `utils.combine` more
