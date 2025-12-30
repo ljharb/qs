@@ -1128,6 +1128,26 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('throws error when array limit exceeded with indexed array', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[0]=1&a[1]=2&a[2]=3&a[10]=4', { arrayLimit: 6, throwOnLimitExceeded: true, allowSparse: true });
+                },
+                new RangeError('Array limit exceeded. Only 6 elements allowed in an array.')
+            );
+            sst.end();
+        });
+
+        st.test('throws error when array limit exceeded with indexed array', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[10]=4', { arrayLimit: 3, throwOnLimitExceeded: true, allowSparse: true });
+                },
+                new RangeError('Array limit exceeded. Only 3 elements allowed in an array.')
+            );
+            sst.end();
+        });
+
         st.test('converts array to object if length is greater than limit', function (sst) {
             var result = qs.parse('a[1]=1&a[2]=2&a[3]=3&a[4]=4&a[5]=5&a[6]=6', { arrayLimit: 5 });
 
