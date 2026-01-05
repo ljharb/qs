@@ -1,5 +1,5 @@
 ## **6.14.1**
-- [Fix] ensure arrayLength applies to `[]` notation as well
+- [Fix] (breaking change) ensure arrayLimit applies to `[]` notation as well
 - [Fix] `parse`: when a custom decoder returns `null` for a key, ignore that key
 - [Refactor] `parse`: extract key segment splitting helper
 - [meta] add threat model
