@@ -723,7 +723,7 @@ Save time, reduce risk, and improve code health, while paying the maintainers of
 [downloads-url]: https://npm-stat.com/charts.html?package=qs
 [codecov-image]: https://codecov.io/gh/ljharb/qs/branch/main/graphs/badge.svg
 [codecov-url]: https://app.codecov.io/gh/ljharb/qs/
-[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/qs
+[actions-image]: https://img.shields.io/github/check-runs/ljharb/qs/main
 [actions-url]: https://github.com/ljharb/qs/actions
 
 ## Acknowledgements
