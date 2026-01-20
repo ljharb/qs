@@ -590,6 +590,14 @@ qs.stringify({ a: { b: { c: 'd', e: 'f' } } }, { allowDots: true });
 // 'a.b.c=d&a.b.e=f'
 ```
 
+Array indices still use brackets; to use dot notation for them too, also set `allowDotsForNumbers` to `true`.
+It requires `allowDots` to be `true`, and `arrayFormat` to be `indices` (the default). `parse` with `allowDots` already reads either form:
+
+```javascript
+qs.stringify({ a: [{ b: 'c' }, { b: 'd' }] }, { allowDots: true, allowDotsForNumbers: true });
+// 'a.0.b=c&a.1.b=d'
+```
+
 You may encode the dot notation in the keys of object with option `encodeDotInKeys` by setting it to `true`:
 Note: it implies `allowDots`, so `stringify` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
 Caveat: when `encodeValuesOnly` is `true` as well as `encodeDotInKeys`, only dots in keys and nothing else will be encoded.

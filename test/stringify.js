@@ -419,6 +419,68 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('`allowDotsForNumbers` option: stringifies array indices with dots notation (#516)', function (st) {
+        var options = { allowDots: true, allowDotsForNumbers: true };
+        st.equal(qs.stringify({ a: [1, 2] }, options), 'a.0=1&a.1=2', 'array of primitives');
+        st.equal(qs.stringify({ a: [{ b: 'c', d: 'e' }] }, options), 'a.0.b=c&a.0.d=e', 'array of objects');
+        st.equal(qs.stringify({ a: { b: [[1, 2], [3]] } }, options), 'a.b.0.0=1&a.b.0.1=2&a.b.1.0=3', 'nested arrays');
+        st.equal(
+            qs.stringify({ a: [1, 2] }, { allowDots: true, allowDotsForNumbers: true, arrayFormat: 'indices' }),
+            'a.0=1&a.1=2',
+            'explicit `indices` arrayFormat'
+        );
+        st.equal(
+            qs.stringify({ 'x.y': [{ b: 1 }] }, { allowDots: true, allowDotsForNumbers: true, encodeDotInKeys: true }),
+            'x%252Ey.0.b=1',
+            'with encodeDotInKeys, only dots inside keys are encoded'
+        );
+        st.equal(qs.stringify({ a: [1, 2] }, { allowDots: true, allowDotsForNumbers: false }), 'a%5B0%5D=1&a%5B1%5D=2', 'false keeps brackets');
+
+        st.deepEqual(
+            qs.parse(qs.stringify({ c: [{ id: 'x', value: '5' }, { id: 'y' }] }, options), { allowDots: true }),
+            { c: [{ id: 'x', value: '5' }, { id: 'y' }] },
+            'round-trips through `parse` with allowDots'
+        );
+
+        st.end();
+    });
+
+    t.test('`allowDotsForNumbers` option: throws on invalid combinations', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: [1] }, { allowDots: true, allowDotsForNumbers: 'yes' }); },
+            TypeError,
+            'a non-boolean value'
+        );
+        st['throws'](function () { qs.stringify({ a: [1] }, { allowDotsForNumbers: true }); }, TypeError, 'without allowDots');
+        st['throws'](
+            function () { qs.stringify({ a: [1] }, { allowDots: false, allowDotsForNumbers: true }); },
+            TypeError,
+            'with allowDots false'
+        );
+        st['throws'](
+            function () { qs.stringify({ a: [1] }, { encodeDotInKeys: true, allowDotsForNumbers: true }); },
+            TypeError,
+            'with allowDots only implied by encodeDotInKeys'
+        );
+
+        ['brackets', 'comma', 'repeat'].forEach(function (arrayFormat) {
+            st['throws'](
+                function () {
+                    qs.stringify({ a: [1] }, { allowDots: true, allowDotsForNumbers: true, arrayFormat: arrayFormat });
+                },
+                TypeError,
+                'with arrayFormat ' + arrayFormat
+            );
+        });
+        st['throws'](
+            function () { qs.stringify({ a: [1] }, { allowDots: true, allowDotsForNumbers: true, indices: false }); },
+            TypeError,
+            'with the deprecated `indices: false`'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value', function (st) {
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'indices' }),
