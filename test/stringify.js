@@ -227,6 +227,12 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('`allowDotsForIndices` option: stringifies a nested object with converting indices to dot notation', function (st) {
+        st.equal(qs.stringify({ a: [1, 2] }, { allowDotsForIndices: true }), 'a.0=1&a.1=2');
+        st.equal(qs.stringify({ a: [{ b: 'c', d: 'e' }] }, { allowDotsForIndices: true, allowDots: true }), 'a.0.b=c&a.0.d=e');
+        st.end();
+    });
+
     t.test('stringifies an array value', function (st) {
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'indices' }),
