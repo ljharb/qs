@@ -143,9 +143,9 @@ test('combine()', function (t) {
         var b = [2];
         var combined = utils.combine(a, b);
 
-        st.deepEqual(a, [1], 'a is not mutated');
+        st.deepEqual(a, [1, 2], 'a is mutated');
         st.deepEqual(b, [2], 'b is not mutated');
-        st.notEqual(a, combined, 'a !== combined');
+        st.deepEqual(a, combined, 'a === combined');
         st.notEqual(b, combined, 'b !== combined');
         st.deepEqual(combined, [1, 2], 'combined is a + b');
 
@@ -167,9 +167,9 @@ test('combine()', function (t) {
         st.deepEqual([1, 2], combinedAnB, 'first argument is array-wrapped when not an array');
 
         var combinedABn = utils.combine(a, bN);
-        st.deepEqual(a, [aN], 'a is not mutated');
+        st.deepEqual(a, [aN, bN], 'a is mutated');
         st.notEqual(aN, combinedABn, 'a + bN !== aN');
-        st.notEqual(a, combinedABn, 'a + bN !== a');
+        st.deepEqual(a, combinedABn, 'a + bN === a');
         st.notEqual(bN, combinedABn, 'a + bN !== bN');
         st.notEqual(b, combinedABn, 'a + bN !== b');
         st.deepEqual([1, 2], combinedABn, 'second argument is array-wrapped when not an array');
