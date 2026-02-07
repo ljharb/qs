@@ -63,6 +63,12 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('allows enabling dots for indices', function (st) {
+        st.deepEqual(qs.parse('a.0.b=d&a.1.c=e', { allowDotsForIndices: false, allowDots: true }), { 'a.0': { b: 'd' }, 'a.1': { c: 'e' } }, 'with allowDotsForIndices false and allowDots true');
+        st.deepEqual(qs.parse('a.b.0=c&a.c.0=d', { allowDotsForIndices: true }), { a: { b: ['c'], c: ['d'] } }, 'with only allowDotsForIndices true');
+        st.end();
+    });
+
     t.test('decode dot keys correctly', function (st) {
         st.deepEqual(
             qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: false, decodeDotInKeys: false }),
