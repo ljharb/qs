@@ -2316,6 +2316,85 @@ test('stringifies empty keys', function (t) {
         st.end();
     });
 
+    t.test('`encodeBracketsInKeys` option (#513)', function (st) {
+        var options = { encodeBracketsInKeys: true };
+        st.equal(qs.stringify({ a: { 'b[c]': 'd' } }, options), 'a%5Bb%255Bc%255D%5D=d', 'brackets in nested key content');
+        st.equal(qs.stringify({ 'a[b]': 'c' }, options), 'a%255Bb%255D=c', 'brackets in a top-level key');
+        st.equal(qs.stringify({ 'a%b': 'c' }, options), 'a%2525b=c', 'a percent sign in a key');
+        st.equal(qs.stringify({ a: { b: 'c' } }, options), 'a%5Bb%5D=c', 'keys without brackets are unaffected');
+        st.equal(
+            qs.stringify({ a: { 'b[c]': 'd' } }, { encodeBracketsInKeys: true, encodeValuesOnly: true }),
+            'a[b%255Bc%255D]=d',
+            'with encodeValuesOnly, key content is escaped twice since keys are not encoded'
+        );
+        st.equal(
+            qs.stringify({ a: { 'b[c]': 'd' } }, { encode: false, encodeBracketsInKeys: true }),
+            'a[b%255Bc%255D]=d',
+            'with encode false, key content is escaped twice since keys are not encoded'
+        );
+        st.equal(
+            qs.stringify({ a: { 'b.c[d]': 'e' } }, { allowDots: true, encodeBracketsInKeys: true, encodeDotInKeys: true }),
+            'a.b%252Ec%255Bd%255D=e',
+            'with encodeDotInKeys'
+        );
+
+        st['throws'](
+            function () { qs.stringify({}, { encodeBracketsInKeys: 'yes' }); },
+            new TypeError('`encodeBracketsInKeys` option can only be `true` or `false`, when provided'),
+            'throws on a non-boolean'
+        );
+
+        st.end();
+    });
+
+    t.test('`encodeBracketsInKeys` and `decodeBracketsInKeys` round-trip keys containing brackets and percent signs (#513)', function (st) {
+        var cases = [
+            { 'a[b]': 'c' },
+            { a: { 'b[c]': 'd' } },
+            { a: { 'b]c': 'd' } },
+            { a: { 'b[c': 'd' } },
+            { 'my name|{"data":["one","two","three"]}': 'value' },
+            { buttons: { 'commands.identifier|{"orders":["47441","47440"]}': 'Unisci ordini' } },
+            { 'a%5Bb': 'c' },
+            { 'a%5Db': 'c' },
+            { 'a%255Bb': 'c' },
+            { 'a%5B%255Bb': 'c' },
+            { a: { 'b%5Bc%5D': 'd' } },
+            { '50%': 'x' },
+            { a: ['x', { '[': 'y' }] },
+            { '[]': 'x' }
+        ];
+        var stringifyOptions = [
+            {},
+            { encodeValuesOnly: true },
+            { encode: false },
+            { charset: 'iso-8859-1' }
+        ];
+        for (var i = 0; i < stringifyOptions.length; i++) {
+            var encodeOptions = utils.assign({ encodeBracketsInKeys: true }, stringifyOptions[i]);
+            var decodeOptions = { charset: stringifyOptions[i].charset, decodeBracketsInKeys: true };
+            for (var j = 0; j < cases.length; j++) {
+                st.deepEqual(
+                    qs.parse(qs.stringify(cases[j], encodeOptions), decodeOptions),
+                    cases[j],
+                    'round-trips ' + JSON.stringify(cases[j]) + ' with ' + JSON.stringify(stringifyOptions[i])
+                );
+            }
+        }
+
+        var dotted = { a: { 'b.c[d]': 'e', 'f%2Eg': 'h' } };
+        st.deepEqual(
+            qs.parse(
+                qs.stringify(dotted, { allowDots: true, encodeBracketsInKeys: true, encodeDotInKeys: true }),
+                { allowDots: true, decodeBracketsInKeys: true, decodeDotInKeys: true }
+            ),
+            dotted,
+            'round-trips with encodeDotInKeys and decodeDotInKeys'
+        );
+
+        st.end();
+    });
+
     t.test('limits nesting depth with the `depth` option', function (st) {
         st.equal(
             qs.stringify({ a: { b: { c: 'd' } } }),

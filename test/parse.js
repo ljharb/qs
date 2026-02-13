@@ -205,6 +205,30 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('`decodeBracketsInKeys` option (#513)', function (st) {
+        var options = { decodeBracketsInKeys: true };
+        st.deepEqual(qs.parse('a%5Bb%255Bc%255D%5D=d', options), { a: { 'b[c]': 'd' } }, 'escaped brackets in nested key content');
+        st.deepEqual(qs.parse('a%255Bb%255D=c', options), { 'a[b]': 'c' }, 'escaped brackets in a top-level key');
+        st.deepEqual(qs.parse('a[b%255Bc%255D]=d', options), { a: { 'b[c]': 'd' } }, 'escaped brackets with literal structural brackets');
+        st.deepEqual(qs.parse('a%2525b=c', options), { 'a%b': 'c' }, 'an escaped percent sign');
+        st.deepEqual(qs.parse('a%5Bb%255bc%255d%5D=d', options), { a: { 'b[c]': 'd' } }, 'lowercase escapes');
+        st.deepEqual(qs.parse('a%253Fb=c', options), { 'a%3Fb': 'c' }, 'other escapes are left alone');
+        st.deepEqual(
+            qs.parse('buttons%5Bcommands%7C%7B%22orders%22%3A%255B%2247441%22%255D%7D%5D=Unisci%20ordini', options),
+            { buttons: { 'commands|{"orders":["47441"]}': 'Unisci ordini' } },
+            'the example from #513'
+        );
+        st.deepEqual(qs.parse('a%255B0%255D=b', options), { 'a[0]': 'b' }, 'an escaped index is a literal key, not an array index');
+
+        st['throws'](
+            function () { qs.parse('a=b', { decodeBracketsInKeys: 'yes' }); },
+            new TypeError('`decodeBracketsInKeys` option can only be `true` or `false`, when provided'),
+            'throws on a non-boolean'
+        );
+
+        st.end();
+    });
+
     t.test('allows empty arrays in obj values', function (st) {
         st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: true }), { foo: [], bar: 'baz' });
         st.deepEqual(qs.parse('foo[]&bar=baz', { allowEmptyArrays: false }), { foo: [''], bar: 'baz' });

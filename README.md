@@ -222,6 +222,13 @@ var withDots = qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { decod
 assert.deepEqual(withDots, { 'name.obj': { first: 'John', last: 'Doe' }});
 ```
 
+Option `decodeBracketsInKeys` can be used to decode brackets (and percent signs) in keys that `stringify` escaped with `encodeBracketsInKeys`, so they aren't treated as nesting:
+
+```javascript
+var withBrackets = qs.parse('filter%255Bname%255D=x&a%5Bb%255Bc%255D%5D=d', { decodeBracketsInKeys: true });
+assert.deepEqual(withBrackets, { 'filter[name]': 'x', a: { 'b[c]': 'd' } });
+```
+
 Option `allowEmptyArrays` can be used to allow empty array values in an object
 ```javascript
 var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
@@ -604,6 +611,13 @@ Caveat: when `encodeValuesOnly` is `true` as well as `encodeDotInKeys`, only dot
 ```javascript
 qs.stringify({ "name.obj": { "first": "John", "last": "Doe" } }, { allowDots: true, encodeDotInKeys: true })
 // 'name%252Eobj.first=John&name%252Eobj.last=Doe'
+```
+
+By default, brackets in keys are treated as nesting, so `{ 'filter[name]': 'x' }` stringifies to `filter%5Bname%5D=x` and parses back as `{ filter: { name: 'x' } }`.
+To keep brackets as part of a key instead, set `encodeBracketsInKeys` to `true`, which also escapes percent signs in keys, and parse with `decodeBracketsInKeys`:
+```javascript
+qs.stringify({ 'filter[name]': 'x', a: { 'b[c]': 'd' } }, { encodeBracketsInKeys: true })
+// 'filter%255Bname%255D=x&a%5Bb%255Bc%255D%5D=d'
 ```
 
 You may allow empty array values by setting the `allowEmptyArrays` option to `true`:
