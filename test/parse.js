@@ -1650,5 +1650,36 @@ test('mixed array and object notation', function (t) {
         st.end();
     });
 
+    t.test('decodes encoded brackets in key content (#513)', function (st) {
+        // %5B/%5D in segment content should be decoded to [ and ]
+        st.deepEqual(
+            qs.parse('a%5Bb%255Bc%255D%5D=d'),
+            { a: { 'b[c]': 'd' } },
+            'decodes double-encoded brackets in nested key content'
+        );
+
+        // top-level key with double-encoded brackets
+        st.deepEqual(
+            qs.parse('a%255Bb%255D=c'),
+            { 'a[b]': 'c' },
+            'decodes double-encoded brackets in top-level key'
+        );
+
+        // encodeValuesOnly-style input (structural brackets literal, content double-encoded)
+        st.deepEqual(
+            qs.parse('a[b%255Bc%255D]=d'),
+            { a: { 'b[c]': 'd' } },
+            'decodes double-encoded brackets in key content with literal structural brackets'
+        );
+
+        // issue #513: key content with JSON-like brackets
+        st.deepEqual(
+            qs.parse('buttons%5Bcommands%7C%7B%22orders%22%3A%255B%2247441%22%255D%7D%5D=Unisci%20ordini'),
+            { buttons: { 'commands|{"orders":["47441"]}': 'Unisci ordini' } },
+            'correctly parses key content with JSON-like brackets'
+        );
+        st.end();
+    });
+
     t.end();
 });

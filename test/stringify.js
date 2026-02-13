@@ -1316,4 +1316,82 @@ test('stringifies empty keys', function (t) {
 
         st.end();
     });
+    t.test('encodes brackets in key content for round-trip safety (#513)', function (st) {
+        // nested key with brackets in content
+        st.equal(
+            qs.stringify({ a: { 'b[c]': 'd' } }),
+            'a%5Bb%255Bc%255D%5D=d',
+            'encodes nested key containing brackets with default encoding'
+        );
+
+        // flat key with brackets in content
+        st.equal(
+            qs.stringify({ 'a[b]': 'c' }),
+            'a%255Bb%255D=c',
+            'encodes top-level key containing brackets with default encoding'
+        );
+
+        // round-trip: nested key with brackets
+        var obj1 = { a: { 'b[c]': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj1)),
+            obj1,
+            'round-trips nested key containing brackets'
+        );
+
+        // round-trip: flat key with brackets (issue #513 example)
+        var obj2 = { 'my name|{"data":["one","two","three"]}': 'value' };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj2)),
+            obj2,
+            'round-trips flat key containing brackets'
+        );
+
+        // round-trip with encodeValuesOnly
+        st.equal(
+            qs.stringify({ a: { 'b[c]': 'd' } }, { encodeValuesOnly: true }),
+            'a[b%255Bc%255D]=d',
+            'encodes nested key containing brackets with encodeValuesOnly'
+        );
+
+        var obj3 = { a: { 'b[c]': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj3, { encodeValuesOnly: true })),
+            obj3,
+            'round-trips nested key containing brackets with encodeValuesOnly'
+        );
+
+        // round-trip: original issue example (buttons with JSON in key)
+        var obj4 = { buttons: { 'commands.identifier|{"orders":["47441","47440"]}': 'Unisci ordini' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj4)),
+            obj4,
+            'round-trips issue #513 example with nested brackets in key content'
+        );
+
+        // keys without brackets should be unaffected
+        st.equal(
+            qs.stringify({ a: { b: 'c' } }),
+            'a%5Bb%5D=c',
+            'keys without brackets are unaffected'
+        );
+
+        // round-trip with allowDots
+        var obj5 = { a: { 'b[c]': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj5, { allowDots: true }), { allowDots: true }),
+            obj5,
+            'round-trips nested key containing brackets with allowDots'
+        );
+
+        // encode: false should not encode brackets
+        st.equal(
+            qs.stringify({ a: { 'b[c]': 'd' } }, { encode: false }),
+            'a[b[c]]=d',
+            'does not encode brackets in key content when encode is false'
+        );
+
+        st.end();
+    });
+
 });
