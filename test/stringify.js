@@ -1391,6 +1391,36 @@ test('stringifies empty keys', function (t) {
             'does not encode brackets in key content when encode is false'
         );
 
+        // round-trip: key containing literal %5B text (should not be mangled)
+        var obj6 = { 'a%5Bb': 'c' };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj6)),
+            obj6,
+            'round-trips flat key containing literal %5B text'
+        );
+
+        var obj7 = { a: { 'b%5Bc': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj7)),
+            obj7,
+            'round-trips nested key containing literal %5B text'
+        );
+
+        var obj8 = { a: { 'b%5Bc%5D': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj8)),
+            obj8,
+            'round-trips nested key containing literal %5B and %5D text'
+        );
+
+        // round-trip with encodeValuesOnly: key containing literal %5B text
+        var obj9 = { a: { 'b%5Bc': 'd' } };
+        st.deepEqual(
+            qs.parse(qs.stringify(obj9, { encodeValuesOnly: true })),
+            obj9,
+            'round-trips nested key containing literal %5B text with encodeValuesOnly'
+        );
+
         st.end();
     });
 
