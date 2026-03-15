@@ -1188,6 +1188,15 @@ test('stringify()', function (t) {
         };
 
         st.deepEqual(qs.stringify({ KeY: 'vAlUe' }, { encoder: encoder }), 'key=VALUE');
+
+        var noopEncoder = function () { return 'x'; };
+        noopEncoder();
+        st['throws'](
+            function () { encoder('x', noopEncoder, 'utf-8', 'unknown'); },
+            'this should never happen! type: unknown',
+            'encoder throws for unexpected type'
+        );
+
         st.end();
     });
 
