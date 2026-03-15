@@ -31,6 +31,7 @@ test('merge()', function (t) {
     t.deepEqual(noOptionsNonObjectSource, { foo: 'baz', bar: true });
 
     var func = function f() {};
+    func();
     t.deepEqual(
         utils.merge(func, { foo: 'bar' }),
         [func, { foo: 'bar' }],
@@ -112,6 +113,15 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('merges overflow object into primitive with plainObjects', function (s2t) {
+            var overflow = utils.combine(['a'], 'b', 0, false);
+            s2t.ok(utils.isOverflow(overflow), 'overflow object is marked');
+            var merged = utils.merge('c', overflow, { plainObjects: true });
+            s2t.ok(utils.isOverflow(merged), 'result is also marked as overflow');
+            s2t.deepEqual(merged, { __proto__: null, 0: 'c', 1: 'a', 2: 'b' }, 'creates null-proto object with primitive at 0');
+            s2t.end();
+        });
+
         st.test('merges overflow object with multiple values into primitive', function (s2t) {
             // Create an overflow object via combine: 3 elements (indices 0-2) with limit 0
             var overflow = utils.combine(['b', 'c'], 'd', 0, false);
@@ -125,6 +135,21 @@ test('merge()', function (t) {
             var obj = { foo: 'bar' };
             var merged = utils.merge('a', obj);
             s2t.deepEqual(merged, ['a', { foo: 'bar' }], 'creates array with primitive and object');
+            s2t.end();
+        });
+
+        st.test('merges primitive into array that exceeds arrayLimit', function (s2t) {
+            var arr = ['a', 'b', 'c'];
+            var merged = utils.merge(arr, 'd', { arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(merged), 'result is marked as overflow');
+            s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c', 3: 'd' }, 'converts to overflow object with primitive appended');
+            s2t.end();
+        });
+
+        st.test('merges array into primitive that exceeds arrayLimit', function (s2t) {
+            var merged = utils.merge('a', ['b', 'c'], { arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(merged), 'result is marked as overflow');
+            s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c' }, 'converts to overflow object');
             s2t.end();
         });
 
@@ -376,7 +401,9 @@ test('encode', function (t) {
 });
 
 test('isBuffer()', function (t) {
-    forEach([null, undefined, true, false, '', 'abc', 42, 0, NaN, {}, [], function () {}, /a/g], function (x) {
+    var fn = function () {};
+    fn();
+    forEach([null, undefined, true, false, '', 'abc', 42, 0, NaN, {}, [], fn, /a/g], function (x) {
         t.equal(utils.isBuffer(x), false, inspect(x) + ' is not a buffer');
     });
 
@@ -386,8 +413,9 @@ test('isBuffer()', function (t) {
     var saferBuffer = SaferBuffer.from('abc');
     t.equal(utils.isBuffer(saferBuffer), true, 'SaferBuffer instance is a buffer');
 
-    var buffer = Buffer.from && Buffer.alloc ? Buffer.from('abc') : new Buffer('abc');
-    t.equal(utils.isBuffer(buffer), true, 'real Buffer instance is a buffer');
+    var buffer = SaferBuffer.from('abc');
+    t.notEqual(saferBuffer, buffer, 'different buffer instances');
+    t.equal(utils.isBuffer(buffer), true, 'another Buffer instance is a buffer');
     t.end();
 });
 

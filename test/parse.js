@@ -213,6 +213,18 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('ignores prototype keys when depth = 0 and allowPrototypes is false', function (st) {
+        st.deepEqual(qs.parse('toString=foo', { depth: 0 }), {});
+        st.deepEqual(qs.parse('hasOwnProperty=bar', { depth: 0 }), {});
+        st.deepEqual(qs.parse('toString=foo&a=b', { depth: 0 }), { a: 'b' });
+        st.end();
+    });
+
+    t.test('allows prototype keys when depth = 0 and allowPrototypes is true', function (st) {
+        st.deepEqual(qs.parse('toString=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' });
+        st.end();
+    });
+
     t.test('uses original key when depth = false', function (st) {
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: false }), { 'a[0]': 'b', 'a[1]': 'c' });
         st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: false }), { 'a[0][0]': 'b', 'a[0][1]': 'c', 'a[1]': 'd', e: '2' });
@@ -1074,6 +1086,15 @@ test('parse()', function (t) {
         };
 
         st.deepEqual(qs.parse('KeY=vAlUe', { decoder: decoder }), { key: 'VALUE' });
+
+        var noopDecoder = function () { return 'x'; };
+        noopDecoder();
+        st['throws'](
+            function () { decoder('x', noopDecoder, 'utf-8', 'unknown'); },
+            'this should never happen! type: unknown',
+            'decoder throws for unexpected type'
+        );
+
         st.end();
     });
 
@@ -1102,6 +1123,14 @@ test('parse()', function (t) {
                 },
                 new RangeError('Parameter limit exceeded. Only 3 parameters allowed.'),
                 'throws error when parameter limit is exceeded'
+            );
+
+            sst['throws'](
+                function () {
+                    qs.parse('a=1&b=2', { parameterLimit: 1, throwOnLimitExceeded: true });
+                },
+                new RangeError('Parameter limit exceeded. Only 1 parameter allowed.'),
+                'throws error with singular "parameter" when parameterLimit is 1'
             );
             sst.end();
         });
@@ -1189,6 +1218,14 @@ test('parse()', function (t) {
                 'throws error when a sparse index exceeds arrayLimit'
             );
 
+            sst['throws'](
+                function () {
+                    qs.parse('a[2]=b', { arrayLimit: 1, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'throws error with singular "element" when arrayLimit is 1'
+            );
+
             sst.end();
         });
 
@@ -1203,6 +1240,17 @@ test('parse()', function (t) {
         st.test('silently converts to object for indexed notation exceeding arrayLimit without throwOnLimitExceeded', function (sst) {
             var result = qs.parse('a[1001]=b', { arrayLimit: 1000 });
             sst.deepEqual(result, { a: { 1001: 'b' } }, 'converts to object without throwing');
+            sst.end();
+        });
+
+        st.test('throws when duplicate bracket keys exceed arrayLimit with throwOnLimitExceeded', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[]=1&a[]=2&a[]=3&a[]=4&a[]=5&a[]=6', { arrayLimit: 5, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 5 elements allowed in an array.'),
+                'throws error when duplicate bracket notation exceeds array limit'
+            );
             sst.end();
         });
 
@@ -1462,6 +1510,14 @@ test('comma + arrayLimit', function (t) {
             new RangeError('Array limit exceeded. Only 3 elements allowed in an array.'),
             'throws error when comma-split exceeds array limit'
         );
+
+        st['throws'](
+            function () {
+                qs.parse('a=1,2,3', { comma: true, arrayLimit: 1, throwOnLimitExceeded: true });
+            },
+            new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+            'throws error with singular "element" when arrayLimit is 1'
+        );
         st.end();
     });
 
@@ -1561,6 +1617,30 @@ test('mixed array and object notation', function (t) {
             'arrayLimit 1'
         );
 
+        st.end();
+    });
+
+    t.test('uses existing array length for currentArrayLength when parsing object input with bracket keys', function (st) {
+        var input = {};
+        var arr = ['x', 'y'];
+        arr.a = ['z', 'w'];
+        input['a[]'] = arr;
+        st.deepEqual(qs.parse(input), { a: ['x', 'y'] }, 'parses object input with bracket keys using existing array values');
+        st.end();
+    });
+
+    t.test('throws with singular message when object input bracket key exceeds arrayLimit of 1', function (st) {
+        var input = {};
+        var arr = ['x'];
+        arr.a = ['z', 'w'];
+        input['a[]'] = arr;
+        st['throws'](
+            function () {
+                qs.parse(input, { throwOnLimitExceeded: true, arrayLimit: 1 });
+            },
+            new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+            'throws singular error for object input exceeding arrayLimit 1'
+        );
         st.end();
     });
 
