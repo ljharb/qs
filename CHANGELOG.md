@@ -1,3 +1,9 @@
+## **6.15.1**
+- [Fix] `parse`: `parameterLimit: Infinity` with `throwOnLimitExceeded: true` silently drops all parameters
+- [Deps] update `@ljharb/eslint-config`
+- [Dev Deps] update `@ljharb/eslint-config`, `iconv-lite`
+- [Tests] increase coverage
+
 ## **6.15.0**
 - [New] `parse`: add `strictMerge` option to wrap object/primitive conflicts in an array (#425, #122)
 - [Fix] `duplicates` option should not apply to bracket notation keys (#514)
