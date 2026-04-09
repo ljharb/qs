@@ -210,6 +210,9 @@ test('parse()', function (t) {
     t.test('uses original key when depth = 0', function (st) {
         st.deepEqual(qs.parse('a[0]=b&a[1]=c', { depth: 0 }), { 'a[0]': 'b', 'a[1]': 'c' });
         st.deepEqual(qs.parse('a[0][0]=b&a[0][1]=c&a[1]=d&e=2', { depth: 0 }), { 'a[0][0]': 'b', 'a[0][1]': 'c', 'a[1]': 'd', e: '2' });
+        st.deepEqual(qs.parse('a.b=c', { depth: 0, allowDots: true }), { 'a[b]': 'c' }, 'normalizes dots before applying depth-0 behavior');
+        st.deepEqual(qs.parse('toString=foo', { depth: 0 }), {}, 'respects prototype guard at depth 0');
+        st.deepEqual(qs.parse('toString=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' }, 'allows prototypes at depth 0 when enabled');
         st.end();
     });
 
@@ -260,6 +263,52 @@ test('parse()', function (t) {
     t.test('parses a nested array', function (st) {
         st.deepEqual(qs.parse('a[b][]=c&a[b][]=d'), { a: { b: ['c', 'd'] } });
         st.deepEqual(qs.parse('a[>=]=25'), { a: { '>=': '25' } });
+        st.end();
+    });
+
+    t.test('parses keys with literal [] inside a bracket group (#493)', function (st) {
+        // A bracket pair inside a bracket group should be treated literally as part of the key
+        st.deepEqual(
+            qs.parse('search[withbracket[]]=foobar'),
+            { search: { 'withbracket[]': 'foobar' } },
+            'treats inner [] literally when inside a bracket group'
+        );
+
+        // Single-level variant
+        st.deepEqual(
+            qs.parse('a[b[]]=c'),
+            { a: { 'b[]': 'c' } },
+            'keeps "b[]" as a literal key'
+        );
+
+        // Nested with an array push on the outer level
+        st.deepEqual(
+            qs.parse('list[][x[]]=y'),
+            { list: [{ 'x[]': 'y' }] },
+            'preserves inner [] while still treating outer [] as array push'
+        );
+
+        // Multiple nested bracket pairs: inner [] remains literal as part of the key
+        st.deepEqual(
+            qs.parse('a[b[c[]]]=d'),
+            { a: { 'b[c[]]': 'd' } },
+            'treats "b[c[]]" as a literal key inside the bracket group'
+        );
+
+        // Depth limits with literal brackets: preserve inner [] while limiting bracket-group parsing
+        st.deepEqual(
+            qs.parse('a[b[c[]]][d]=e', { depth: 1 }),
+            { a: { 'b[c[]]': { '[d]': 'e' } } },
+            'respects depth: 1 and preserves literal inner [] in the parsed key'
+        );
+
+        // Unterminated inner bracket group is wrapped as a literal remainder segment
+        st.deepEqual(
+            qs.parse('a[[]b=c'),
+            { a: { '[[]b': 'c' } },
+            'handles unterminated inner bracket groups without throwing'
+        );
+
         st.end();
     });
 
