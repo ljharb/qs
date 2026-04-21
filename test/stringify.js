@@ -825,6 +825,35 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('skips null/undefined entries in filter=array', function (st) {
+        st.doesNotThrow(
+            function () { qs.stringify({ a: 'b', 'undefined': 'x' }, { filter: ['a', undefined] }); },
+            'does not pass a raw undefined filter entry to the encoder'
+        );
+        st.doesNotThrow(
+            function () { qs.stringify({ a: 'b', 'null': 'x' }, { filter: ['a', null] }); },
+            'does not pass a raw null filter entry to the encoder'
+        );
+
+        st.equal(
+            qs.stringify({ a: 'b', 'undefined': 'x', c: 'd' }, { filter: ['a', undefined, 'c'] }),
+            'a=b&c=d',
+            'undefined filter entry is skipped, remaining keys are kept'
+        );
+        st.equal(
+            qs.stringify({ a: 'b', 'null': 'x', c: 'd' }, { filter: ['a', null, 'c'] }),
+            'a=b&c=d',
+            'null filter entry is skipped, remaining keys are kept'
+        );
+        st.equal(
+            qs.stringify({ a: 'b', 'null': 'x' }, { filter: [null] }),
+            '',
+            'filter array containing only null yields empty string'
+        );
+
+        st.end();
+    });
+
     t.test('supports custom representations when filter=function', function (st) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
