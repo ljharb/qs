@@ -1,1 +1,2 @@
 thesis	attempt	metric	baseline	status	summary
+#1	thesis/1-cache-hasownproperty-lookups-in-hot-paths	221515.0000	214655.0000	accepted	Bound hasOwnProperty to Object.prototype in parse.js and utils.js hot paths. 3.20% improvement (6,860 ops/sec).
