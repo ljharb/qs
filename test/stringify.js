@@ -1140,6 +1140,28 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('strictNullHandling: applies the formatter to the encoded key (RFC1738)', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'a b': null, 'c d': 'e f' },
+                { strictNullHandling: false, format: 'RFC1738' }
+            ),
+            'a+b=&c+d=e+f',
+            'without: as expected'
+        );
+
+        st.equal(
+            qs.stringify(
+                { 'a b': null, 'c d': 'e f' },
+                { strictNullHandling: true, format: 'RFC1738' }
+            ),
+            'a+b&c+d=e+f',
+            'with: as expected'
+        );
+
+        st.end();
+    });
+
     t.test('throws if an invalid charset is specified', function (st) {
         st['throws'](function () {
             qs.stringify({ a: 'b' }, { charset: 'foobar' });
