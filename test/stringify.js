@@ -1146,6 +1146,12 @@ test('stringify()', function (t) {
             'adds the right sentinel when instructed to and the charset is iso-8859-1'
         );
 
+        st.equal(
+            qs.stringify({ a: 1, b: 2 }, { charsetSentinel: true, delimiter: ';' }),
+            'utf8=%E2%9C%93;a=1;b=2',
+            'uses the configured delimiter after the sentinel'
+        );
+
         st.end();
     });
 
