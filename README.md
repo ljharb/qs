@@ -183,7 +183,7 @@ var withDots = qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { decod
 assert.deepEqual(withDots, { 'name.obj': { first: 'John', last: 'Doe' }});
 ```
 
-Option `allowEmptyArrays` can be used to allowing empty array values in object
+Option `allowEmptyArrays` can be used to allow empty array values in an object
 ```javascript
 var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
 assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
