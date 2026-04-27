@@ -1316,4 +1316,33 @@ test('stringifies empty keys', function (t) {
 
         st.end();
     });
+
+    t.test('round-trips keys containing percent-encoded bracket text', function (st) {
+        var cases = [
+            { 'a%5Bb': 'c' },
+            { 'a%5Db': 'c' },
+            { 'a%255Bb': 'c' },
+            { 'a%255Db': 'c' },
+            { a: { 'b%5Bc': 'd' } },
+            { a: { 'b%255Bc': 'd' } },
+            { 'a%5B%255Bb': 'c' }
+        ];
+        for (var i = 0; i < cases.length; i++) {
+            st.deepEqual(
+                qs.parse(qs.stringify(cases[i])),
+                cases[i],
+                'round-trips ' + JSON.stringify(cases[i])
+            );
+        }
+
+        st.end();
+    });
+
+    t.test('parses input containing percent-encoded bracket text without mangling', function (st) {
+        st.deepEqual(qs.parse('a%25255Bb=c'), { 'a%255Bb': 'c' }, 'a%25255Bb decodes to a%255Bb, not a%5Bb');
+        st.deepEqual(qs.parse('a%25255Db=c'), { 'a%255Db': 'c' }, 'a%25255Db decodes to a%255Db, not a%5Db');
+        st.deepEqual(qs.parse('a%5Bb%25255Bc%5D=d'), { a: { 'b%255Bc': 'd' } }, 'nested %25255B decodes to %255B inside segment, not %5B');
+
+        st.end();
+    });
 });
