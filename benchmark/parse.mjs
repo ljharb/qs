@@ -24,6 +24,7 @@ export default function addParseCases(suite, qs, stress) {
 		.add('parse: API query', () => qs.parse(realWorldQueries.api))
 		.add('parse: empty values', () => qs.parse(edgeCaseQueries.emptyValues))
 		.add('parse: special characters', () => qs.parse(edgeCaseQueries.specialChars))
+		.add('parse: encoded values', () => qs.parse(edgeCaseQueries.encodedValues))
 		.add('parse: with allowDots', () => qs.parse('user.name=John&user.age=30', { allowDots: true }))
 		.add('parse: with comma arrays', () => qs.parse('colors=red,green,blue', { comma: true }))
 		.add('parse: with depth limit', () => qs.parse(nestedQueries.deep, { depth: 2 }));

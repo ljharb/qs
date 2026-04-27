@@ -10,6 +10,7 @@ export const arrayQueries = {
 
 export const edgeCaseQueries = {
 	emptyValues: 'a=&b=&c=value&d=',
+	encodedValues: 'q=hello%20world&filter=%7B%22a%22%3A1%7D&name=Jos%C3%A9',
 	specialChars: 'special=%21%40%23%24%25%5E%26%2A%28%29&unicode=%E2%9C%93',
 };
 
