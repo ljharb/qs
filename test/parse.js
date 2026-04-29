@@ -555,6 +555,73 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('consistent overflow handling regardless of arrayLimit value', function (st) {
+        st.deepEqual(
+            qs.parse('a[]=b&a[1]=c&a=d', { arrayLimit: -1 }),
+            { a: { 0: 'b', 1: 'c', 2: 'd' } },
+            'mixed array notation with arrayLimit -1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[1]=c&a=d', { arrayLimit: 0 }),
+            { a: { 0: 'b', 1: 'c', 2: 'd' } },
+            'mixed array notation with arrayLimit 0 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[1]=c&a=d', { arrayLimit: 1 }),
+            { a: { 0: 'b', 1: 'c', 2: 'd' } },
+            'mixed array notation with arrayLimit 1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[1]=c&a=d', { arrayLimit: 2 }),
+            { a: { 0: 'b', 1: 'c', 2: 'd' } },
+            'mixed array notation with arrayLimit 2 produces object'
+        );
+
+        st.deepEqual(
+            qs.parse('a[0]=c&a=b', { arrayLimit: -1 }),
+            { a: { 0: 'c', 1: 'b' } },
+            'index + plain with arrayLimit -1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[0]=c&a=b', { arrayLimit: 0 }),
+            { a: { 0: 'c', 1: 'b' } },
+            'index + plain with arrayLimit 0 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[0]=c&a=b', { arrayLimit: 1 }),
+            { a: { 0: 'c', 1: 'b' } },
+            'index + plain with arrayLimit 1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a[0]=c&a=b', { arrayLimit: 2 }),
+            { a: { 0: 'c', 1: 'b' } },
+            'index + plain with arrayLimit 2 produces object'
+        );
+
+        st.deepEqual(
+            qs.parse('a=b&a[0]=c', { arrayLimit: -1 }),
+            { a: { 0: 'b', 1: 'c' } },
+            'plain + index with arrayLimit -1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a=b&a[0]=c', { arrayLimit: 0 }),
+            { a: { 0: 'b', 1: 'c' } },
+            'plain + index with arrayLimit 0 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a=b&a[0]=c', { arrayLimit: 1 }),
+            { a: { 0: 'b', 1: 'c' } },
+            'plain + index with arrayLimit 1 produces object'
+        );
+        st.deepEqual(
+            qs.parse('a=b&a[0]=c', { arrayLimit: 2 }),
+            { a: { 0: 'b', 1: 'c' } },
+            'plain + index with arrayLimit 2 produces object'
+        );
+
+        st.end();
+    });
+
     t.test('allows disabling array parsing', function (st) {
         var indices = qs.parse('a[0]=b&a[1]=c', { parseArrays: false });
         st.deepEqual(indices, { a: { 0: 'b', 1: 'c' } });
