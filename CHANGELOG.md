@@ -1,3 +1,13 @@
+## **6.15.2**
+- [Fix] `stringify`: skip null/undefined entries in `arrayFormat: 'comma'` + `encodeValuesOnly` instead of crashing in `encoder`
+- [Fix] `stringify`: use configured `delimiter` after `charsetSentinel` (#555)
+- [Fix] `stringify`: apply `formatter` to encoded key under `strictNullHandling` (#554)
+- [Fix] `stringify`: skip null/undefined filter-array entries instead of crashing in `encoder` (#551)
+- [Fix] `parse`: handle nested bracket groups and add regression tests (#530)
+- [readme] fix grammar (#550)
+- [Dev Deps] update `@ljharb/eslint-config`
+- [Tests] add regression tests for keys containing percent-encoded bracket text
+
 ## **6.15.1**
 - [Fix] `parse`: `parameterLimit: Infinity` with `throwOnLimitExceeded: true` silently drops all parameters
 - [Deps] update `@ljharb/eslint-config`
