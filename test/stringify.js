@@ -651,6 +651,49 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('does not crash on null/undefined entries in arrayFormat=comma with encodeValuesOnly', function (st) {
+        st.doesNotThrow(
+            function () { qs.stringify({ a: [null, 'b'] }, { arrayFormat: 'comma', encodeValuesOnly: true }); },
+            'does not pass a raw null array entry to the encoder'
+        );
+        st.doesNotThrow(
+            function () { qs.stringify({ a: [undefined, 'b'] }, { arrayFormat: 'comma', encodeValuesOnly: true }); },
+            'does not pass a raw undefined array entry to the encoder'
+        );
+        st.doesNotThrow(
+            function () { qs.stringify({ a: [null] }, { arrayFormat: 'comma', encodeValuesOnly: true }); },
+            'does not crash on a single-null array'
+        );
+
+        st.equal(
+            qs.stringify({ a: [null, 'b'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=,b',
+            'null entry joins as empty, comma stays unencoded under encodeValuesOnly'
+        );
+        st.equal(
+            qs.stringify({ a: [undefined, 'b'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=,b',
+            'undefined entry joins as empty, comma stays unencoded under encodeValuesOnly'
+        );
+        st.equal(
+            qs.stringify({ a: [null] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=',
+            'single-null array stringifies as empty value'
+        );
+        st.equal(
+            qs.stringify({ a: [null] }, { arrayFormat: 'comma', encodeValuesOnly: true, strictNullHandling: true }),
+            'a',
+            'strictNullHandling drops the equals sign for a single-null array'
+        );
+        st.equal(
+            qs.stringify({ a: [null] }, { arrayFormat: 'comma', encodeValuesOnly: true, skipNulls: true }),
+            '',
+            'skipNulls drops a single-null array entirely'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies a null object', { skip: !hasProto }, function (st) {
         st.equal(qs.stringify({ __proto__: null, a: 'b' }), 'a=b');
         st.end();
