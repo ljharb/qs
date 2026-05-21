@@ -959,6 +959,22 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('object-valued input with own `__proto__` does not mutate sub-object [[Prototype]]', function (st) {
+        // JSON.parse creates own data `__proto__` properties (via CreateDataProperty),
+        // which would trigger the Object.prototype.__proto__ accessor if merged via `acc[key] = value`.
+        var out = qs.parse({
+            'user[name]': 'alice',
+            user: JSON.parse('{"__proto__":{"isAdmin":true}}')
+        }, { allowPrototypes: false });
+
+        st.equal(out.user.name, 'alice', 'name from bracket key is preserved');
+        st.equal(out.user.isAdmin, undefined, 'attacker-controlled inherited property is not exposed');
+        st.equal(Object.getPrototypeOf(out.user), Object.prototype, 'sub-object [[Prototype]] is unchanged');
+        st.equal(Object.prototype.isAdmin, undefined, 'Object.prototype is not polluted');
+
+        st.end();
+    });
+
     t.test('can return null objects', { skip: !hasProto }, function (st) {
         var expected = {
             __proto__: null,

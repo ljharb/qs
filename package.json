@@ -31,6 +31,7 @@
         "node": ">=0.6"
     },
     "dependencies": {
+        "es-define-property": "^1.0.1",
         "side-channel": "^1.1.0"
     },
     "devDependencies": {
