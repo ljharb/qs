@@ -372,6 +372,79 @@ test('encode', function (t) {
         'encodes a long string'
     );
 
+    var boundary = '';
+    var expected = '';
+    for (var j = 0; j < 1023; j++) {
+        boundary += 'a';
+        expected += 'a';
+    }
+    boundary += '😀';
+    expected += '%F0%9F%98%80';
+
+    t.equal(
+        utils.encode(boundary),
+        expected,
+        'encodes a surrogate pair split across long-string chunks'
+    );
+
+    var laterBoundary = '';
+    var laterExpected = '';
+    for (var k = 0; k < 2047; k++) {
+        laterBoundary += 'a';
+        laterExpected += 'a';
+    }
+    laterBoundary += '😀';
+    laterExpected += '%F0%9F%98%80';
+
+    t.equal(
+        utils.encode(laterBoundary),
+        laterExpected,
+        'encodes a surrogate pair split across a later chunk boundary'
+    );
+
+    var twoPairs = '';
+    for (k = 0; k < 1023; k++) {
+        twoPairs += 'a';
+    }
+    twoPairs += '😀';
+    for (k = 0; k < 1022; k++) {
+        twoPairs += 'b';
+    }
+    twoPairs += '😀';
+
+    t.equal(
+        (utils.encode(twoPairs).match(/%F0%9F%98%80/g) || []).length,
+        2,
+        'encodes two surrogate pairs each split across a chunk boundary'
+    );
+
+    var roundTrip = '';
+    for (k = 0; k < 1023; k++) {
+        roundTrip += 'a';
+    }
+    roundTrip += '😀';
+
+    t.equal(
+        decodeURIComponent(utils.encode(roundTrip)),
+        roundTrip,
+        'a boundary-split surrogate pair round-trips through decodeURIComponent'
+    );
+
+    var loneBoundary = '';
+    var loneExpected = '';
+    for (k = 0; k < 1023; k++) {
+        loneBoundary += 'a';
+        loneExpected += 'a';
+    }
+    loneBoundary += '\uD83DX';
+    loneExpected += '%F0%9F%91%98';
+
+    t.equal(
+        utils.encode(loneBoundary),
+        loneExpected,
+        'a lone high surrogate at a chunk boundary encodes the same as mid-chunk'
+    );
+
     t.equal(
         utils.encode('\x28\x29'),
         '%28%29',
