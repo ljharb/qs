@@ -843,6 +843,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('throws on unterminated bracket groups after a parent key', function (st) {
+        st['throws'](
+            function () { qs.parse('filters[customtags:Env: Prod&startDate=2025-02-01'); },
+            new RangeError('Unbalanced bracket group in query string key'),
+            'throws on a missing closing bracket after a parent key'
+        );
+        st.end();
+    });
+
     t.test('add keys to objects', function (st) {
         st.deepEqual(
             qs.parse('a[b]=c&a=d', { strictMerge: false }),
