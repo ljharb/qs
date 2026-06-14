@@ -430,6 +430,31 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('should encode the key of an empty array when allowEmptyArrays is set', function (st) {
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true }),
+            'a%20b[]',
+            'default (RFC3986) percent-encodes the space in the key'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, format: 'RFC1738' }),
+            'a+b[]',
+            'RFC1738 encodes the space in the key as a plus'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, encodeValuesOnly: true }),
+            'a b[]',
+            'encodeValuesOnly leaves the key unencoded'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, encode: false }),
+            'a b[]',
+            'encode: false leaves the key unencoded'
+        );
+
+        st.end();
+    });
+
     t.test('should throw when allowEmptyArrays is not of type boolean', function (st) {
         st['throws'](
             function () { qs.stringify({ a: [], b: 'zz' }, { allowEmptyArrays: 'foobar' }); },
