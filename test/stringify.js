@@ -136,6 +136,82 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes dot in key of object with a primitive value when encodeDotInKeys and allowDots is provided', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj=John',
+            'with allowDots true and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj=John',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { encodeDotInKeys: true, allowDots: true, encodeValuesOnly: true }
+            ),
+            'name%2Eobj=John',
+            'with encodeValuesOnly true'
+        );
+
+        // With `encodeValuesOnly` the key encoder is skipped, so the dot is encoded once
+        // (`%2E`) rather than twice. That single `%2E` decodes back to a structural dot, so
+        // unlike the default output below this does not round-trip to the original dotted key
+        // (a pre-existing `encodeValuesOnly` + `encodeDotInKeys` limitation, not new here).
+        st.deepEqual(
+            qs.parse(
+                qs.stringify(
+                    { 'name.obj': 'John' },
+                    { encodeDotInKeys: true, allowDots: true, encodeValuesOnly: true }
+                ),
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { name: { obj: 'John' } },
+            'with encodeValuesOnly the single-encoded dot decodes structurally (does not round-trip)'
+        );
+
+        st.deepEqual(
+            qs.parse(
+                qs.stringify({ 'name.obj': 'John' }, { allowDots: true, encodeDotInKeys: true }),
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { 'name.obj': 'John' },
+            'round-trips a dotted key with a primitive value'
+        );
+
+        st.equal(
+            qs.stringify({ 'a.b': null }, { allowDots: true, encodeDotInKeys: true, strictNullHandling: true }),
+            'a%252Eb',
+            'encodes a dotted key with a null value'
+        );
+        st.equal(
+            qs.stringify({ 'a.b': '1', 'c.d': '2' }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb=1&c%252Ed=2',
+            'encodes dots in every top-level key, not just the first'
+        );
+        st.equal(
+            qs.stringify({ 'a.b.c': 'x' }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec=x',
+            'encodes every dot in a key'
+        );
+        var primitiveKey = qs.stringify({ 'a.b': 'c' }, { allowDots: true, encodeDotInKeys: true }).split('=')[0];
+        st.equal(
+            qs.stringify({ 'a.b': { x: 'c' } }, { allowDots: true, encodeDotInKeys: true }).indexOf(primitiveKey + '.'),
+            0,
+            'a top-level dotted key encodes identically for primitive and object values'
+        );
+
+        st.end();
+    });
+
     t.test('should encode dot in key of object, and automatically set allowDots to `true` when encodeDotInKeys is true and allowDots in undefined', function (st) {
         st.equal(
             qs.stringify(
