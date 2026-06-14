@@ -136,6 +136,44 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes dot in key of object with a primitive value when encodeDotInKeys and allowDots is provided', function (st) {
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { allowDots: true, encodeDotInKeys: true }
+            ),
+            'name%252Eobj=John',
+            'with allowDots true and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { allowDots: false, encodeDotInKeys: true }
+            ),
+            'name%252Eobj=John',
+            'with allowDots false and encodeDotInKeys true'
+        );
+        st.equal(
+            qs.stringify(
+                { 'name.obj': 'John' },
+                { encodeDotInKeys: true, allowDots: true, encodeValuesOnly: true }
+            ),
+            'name%2Eobj=John',
+            'with encodeValuesOnly true'
+        );
+
+        st.deepEqual(
+            qs.parse(
+                qs.stringify({ 'name.obj': 'John' }, { allowDots: true, encodeDotInKeys: true }),
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { 'name.obj': 'John' },
+            'round-trips a dotted key with a primitive value'
+        );
+
+        st.end();
+    });
+
     t.test('should encode dot in key of object, and automatically set allowDots to `true` when encodeDotInKeys is true and allowDots in undefined', function (st) {
         st.equal(
             qs.stringify(
