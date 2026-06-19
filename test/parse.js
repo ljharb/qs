@@ -1117,6 +1117,7 @@ test('parse()', function (t) {
     var urlEncodedOSlashInUtf8 = '%C3%B8';
     var urlEncodedNumCheckmark = '%26%2310003%3B';
     var urlEncodedNumSmiley = '%26%239786%3B';
+    var urlEncodedNumGrinning = '%26%23128512%3B'; // &#128512; -> U+1F600 (astral)
 
     t.test('prefers an utf-8 charset specified by the utf8 sentinel to a default charset of iso-8859-1', function (st) {
         st.deepEqual(qs.parse('utf8=' + urlEncodedCheckmarkInUtf8 + '&' + urlEncodedOSlashInUtf8 + '=' + urlEncodedOSlashInUtf8, { charsetSentinel: true, charset: 'iso-8859-1' }), { ø: 'ø' });
@@ -1150,6 +1151,24 @@ test('parse()', function (t) {
 
     t.test('interprets numeric entities in iso-8859-1 when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'iso-8859-1', interpretNumericEntities: true }), { foo: '☺' });
+        st.end();
+    });
+
+    t.test('interprets astral (> U+FFFF) numeric entities in iso-8859-1 when `interpretNumericEntities`', function (st) {
+        var grinning = String.fromCodePoint(0x1F600); // 😀
+        st.deepEqual(
+            qs.parse('foo=' + urlEncodedNumGrinning, { charset: 'iso-8859-1', interpretNumericEntities: true }),
+            { foo: grinning },
+            'a numeric entity above U+FFFF round-trips to the correct code point'
+        );
+
+        // out-of-range code points (> U+10FFFF) must not throw; left as the literal entity
+        st.deepEqual(
+            qs.parse('foo=%26%231114112%3B', { charset: 'iso-8859-1', interpretNumericEntities: true }),
+            { foo: '&#1114112;' },
+            'an out-of-range numeric entity is left untouched instead of throwing'
+        );
+
         st.end();
     });
 
