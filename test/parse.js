@@ -14,6 +14,12 @@ var hasProto = require('has-proto')();
 var qs = require('../');
 var utils = require('../lib/utils');
 
+var characterizeParse = function characterizeParse(st, input, opts, expected, label) {
+    var result;
+    st.doesNotThrow(function () { result = qs.parse(input, opts); }, label + ': does not throw');
+    st.deepEqual(result, expected, label + ': parses to the current lenient output');
+};
+
 test('parse()', function (t) {
     t.test('parses a simple string', function (st) {
         st.deepEqual(qs.parse('0=foo'), { 0: 'foo' });
@@ -309,6 +315,48 @@ test('parse()', function (t) {
             'handles unterminated inner bracket groups without throwing'
         );
 
+        st.end();
+    });
+
+    t.test('currently parses unbalanced bracket keys after a parent leniently to literal segments (issue #558)', function (st) {
+        characterizeParse(st, 'a[bc=v', undefined, { a: { '[bc': 'v' } }, 'unclosed group after a parent');
+        characterizeParse(st, 'a[=v', undefined, { a: { '[': 'v' } }, 'bare unclosed bracket after a parent');
+        characterizeParse(st, 'a[b][c=v', undefined, { a: { b: { '[c': 'v' } } }, 'unclosed group after a valid one');
+        characterizeParse(st, 'a[b]c[d=v', undefined, { a: { b: { '[d': 'v' } } }, 'unclosed group after text following a valid one');
+        characterizeParse(st, 'filters[customtags:Env: Prod=v', undefined, { filters: { '[customtags:Env: Prod': 'v' } }, 'the issue #558 reproduction');
+        characterizeParse(st, '][a=v', undefined, { ']': { '[a': 'v' } }, 'stray close bracket before an unclosed group');
+        characterizeParse(st, 'a][b=v', undefined, { 'a]': { '[b': 'v' } }, 'stray close bracket inside the parent');
+        st.end();
+    });
+
+    t.test('currently parses unbalanced bracket keys containing inner brackets leniently (issue #558)', function (st) {
+        characterizeParse(st, 'a[b[c=v', undefined, { a: { '[b[c': 'v' } }, 'unclosed group containing an inner bracket');
+        characterizeParse(st, 'a[b[c]=v', undefined, { a: { '[b[c]': 'v' } }, 'unbalanced group with an inner bracket and one close');
+        characterizeParse(st, 'a[b][c[d=v', undefined, { a: { b: { '[c[d': 'v' } } }, 'unclosed inner-bracket group after a valid one');
+        st.end();
+    });
+
+    t.test('currently parses bracket-prefixed unbalanced keys leniently (issue #558)', function (st) {
+        characterizeParse(st, '[abc=v', undefined, { '[abc': 'v' }, 'key starting with an unclosed bracket');
+        characterizeParse(st, '[[]b=v', undefined, { '[[]b': 'v' }, 'key starting with an unbalanced bracket group');
+        st.end();
+    });
+
+    t.test('lenient unbalanced-bracket handling currently depends on the depth option (issue #558)', function (st) {
+        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 5 }, { a: { b: { d: { '[f': 'v' } } } }, 'consumes groups up to the depth budget then keeps the unclosed remainder literal');
+        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 1 }, { a: { b: { '[d]e[f': 'v' } } }, 'a lower depth keeps more of the unclosed remainder literal');
+        characterizeParse(st, 'a[bc=v', { depth: 0 }, { 'a[bc': 'v' }, 'depth 0 keeps the entire key literal');
+        st.end();
+    });
+
+    t.test('currently parses an allowDots key with a trailing unclosed bracket leniently (issue #558)', function (st) {
+        characterizeParse(st, 'a.b[c=v', { allowDots: true }, { a: { b: { '[c': 'v' } } }, 'allowDots expands the dot then keeps the unclosed bracket literal');
+        st.end();
+    });
+
+    t.test('valid and stray-close bracket keys are unaffected by unbalanced-bracket handling', function (st) {
+        characterizeParse(st, 'a]b=v', undefined, { 'a]b': 'v' }, 'stray close bracket with no open bracket stays a flat key');
+        characterizeParse(st, 'a[b]extra=v', undefined, { a: { b: 'v' } }, 'text after a balanced group is ignored');
         st.end();
     });
 
