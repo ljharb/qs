@@ -1392,6 +1392,64 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('throws before splitting when a single comma value exceeds arrayLimit', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a=1,2,3,4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 5 elements allowed in an array.'),
+                'a flat comma value over the limit throws'
+            );
+
+            sst['throws'](
+                function () {
+                    qs.parse('a=1,2', { comma: true, arrayLimit: 1, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'singular message at arrayLimit 1'
+            );
+
+            sst['throws'](
+                function () {
+                    qs.parse('a[b]=1,2,3,4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 5 elements allowed in an array.'),
+                'a non-bracket nested key comma value over the limit throws'
+            );
+            sst.end();
+        });
+
+        st.test('does not throw for a single comma value within arrayLimit', function (sst) {
+            sst.deepEqual(
+                qs.parse('a=1,2,3', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true }),
+                { a: ['1', '2', '3'] },
+                'within the limit'
+            );
+            sst.deepEqual(
+                qs.parse('a=1,2,3,4,5', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true }),
+                { a: ['1', '2', '3', '4', '5'] },
+                'exactly at the limit'
+            );
+            sst.end();
+        });
+
+        st.test('does not throw for a bracketed comma group within arrayLimit', function (sst) {
+            var result = qs.parse('a[]=1,2,3,4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+            sst.deepEqual(result, { a: [['1', '2', '3', '4', '5', '6']] }, 'a bracketed comma group is a single element');
+            sst.end();
+        });
+
+        st.test('throws for a bracketed comma group when arrayLimit is 0', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a[]=1,2,3', { comma: true, arrayLimit: 0, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 0 elements allowed in an array.'),
+                'a single bracketed element still exceeds arrayLimit 0'
+            );
+            sst.end();
+        });
+
         st.end();
     });
 
