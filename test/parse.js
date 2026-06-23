@@ -726,6 +726,21 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('does not crash on multi-step circular references', function (st) {
+        var a = {};
+        a.b = { c: { d: a } };
+
+        var parsed;
+
+        st.doesNotThrow(function () {
+            parsed = qs.parse({ foo: a });
+        });
+
+        st.equal('foo' in parsed, true, 'parsed has "foo" property');
+        st.equal(parsed.foo.b.c.d, parsed.foo, 'the multi-step cycle is preserved');
+        st.end();
+    });
+
     t.test('does not crash when parsing deep objects', function (st) {
         var parsed;
         var str = 'foo';
