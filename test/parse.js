@@ -1325,6 +1325,73 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('throws when cumulative comma + duplicate-key combine exceeds arrayLimit', function (sst) {
+            sst['throws'](
+                function () {
+                    qs.parse('a=1,2,3&a=4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 5 elements allowed in an array.'),
+                'throws when comma groups within the limit cumulatively exceed it across duplicate keys'
+            );
+
+            sst['throws'](
+                function () {
+                    qs.parse('a=v,v,v,v,v&a=v,v,v,v,v&a=v,v,v,v,v', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+                },
+                new RangeError('Array limit exceeded. Only 5 elements allowed in an array.'),
+                'throws on a subsequent part once the cumulative array is already over the limit'
+            );
+            sst.end();
+        });
+
+        st.test('throws when plain duplicate keys combine past arrayLimit at the boundary', function (sst) {
+            sst['throws'](
+                function () { qs.parse('a=x&a=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'duplicate scalar keys'
+            );
+
+            sst['throws'](
+                function () { qs.parse('a[]=x&a[]=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'duplicate bracket keys'
+            );
+            sst.end();
+        });
+
+        st.test('throws when mixed index and key notation merge past arrayLimit', function (sst) {
+            sst['throws'](
+                function () { qs.parse('a=x&a[0]=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'scalar then index that overflows on merge'
+            );
+
+            sst['throws'](
+                function () { qs.parse('a[0]=1&a[1]=2&a=3', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'indexed array then scalar that overflows on merge'
+            );
+            sst.end();
+        });
+
+        st.test('does not throw when cumulative comma combine stays within arrayLimit', function (sst) {
+            var result = qs.parse('a=1,2,3&a=4', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+            sst.deepEqual(result, { a: ['1', '2', '3', '4'] }, 'combined array within limit is preserved');
+            sst.end();
+        });
+
+        st.test('silently combines to an overflow object when throwOnLimitExceeded is not set', function (sst) {
+            var result = qs.parse('a=1,2,3&a=4,5,6', { comma: true, arrayLimit: 5 });
+            sst.deepEqual(result, { a: { 0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6' } }, 'converts to object without throwing');
+            sst.end();
+        });
+
+        st.test('does not throw for comma groups nested under bracket notation, counting each group as one element', function (sst) {
+            var result = qs.parse('a[]=1,2,3&a[]=4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
+            sst.deepEqual(result, { a: [['1', '2', '3'], ['4', '5', '6']] }, 'nested comma groups count as one element each');
+            sst.end();
+        });
+
         st.end();
     });
 

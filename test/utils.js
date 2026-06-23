@@ -153,6 +153,34 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('throws instead of merging primitive into over-limit array when throwOnLimitExceeded is set', function (s2t) {
+            s2t['throws'](
+                function () { utils.merge(['a', 'b', 'c'], 'd', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'throws rather than converting to an overflow object'
+            );
+            s2t['throws'](
+                function () { utils.merge(['a', 'b', 'c'], 'd', { arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'uses the plural message when arrayLimit is not 1'
+            );
+            s2t.end();
+        });
+
+        st.test('throws instead of merging array into primitive when throwOnLimitExceeded is set', function (s2t) {
+            s2t['throws'](
+                function () { utils.merge('a', ['b', 'c'], { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'throws rather than converting to an overflow object'
+            );
+            s2t['throws'](
+                function () { utils.merge('a', ['b', 'c', 'd'], { arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'uses the plural message when arrayLimit is not 1'
+            );
+            s2t.end();
+        });
+
         st.end();
     });
 
@@ -268,6 +296,47 @@ test('combine()', function (t) {
             var expected = { __proto__: null, 0: 'a', 1: 'b', 2: 'c' };
             s2t.deepEqual(combined, expected, 'converts to object with null prototype');
             s2t.equal(Object.getPrototypeOf(combined), null, 'result has null prototype when plainObjects is true');
+            s2t.end();
+        });
+
+        st.end();
+    });
+
+    t.test('with throwOnLimitExceeded', function (st) {
+        st.test('throws when concatenation exceeds the limit', function (s2t) {
+            s2t['throws'](
+                function () { utils.combine(['a', 'b', 'c'], 'd', 3, false, true); },
+                new RangeError('Array limit exceeded. Only 3 elements allowed in an array.'),
+                'throws instead of converting to an overflow object'
+            );
+            s2t['throws'](
+                function () { utils.combine([], 'a', 0, false, true); },
+                new RangeError('Array limit exceeded. Only 0 elements allowed in an array.'),
+                'throws with the correct count at arrayLimit 0'
+            );
+            s2t.end();
+        });
+
+        st.test('throws when adding to an existing overflow object', function (s2t) {
+            var overflow = utils.combine(['a', 'b'], 'c', 0, false);
+            s2t.ok(utils.isOverflow(overflow), 'initial object is marked as overflow');
+
+            s2t['throws'](
+                function () { utils.combine(overflow, 'd', 0, false, true); },
+                new RangeError('Array limit exceeded. Only 0 elements allowed in an array.'),
+                'throws rather than appending to the overflow object'
+            );
+            s2t['throws'](
+                function () { utils.combine(overflow, 'd', 1, false, true); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'uses the singular message at arrayLimit 1'
+            );
+            s2t.end();
+        });
+
+        st.test('does not throw when within the limit', function (s2t) {
+            var combined = utils.combine(['a'], 'b', 5, false, true);
+            s2t.deepEqual(combined, ['a', 'b'], 'returns the array unchanged when under the limit');
             s2t.end();
         });
 
