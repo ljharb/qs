@@ -1437,6 +1437,32 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('enforces arrayLimit on merge at the boundary, consistently with combine', function (sst) {
+            sst['throws'](
+                function () { qs.parse('a[0]=x&a=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'a trailing scalar merged into an at-limit array throws'
+            );
+            sst.deepEqual(
+                qs.parse('a[0]=x&a=y', { arrayLimit: 1 }),
+                { a: { 0: 'x', 1: 'y' } },
+                'and converts to an overflow object without throwOnLimitExceeded'
+            );
+
+            sst['throws'](
+                function () { qs.parse('a[0]=x&a[]=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'mixed index and bracket notation merged past the limit throws'
+            );
+            sst.deepEqual(
+                qs.parse('a[0]=x&a[]=y', { arrayLimit: 1 }),
+                { a: { 0: 'x', 1: 'y' } },
+                'mixed index and bracket notation converts like duplicate-bracket combine'
+            );
+
+            sst.end();
+        });
+
         st.test('does not throw when cumulative comma combine stays within arrayLimit', function (sst) {
             var result = qs.parse('a=1,2,3&a=4', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
             sst.deepEqual(result, { a: ['1', '2', '3', '4'] }, 'combined array within limit is preserved');

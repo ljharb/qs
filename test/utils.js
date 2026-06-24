@@ -65,6 +65,7 @@ test('merge()', function (t) {
             observed[0] = observed[0]; // eslint-disable-line no-self-assign
             st.equal(setCount, 1);
             st.equal(getCount, 2);
+
             st.end();
         }
     );
@@ -78,6 +79,7 @@ test('merge()', function (t) {
             s2t.ok(utils.isOverflow(overflow), 'overflow object is marked');
             var merged = utils.merge(overflow, 'd');
             s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c', 3: 'd' }, 'adds primitive at next numeric index');
+
             s2t.end();
         });
 
@@ -93,6 +95,7 @@ test('merge()', function (t) {
             var obj = { foo: 'bar' };
             var merged = utils.merge(obj, 'baz');
             s2t.deepEqual(merged, { foo: 'bar', baz: true }, 'adds primitive as key with value true');
+
             s2t.end();
         });
 
@@ -110,6 +113,7 @@ test('merge()', function (t) {
             var merged = utils.merge('c', overflow);
             s2t.ok(utils.isOverflow(merged), 'result is also marked as overflow');
             s2t.deepEqual(merged, { 0: 'c', 1: 'a', 2: 'b' }, 'creates object with primitive at 0, source values shifted');
+
             s2t.end();
         });
 
@@ -119,6 +123,7 @@ test('merge()', function (t) {
             var merged = utils.merge('c', overflow, { plainObjects: true });
             s2t.ok(utils.isOverflow(merged), 'result is also marked as overflow');
             s2t.deepEqual(merged, { __proto__: null, 0: 'c', 1: 'a', 2: 'b' }, 'creates null-proto object with primitive at 0');
+
             s2t.end();
         });
 
@@ -128,6 +133,7 @@ test('merge()', function (t) {
             s2t.ok(utils.isOverflow(overflow), 'overflow object is marked');
             var merged = utils.merge('a', overflow);
             s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c', 3: 'd' }, 'shifts all source indices by 1');
+
             s2t.end();
         });
 
@@ -135,6 +141,7 @@ test('merge()', function (t) {
             var obj = { foo: 'bar' };
             var merged = utils.merge('a', obj);
             s2t.deepEqual(merged, ['a', { foo: 'bar' }], 'creates array with primitive and object');
+
             s2t.end();
         });
 
@@ -143,6 +150,7 @@ test('merge()', function (t) {
             var merged = utils.merge(arr, 'd', { arrayLimit: 1 });
             s2t.ok(utils.isOverflow(merged), 'result is marked as overflow');
             s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c', 3: 'd' }, 'converts to overflow object with primitive appended');
+
             s2t.end();
         });
 
@@ -150,6 +158,48 @@ test('merge()', function (t) {
             var merged = utils.merge('a', ['b', 'c'], { arrayLimit: 1 });
             s2t.ok(utils.isOverflow(merged), 'result is marked as overflow');
             s2t.deepEqual(merged, { 0: 'a', 1: 'b', 2: 'c' }, 'converts to overflow object');
+
+            s2t.end();
+        });
+
+        st.test('merges primitive into array at the arrayLimit boundary, consistently with combine', function (s2t) {
+            var merged = utils.merge(['a'], 'b', { arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(merged), 'result is marked as overflow at the boundary');
+            s2t.deepEqual(merged, { 0: 'a', 1: 'b' }, 'converts to overflow object instead of a length-2 array');
+
+            s2t.end();
+        });
+
+        st.test('merges two arrays that exceed arrayLimit into an overflow object', function (s2t) {
+            var merged = utils.merge(['a'], ['b'], { arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(merged), 'result is marked as overflow');
+            s2t.deepEqual(merged, { 0: 'a', 1: 'b' }, 'array-into-array merge enforces arrayLimit like combine');
+
+            s2t.end();
+        });
+
+        st.test('throws at the arrayLimit boundary when merging a primitive into an array with throwOnLimitExceeded', function (s2t) {
+            s2t['throws'](
+                function () { utils.merge(['a'], 'b', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'throws when the resulting length would exceed arrayLimit'
+            );
+
+            s2t.end();
+        });
+
+        st.test('throws when merging two arrays past arrayLimit with throwOnLimitExceeded', function (s2t) {
+            s2t['throws'](
+                function () { utils.merge(['a'], ['b'], { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'array-into-array merge throws rather than silently exceeding arrayLimit'
+            );
+            s2t['throws'](
+                function () { utils.merge(['a', 'b', 'c'], ['d', 'e', 'f'], { arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'uses the plural message when arrayLimit is not 1'
+            );
+
             s2t.end();
         });
 
@@ -164,6 +214,7 @@ test('merge()', function (t) {
                 new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
                 'uses the plural message when arrayLimit is not 1'
             );
+
             s2t.end();
         });
 
@@ -178,6 +229,7 @@ test('merge()', function (t) {
                 new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
                 'uses the plural message when arrayLimit is not 1'
             );
+
             s2t.end();
         });
 
