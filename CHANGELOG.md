@@ -1,3 +1,14 @@
+## **6.15.3**
+- [Fix] `parse`: enforce `throwOnLimitExceeded` for cumulative array growth via `combine`/`merge`
+- [Fix] `utils`: respect encoding of surrogate pairs across chunks (#559)
+- [Robustness] `parse`: throw the `arrayLimit` error before splitting oversized comma values
+- [Robustness] `utils.merge` / `utils.assign`: avoid invoking `__proto__` setter when copying own properties
+- [Robustness] `utils`: enforce `arrayLimit` consistently across `merge`'s array paths
+- [Perf] `utils`: make `compact` O(n) via a side-channel visited-set instead of `Array.indexOf`
+- [Deps] update `side-channel`
+- [Dev Deps] update `eslint`, `mock-property`, `tape`
+- [Tests] `parse`: characterize current lenient handling of unbalanced bracket keys (#558)
+
 ## **6.15.2**
 - [Fix] `stringify`: skip null/undefined entries in `arrayFormat: 'comma'` + `encodeValuesOnly` instead of crashing in `encoder`
 - [Fix] `stringify`: use configured `delimiter` after `charsetSentinel` (#555)
