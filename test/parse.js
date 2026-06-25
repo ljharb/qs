@@ -20,6 +20,14 @@ var characterizeParse = function characterizeParse(st, input, opts, expected, la
     st.deepEqual(result, expected, label + ': parses to the current lenient output');
 };
 
+var throwsUnbalancedBracket = function throwsUnbalancedBracket(st, input, opts, label) {
+    st['throws'](
+        function () { qs.parse(input, opts); },
+        new RangeError('Unbalanced bracket group in query string key'),
+        label + ': throws on the unbalanced bracket group'
+    );
+};
+
 test('parse()', function (t) {
     t.test('parses a simple string', function (st) {
         st.deepEqual(qs.parse('0=foo'), { 0: 'foo' });
@@ -308,49 +316,44 @@ test('parse()', function (t) {
             'respects depth: 1 and preserves literal inner [] in the parsed key'
         );
 
-        // Unterminated inner bracket group is wrapped as a literal remainder segment
-        st.deepEqual(
-            qs.parse('a[[]b=c'),
-            { a: { '[[]b': 'c' } },
-            'handles unterminated inner bracket groups without throwing'
-        );
+        throwsUnbalancedBracket(st, 'a[[]b=c', undefined, 'throws on an unterminated inner bracket group');
 
         st.end();
     });
 
-    t.test('currently parses unbalanced bracket keys after a parent leniently to literal segments (issue #558)', function (st) {
-        characterizeParse(st, 'a[bc=v', undefined, { a: { '[bc': 'v' } }, 'unclosed group after a parent');
-        characterizeParse(st, 'a[=v', undefined, { a: { '[': 'v' } }, 'bare unclosed bracket after a parent');
-        characterizeParse(st, 'a[b][c=v', undefined, { a: { b: { '[c': 'v' } } }, 'unclosed group after a valid one');
-        characterizeParse(st, 'a[b]c[d=v', undefined, { a: { b: { '[d': 'v' } } }, 'unclosed group after text following a valid one');
-        characterizeParse(st, 'filters[customtags:Env: Prod=v', undefined, { filters: { '[customtags:Env: Prod': 'v' } }, 'the issue #558 reproduction');
-        characterizeParse(st, '][a=v', undefined, { ']': { '[a': 'v' } }, 'stray close bracket before an unclosed group');
-        characterizeParse(st, 'a][b=v', undefined, { 'a]': { '[b': 'v' } }, 'stray close bracket inside the parent');
+    t.test('throws on unbalanced bracket keys after a parent (issue #558)', function (st) {
+        throwsUnbalancedBracket(st, 'a[bc=v', undefined, 'unclosed group after a parent');
+        throwsUnbalancedBracket(st, 'a[=v', undefined, 'bare unclosed bracket after a parent');
+        throwsUnbalancedBracket(st, 'a[b][c=v', undefined, 'unclosed group after a valid one');
+        throwsUnbalancedBracket(st, 'a[b]c[d=v', undefined, 'unclosed group after text following a valid one');
+        throwsUnbalancedBracket(st, 'filters[customtags:Env: Prod=v', undefined, 'the issue #558 reproduction');
+        throwsUnbalancedBracket(st, '][a=v', undefined, 'stray close bracket before an unclosed group');
+        throwsUnbalancedBracket(st, 'a][b=v', undefined, 'stray close bracket inside the parent');
         st.end();
     });
 
-    t.test('currently parses unbalanced bracket keys containing inner brackets leniently (issue #558)', function (st) {
-        characterizeParse(st, 'a[b[c=v', undefined, { a: { '[b[c': 'v' } }, 'unclosed group containing an inner bracket');
-        characterizeParse(st, 'a[b[c]=v', undefined, { a: { '[b[c]': 'v' } }, 'unbalanced group with an inner bracket and one close');
-        characterizeParse(st, 'a[b][c[d=v', undefined, { a: { b: { '[c[d': 'v' } } }, 'unclosed inner-bracket group after a valid one');
+    t.test('throws on unbalanced bracket keys containing inner brackets (issue #558)', function (st) {
+        throwsUnbalancedBracket(st, 'a[b[c=v', undefined, 'unclosed group containing an inner bracket');
+        throwsUnbalancedBracket(st, 'a[b[c]=v', undefined, 'unbalanced group with an inner bracket and one close');
+        throwsUnbalancedBracket(st, 'a[b][c[d=v', undefined, 'unclosed inner-bracket group after a valid one');
         st.end();
     });
 
-    t.test('currently parses bracket-prefixed unbalanced keys leniently (issue #558)', function (st) {
-        characterizeParse(st, '[abc=v', undefined, { '[abc': 'v' }, 'key starting with an unclosed bracket');
-        characterizeParse(st, '[[]b=v', undefined, { '[[]b': 'v' }, 'key starting with an unbalanced bracket group');
+    t.test('throws on bracket-prefixed unbalanced keys (issue #558)', function (st) {
+        throwsUnbalancedBracket(st, '[abc=v', undefined, 'key starting with an unclosed bracket');
+        throwsUnbalancedBracket(st, '[[]b=v', undefined, 'key starting with an unbalanced bracket group');
         st.end();
     });
 
-    t.test('lenient unbalanced-bracket handling currently depends on the depth option (issue #558)', function (st) {
-        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 5 }, { a: { b: { d: { '[f': 'v' } } } }, 'consumes groups up to the depth budget then keeps the unclosed remainder literal');
-        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 1 }, { a: { b: { '[d]e[f': 'v' } } }, 'a lower depth keeps more of the unclosed remainder literal');
-        characterizeParse(st, 'a[bc=v', { depth: 0 }, { 'a[bc': 'v' }, 'depth 0 keeps the entire key literal');
+    t.test('throws on unbalanced brackets regardless of depth option (issue #558)', function (st) {
+        throwsUnbalancedBracket(st, 'a[b]c[d]e[f=v', { depth: 5 }, 'unclosed group within the depth budget');
+        throwsUnbalancedBracket(st, 'a[b]c[d]e[f=v', { depth: 1 }, 'unclosed group beyond the depth budget');
+        throwsUnbalancedBracket(st, 'a[bc=v', { depth: 0 }, 'depth 0 still rejects an unclosed bracket group');
         st.end();
     });
 
-    t.test('currently parses an allowDots key with a trailing unclosed bracket leniently (issue #558)', function (st) {
-        characterizeParse(st, 'a.b[c=v', { allowDots: true }, { a: { b: { '[c': 'v' } } }, 'allowDots expands the dot then keeps the unclosed bracket literal');
+    t.test('throws on an allowDots key with a trailing unclosed bracket (issue #558)', function (st) {
+        throwsUnbalancedBracket(st, 'a.b[c=v', { allowDots: true }, 'allowDots expands the dot before detecting the unclosed bracket');
         st.end();
     });
 
@@ -899,10 +902,19 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('params starting with a starting bracket', function (st) {
-        st.deepEqual(qs.parse('[=toString'), { '[': 'toString' });
-        st.deepEqual(qs.parse('[[=toString'), { '[[': 'toString' });
-        st.deepEqual(qs.parse('[hello[=toString'), { '[hello[': 'toString' });
+    t.test('throws on params starting with an unbalanced starting bracket', function (st) {
+        throwsUnbalancedBracket(st, '[=toString', undefined, 'single opening bracket');
+        throwsUnbalancedBracket(st, '[[=toString', undefined, 'multiple opening brackets');
+        throwsUnbalancedBracket(st, '[hello[=toString', undefined, 'opening brackets with text');
+        st.end();
+    });
+
+    t.test('throws on unterminated bracket groups after a parent key', function (st) {
+        st['throws'](
+            function () { qs.parse('filters[customtags:Env: Prod&startDate=2025-02-01'); },
+            new RangeError('Unbalanced bracket group in query string key'),
+            'throws on a missing closing bracket after a parent key'
+        );
         st.end();
     });
 
