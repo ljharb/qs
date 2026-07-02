@@ -147,6 +147,8 @@ try {
 
 When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `parameterLimit` and ignore the rest without throwing an error.
 
+Note that `parameterLimit` only bounds the number of `&`-delimited parameters; it does not limit how many values a single parameter expands into. In particular, when `comma: true` is enabled, a single parameter's value is split on commas into arbitrarily many elements, which `parameterLimit` does not constrain. To bound the total element count from untrusted input, set `throwOnLimitExceeded: true` (see `arrayLimit` below), and always bound the input size at the transport layer (e.g. an HTTP body-size limit).
+
 To bypass the leading question mark, use `ignoreQueryPrefix`:
 
 ```javascript
@@ -313,7 +315,9 @@ try {
 }
 ```
 
-When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `arrayLimit` and if the limit is exceeded, the array will instead be converted to an object with the index as the key
+When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `arrayLimit` and if the limit is exceeded, the array will instead be converted to an object with the index as the key.
+
+Note that `arrayLimit` is a *representation* threshold that controls when a numerically-indexed collection switches from an array to an object — it is **not** a hard cap on the total number of elements parsed. With the default `throwOnLimitExceeded: false`, exceeding `arrayLimit` never rejects or truncates input; it only changes the container type, and the resulting object still holds every element (so its size stays proportional to the input). This conversion is itself a safeguard: it avoids allocating a huge sparse array for input like `a[999999999]`. If you need a hard limit that rejects oversized input from untrusted sources, set `throwOnLimitExceeded: true`.
 
 To prevent array syntax (`a[]`, `a[0]`) from being parsed as arrays, set `parseArrays` to `false`.
 Note that duplicate keys (e.g. `a=b&a=c`) may still produce arrays when `duplicates` is `'combine'` (the default).

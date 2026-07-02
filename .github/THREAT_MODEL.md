@@ -58,7 +58,7 @@ Caller Application → qs.stringify(obj, options) → Stringifying Engine → Ou
 |---------------------------------------------------|---------------------|
 | Tampering (malicious input, prototype pollution)  | Strict input validation; keep `allowPrototypes: false` by default; use `plainObjects` for output; ensure builtins/globals are never modified by parse[4][8]. |
 | Information Disclosure (error messages)           | Generic error messages without stack traces or internal paths. |
-| Denial of Service (memory/CPU exhaustion)         | Enforce `arrayLimit` and `parameterLimit` with safe defaults; enable `throwOnLimitExceeded`; limit nesting depth[7]. |
+| Denial of Service (memory/CPU exhaustion)         | `arrayLimit`, `parameterLimit`, and depth limiting apply with safe defaults. Note that `arrayLimit` is a representation threshold (array vs. object), and `parameterLimit` bounds only the number of `&`-delimited parameters - neither caps the elements produced by `comma: true` splitting. For a hard cap that rejects oversized untrusted input, opt in to `throwOnLimitExceeded: true` (default `false`), and always bound input size at the transport layer[7]. |
 | Elevation of Privilege (prototype pollution)      | Keep `allowPrototypes: false`; validate options against allowlist; use `plainObjects` to avoid prototype pollution[4][8]. |
 
 ### 7. Risk Ranking
