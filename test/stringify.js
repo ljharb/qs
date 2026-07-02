@@ -212,6 +212,68 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    // Characterization of the CURRENT (buggy) behavior: with `allowDots` + `encodeDotInKeys`,
+    // `stringify` percent-encodes the structural `.` separators that `allowDots` inserts between
+    // nested keys, not just the literal dots inside a key, which breaks the stringify -> parse
+    // round-trip. These assertions pin that behavior so it cannot change silently: the fix in
+    // https://github.com/ljharb/qs/pull/564 changes every output below, so landing that fix MUST
+    // update this test (that is the point — it forces the behavior change to be explicit).
+    t.test('[characterization] encodeDotInKeys currently over-encodes structural separator dots (pre-#564)', function (st) {
+        st.equal(
+            qs.stringify({ a: { b: { c: 'd' } } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb.c=d',
+            'over-encodes the a->b separator (#564: should become a.b.c=d)'
+        );
+        st.equal(
+            qs.stringify({ a: { b: { c: { d: 'e' } } } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec.d=e',
+            'clobbers every separator but the last (#564: should become a.b.c.d=e)'
+        );
+        st.equal(
+            qs.stringify({ 'a.b': { c: { d: 'e' } } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec.d=e',
+            'top-level dotted key: deeper separators also get encoded (#564: should become a%252Eb.c.d=e)'
+        );
+        st.equal(
+            qs.stringify({ a: { 'b.c': { d: 'e' } } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec.d=e',
+            'nested dotted key + object value: the separator around it is encoded (#564: should become a.b%252Ec.d=e)'
+        );
+        st.equal(
+            qs.stringify({ a: { b: { 'c.d': { e: 'f' } } } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec%252Ed.e=f',
+            'deeply nested dotted key: all separators encoded (#564: should become a.b.c%252Ed.e=f)'
+        );
+
+        st.equal(
+            qs.stringify({ a: { b: [1, 2] } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%5B0%5D=1&a%252Eb%5B1%5D=2',
+            'array value under nested keys: separator encoded (#564: should become a.b%5B0%5D=1&a.b%5B1%5D=2)'
+        );
+        st.equal(
+            qs.stringify({ a: { 'b.c': [1, 2] } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%252Eb%252Ec%5B0%5D=1&a%252Eb%252Ec%5B1%5D=2',
+            'array value under nested dotted key (#564: should become a.b%252Ec%5B0%5D=1&a.b%252Ec%5B1%5D=2)'
+        );
+
+        st.equal(
+            qs.stringify({ a: { 'b.c': { d: 'e' } } }, { allowDots: false, encodeDotInKeys: true }),
+            'a%5Bb%252Ec%5D%5Bd%5D=e',
+            'allowDots:false object value encodes the nested-key dot, unlike the primitive-value case (#564: should become a%5Bb.c%5D%5Bd%5D=e)'
+        );
+
+        st.deepEqual(
+            qs.parse(
+                qs.stringify({ a: { b: { c: 'd' } } }, { allowDots: true, encodeDotInKeys: true }),
+                { allowDots: true, decodeDotInKeys: true }
+            ),
+            { 'a.b': { c: 'd' } },
+            'the over-encoding breaks the round-trip: {a:{b:{c}}} comes back as {"a.b":{c}} (#564 restores it)'
+        );
+
+        st.end();
+    });
+
     t.test('should encode dot in key of object, and automatically set allowDots to `true` when encodeDotInKeys is true and allowDots in undefined', function (st) {
         st.equal(
             qs.stringify(
