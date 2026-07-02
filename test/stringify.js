@@ -1360,6 +1360,17 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes a literal `+` as `%2B` in iso-8859-1 mode so it round-trips', function (st) {
+        st.equal(qs.stringify({ a: 'b+c' }, { charset: 'iso-8859-1' }), 'a=b%2Bc', 'a `+` in a value is percent-encoded');
+        st.equal(qs.stringify({ 'a+b': 'c' }, { charset: 'iso-8859-1' }), 'a%2Bb=c', 'a `+` in a key is percent-encoded');
+        st.deepEqual(
+            qs.parse(qs.stringify({ a: 'b+c' }, { charset: 'iso-8859-1' }), { charset: 'iso-8859-1' }),
+            { a: 'b+c' },
+            'the `+` survives a round-trip instead of decoding to a space'
+        );
+        st.end();
+    });
+
     t.test('respects an explicit charset of utf-8 (the default)', function (st) {
         st.equal(qs.stringify({ a: 'æ' }, { charset: 'utf-8' }), 'a=%C3%A6');
         st.end();
