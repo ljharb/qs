@@ -466,6 +466,39 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allowEmptyArrays only short-circuits arrays with no own keys', function (st) {
+        st.equal(
+            qs.stringify({ a: [] }, { allowEmptyArrays: true }),
+            'a[]',
+            'a genuinely empty array is still emitted as `[]`'
+        );
+
+        var withKey = [];
+        withKey.extra = 'x';
+        st.equal(
+            qs.stringify({ a: withKey }, { allowEmptyArrays: true }),
+            'a%5Bextra%5D=x',
+            'an own key on an empty array is serialized rather than dropped'
+        );
+        st.equal(
+            qs.stringify({ a: withKey }, { allowEmptyArrays: true }),
+            qs.stringify({ a: withKey }),
+            'the allowEmptyArrays fast path matches the default path when the array has own keys'
+        );
+
+        var container = {};
+        var cyclic = [];
+        cyclic.back = container;
+        container.a = cyclic;
+        st['throws'](
+            function () { qs.stringify(container, { allowEmptyArrays: true }); },
+            RangeError,
+            'a cycle through an empty array with an own key is still detected'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value with one item vs multiple items', function (st) {
         st.test('non-array item', function (s2t) {
             s2t.equal(qs.stringify({ a: 'c' }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a=c');
