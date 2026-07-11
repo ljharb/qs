@@ -25,7 +25,7 @@ Caller Application → qs.stringify(obj, options) → Stringifying Engine → Ou
 
 **Trust Boundaries:**
 - **Input string (parse):** May come from untrusted sources (e.g., user input, network requests)
-- **Input object (stringify):** May contain cycles, which can lead to infinite loops during stringification
+- **Input object (stringify):** The calling application's own data, not a direct untrusted channel. May contain cycles (handled by the cycle detector). Deeply-nested non-cyclic input surfaces as a catchable synchronous `RangeError` (stack overflow), not unbounded resource consumption; callers that serialize externally-influenced objects should bound their depth/size beforehand.
 - **Options:** Provided by the caller
 - **Cycle Tracking:** Used only during stringification to detect and handle circular references
 
@@ -58,7 +58,7 @@ Caller Application → qs.stringify(obj, options) → Stringifying Engine → Ou
 |---------------------------------------------------|---------------------|
 | Tampering (malicious input, prototype pollution)  | Strict input validation; keep `allowPrototypes: false` by default; use `plainObjects` for output; ensure builtins/globals are never modified by parse[4][8]. |
 | Information Disclosure (error messages)           | Generic error messages without stack traces or internal paths. |
-| Denial of Service (memory/CPU exhaustion)         | `arrayLimit`, `parameterLimit`, and depth limiting apply with safe defaults. Note that `arrayLimit` is a representation threshold (array vs. object), and `parameterLimit` bounds only the number of `&`-delimited parameters - neither caps the elements produced by `comma: true` splitting. For a hard cap that rejects oversized untrusted input, opt in to `throwOnLimitExceeded: true` (default `false`), and always bound input size at the transport layer[7]. |
+| Denial of Service (memory/CPU exhaustion)         | `arrayLimit`, `parameterLimit`, and depth limiting apply with safe defaults. Note that `arrayLimit` is a representation threshold (array vs. object), and `parameterLimit` bounds only the number of `&`-delimited parameters - neither caps the elements produced by `comma: true` splitting. For a hard cap that rejects oversized untrusted input, opt in to `throwOnLimitExceeded: true` (default `false`), and always bound input size at the transport layer[7]. On the `stringify` side, the input is the caller's own object rather than an untrusted string, so unbounded nesting manifests as a catchable `RangeError` (stack overflow) rather than exhaustion; callers serializing externally-influenced objects should bound depth/size beforehand, and may opt into `stringify`'s `depth` option (default `Infinity`) for a deterministic, catchable error. |
 | Elevation of Privilege (prototype pollution)      | Keep `allowPrototypes: false`; validate options against allowlist; use `plainObjects` to avoid prototype pollution[4][8]. |
 
 ### 7. Risk Ranking
@@ -70,7 +70,7 @@ Caller Application → qs.stringify(obj, options) → Stringifying Engine → Ou
 ### 8. Next Steps & Review
 
 1. **Audit option validation logic.**
-2. **Add depth limiting to nested parsing and stringification.**
+2. **Depth limiting:** `parse` enforces a `depth` bound by default (with `strictDepth` to throw); `stringify` offers an opt-in `depth` bound (default `Infinity`, since its input is caller-produced) for defense-in-depth.
 3. **Implement fuzz testing for parser and stringifier edge cases.**
 4. **Regularly review dependencies for vulnerabilities.**
 5. **Keep documentation and threat model up to date.**
