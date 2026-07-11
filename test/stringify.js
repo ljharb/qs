@@ -1583,4 +1583,63 @@ test('stringifies empty keys', function (t) {
 
         st.end();
     });
+
+    t.test('limits nesting depth with the `depth` option', function (st) {
+        st.equal(
+            qs.stringify({ a: { b: { c: 'd' } } }),
+            'a%5Bb%5D%5Bc%5D=d',
+            'the default depth is unlimited and does not alter output'
+        );
+        st.equal(
+            qs.stringify({ a: { b: { c: 'd' } } }, { depth: 2 }),
+            'a%5Bb%5D%5Bc%5D=d',
+            'does not throw when nesting is within the depth limit'
+        );
+        st.equal(
+            qs.stringify({ a: { b: 'c' } }, { depth: Infinity }),
+            'a%5Bb%5D=c',
+            'an explicit Infinity depth is unlimited'
+        );
+        st.equal(
+            qs.stringify({ a: { b: { c: { d: 'e' } } } }, { depth: null }),
+            qs.stringify({ a: { b: { c: { d: 'e' } } } }),
+            'a non-number depth is ignored and treated as unlimited'
+        );
+        st.equal(
+            qs.stringify({ a: 'b' }, { depth: 0 }),
+            'a=b',
+            'a flat object serializes with a depth of 0'
+        );
+
+        var deep = {};
+        var cursor = deep;
+        for (var i = 0; i < 250; i++) {
+            cursor.a = {};
+            cursor = cursor.a;
+        }
+        cursor.b = 'c';
+        st.equal(typeof qs.stringify(deep), 'string', 'the default depth serializes deeply nested objects without throwing');
+
+        st['throws'](
+            function () { qs.stringify({ a: { b: { c: { d: 'e' } } } }, { depth: 2 }); },
+            RangeError,
+            'throws a RangeError when nesting exceeds the depth limit'
+        );
+        st['throws'](
+            function () { qs.stringify({ a: { b: 'c' } }, { depth: 0 }); },
+            RangeError,
+            'a depth of 0 throws for any nested object'
+        );
+
+        var caught;
+        try {
+            qs.stringify({ a: { b: { c: { d: 'e' } } } }, { depth: 2 });
+        } catch (e) {
+            caught = e;
+        }
+        st.ok(caught instanceof RangeError, 'the thrown value is a RangeError');
+        st.equal(caught.message, 'Input depth exceeded depth option of 2', 'the RangeError names the exceeded depth');
+
+        st.end();
+    });
 });

@@ -414,6 +414,20 @@ var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str) {
 
 _(Note: the `encoder` option does not apply if `encode` is `false`)_
 
+By default, `qs.stringify` serializes an object of any nesting depth.
+For backwards compatibility, and because its input is the caller's own object rather than a query string parsed by **qs**, this is unbounded.
+If you serialize objects whose nesting can be influenced by untrusted input, bound it with the numeric `depth` option (default `Infinity`);
+exceeding it throws a catchable `RangeError` instead of eventually overflowing the call stack:
+
+```javascript
+try {
+    qs.stringify({ a: { b: { c: { d: 'e' } } } }, { depth: 2 });
+} catch (err) {
+    assert(err instanceof RangeError);
+    assert.strictEqual(err.message, 'Input depth exceeded depth option of 2');
+}
+```
+
 Analogue to the `encoder` there is a `decoder` option for `parse` to override decoding of properties and values:
 
 ```javascript
