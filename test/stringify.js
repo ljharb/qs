@@ -681,11 +681,12 @@ test('stringify()', function (t) {
             'a[][b]=1&a[]=2&a[]=3',
             'brackets => brackets'
         );
-        st.equal(
-            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'comma' }),
-            '???',
-            'brackets => brackets',
-            { skip: 'TODO: figure out what this should do' }
+        st['throws'](
+            function () {
+                qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'comma' });
+            },
+            TypeError,
+            'comma with a non-primitive array element throws'
         );
         st.equal(
             qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true }),
@@ -860,6 +861,31 @@ test('stringify()', function (t) {
             qs.stringify({ a: [null] }, { arrayFormat: 'comma', encodeValuesOnly: true, skipNulls: true }),
             '',
             'skipNulls drops a single-null array entirely'
+        );
+
+        st.end();
+    });
+
+    t.test('throws for non-primitive values in arrayFormat=comma (#378)', function (st) {
+        st['throws'](
+            function () { qs.stringify({ a: { b: [{ c: 'd', e: 'f' }] } }, { encode: false, arrayFormat: 'comma' }); },
+            TypeError,
+            'nested object in a comma array throws instead of stringifying to [object Object]'
+        );
+        st['throws'](
+            function () { qs.stringify({ a: [{ b: 1 }] }, { arrayFormat: 'comma', commaRoundTrip: true }); },
+            TypeError,
+            'the commaRoundTrip path also throws'
+        );
+        st['throws'](
+            function () { qs.stringify({ a: [['b', 'c']] }, { encode: false, arrayFormat: 'comma' }); },
+            TypeError,
+            'a nested array element throws'
+        );
+        st.equal(
+            qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
+            'a=b%2Cc%2Cd',
+            'primitive elements are unaffected'
         );
 
         st.end();
@@ -1485,11 +1511,12 @@ test('stringify()', function (t) {
         st.equal(qs.stringify(withArray, { encode: false, arrayFormat: 'brackets' }), 'a[b][][c]=d&a[b][][e]=f', 'array, bracket');
         st.equal(qs.stringify(withArray, { encode: false, arrayFormat: 'indices' }), 'a[b][0][c]=d&a[b][0][e]=f', 'array, indices');
         st.equal(qs.stringify(withArray, { encode: false, arrayFormat: 'repeat' }), 'a[b][c]=d&a[b][e]=f', 'array, repeat');
-        st.equal(
-            qs.stringify(withArray, { encode: false, arrayFormat: 'comma' }),
-            '???',
-            'array, comma',
-            { skip: 'TODO: figure out what this should do' }
+        st['throws'](
+            function () {
+                qs.stringify(withArray, { encode: false, arrayFormat: 'comma' });
+            },
+            TypeError,
+            'array, comma: throws on a non-primitive array element'
         );
 
         st.end();
