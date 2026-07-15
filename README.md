@@ -85,6 +85,8 @@ assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
 });
 ```
 
+Since 6.15.2, `parse` interprets nested bracket groups more consistently. Query strings with unbalanced `[`/`]` can produce different results than in 6.15.1; see [#558](https://github.com/ljharb/qs/issues/558).
+
 By default, when nesting objects **qs** will only parse up to 5 children deep.
 This means if you attempt to parse a string like `'a[b][c][d][e][f][g][h][i]=j'` your resulting object will be:
 
