@@ -53,8 +53,8 @@
 
 > [!WARNING]
 > The behaviour of `arrayLimit` has changed and now also applies to `[]` notation. The default arrayLimit is 20.
-> Previously, arrays using `[]` notation were limited by the `parameterLimit` instead. If you rely on the old
-> implicit behaviour, you should set pass `{ arrayLimit: 1000 }` to parse.
+> Previously, arrays using `[]` notation were limited by the `parameterLimit` instead, with a default of 1000. If you
+> rely on the old implicit behaviour, you should set pass `{ arrayLimit: 1000 }` to parse.
 
 ## **6.14.0**
 - [New] `parse`: add `throwOnParameterLimitExceeded` option (#517)
