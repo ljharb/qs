@@ -51,6 +51,11 @@
 - [Tests] `stringify`: increase coverage
 - [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `npmignore`, `es-value-fixtures`, `for-each`, `object-inspect`
 
+> [!WARNING]
+> The behaviour of `arrayLimit` has changed and now also applies to `[]` notation. The default arrayLimit is 20.
+> Previously, arrays using `[]` notation were limited by the `parameterLimit` instead. If you rely on the old
+> implicit behaviour, you should set pass `{ arrayLimit: 1000 }` to parse.
+
 ## **6.14.0**
 - [New] `parse`: add `throwOnParameterLimitExceeded` option (#517)
 - [Refactor] `parse`: use `utils.combine` more
