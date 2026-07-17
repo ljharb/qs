@@ -293,6 +293,8 @@ assert.deepEqual(withIndexedEmptyString, { a: ['b', '', 'c'] });
 Any array members with an index of `20` or greater will instead be converted to an object with the index as the key.
 This is needed to handle cases when someone sent, for example, `a[999999999]` and it will take significant time to iterate over this huge array.
 
+Since v6.14.1, the arrayLimit now applies to ararys specified using both the `[]` and `[0]` syntaxes.
+
 ```javascript
 var withMaxIndex = qs.parse('a[100]=b');
 assert.deepEqual(withMaxIndex, { a: { '100': 'b' } });
