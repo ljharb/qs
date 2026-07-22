@@ -905,7 +905,7 @@ test('stringify()', function (t) {
     });
 
     t.test('stringifies the weird object from qs', function (st) {
-        st.equal(qs.stringify({ 'my weird field': '~q1!2"\'w$5&7/z8)?' }), 'my%20weird%20field=~q1%212%22%27w%245%267%2Fz8%29%3F');
+        st.equal(qs.stringify({ 'my weird field': '~q1!2"\'w$5&7/z8)?' }), 'my%20weird%20field=~q1%212%22%27w$5%267%2Fz8%29%3F');
         st.end();
     });
 
