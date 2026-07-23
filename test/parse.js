@@ -1475,6 +1475,16 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('spreads a comma group appended to an already-overflowed object', function (sst) {
+            var result = qs.parse('a=1,2,3,4,5,6&a=7,8', { comma: true, arrayLimit: 5 });
+            sst.deepEqual(
+                result,
+                { a: { 0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6', 6: '7', 7: '8' } },
+                'appended comma values are flattened, not nested'
+            );
+            sst.end();
+        });
+
         st.test('does not throw for comma groups nested under bracket notation, counting each group as one element', function (sst) {
             var result = qs.parse('a[]=1,2,3&a[]=4,5,6', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
             sst.deepEqual(result, { a: [['1', '2', '3'], ['4', '5', '6']] }, 'nested comma groups count as one element each');
