@@ -89,7 +89,8 @@
             "component.json",
             ".github/workflows",
             "logos",
-            "tea.yaml"
+            "tea.yaml",
+            "test"
         ]
     }
 }
