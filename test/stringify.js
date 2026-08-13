@@ -1090,6 +1090,25 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('passes through Date values when filter=function returns them unchanged', function (st) {
+        var date = new Date(1257894000000);
+        var filterFunc = function (prefix, value) {
+            return value instanceof Date ? value : value;
+        };
+
+        st.equal(
+            qs.stringify({ a: new Date(1257894000000) }, { filter: filterFunc }),
+            'a=' + date.toISOString().replace(/:/g, '%3A'),
+            'Date returned unchanged by the filter is serialized with serializeDate'
+        );
+        st.equal(
+            qs.stringify({ a: [new Date(1257894000000)] }, { filter: filterFunc }),
+            'a%5B0%5D=' + date.toISOString().replace(/:/g, '%3A'),
+            'Date nested in an array is serialized with serializeDate'
+        );
+        st.end();
+    });
+
     t.test('can disable uri encoding', function (st) {
         st.equal(qs.stringify({ a: 'b' }, { encode: false }), 'a=b');
         st.equal(qs.stringify({ a: { b: 'c' } }, { encode: false }), 'a[b]=c');
