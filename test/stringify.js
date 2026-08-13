@@ -499,6 +499,26 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies Set values as arrays', function (st) {
+        st.equal(
+            qs.stringify({ a: new Set([1, 2, 3]) }),
+            'a%5B0%5D=1&a%5B1%5D=2&a%5B2%5D=3',
+            'a Set is serialized as an array'
+        );
+        st.equal(
+            qs.stringify(new Set([1, 2])),
+            '0=1&1=2',
+            'a top-level Set is serialized as an array'
+        );
+        st.equal(
+            qs.stringify({ x: { y: new Set(['p', 'q']) } }),
+            'x%5By%5D%5B0%5D=p&x%5By%5D%5B1%5D=q',
+            'a nested Set is serialized as an array'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value with one item vs multiple items', function (st) {
         st.test('non-array item', function (s2t) {
             s2t.equal(qs.stringify({ a: 'c' }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a=c');
