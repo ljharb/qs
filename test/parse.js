@@ -1553,6 +1553,30 @@ test('parses empty keys', function (t) {
             st.end();
         });
     });
+
+    t.test('keeps empty string keys with allowEmptyKeys', function (st) {
+        st.deepEqual(qs.parse('=1&=2', { allowEmptyKeys: true }), { '': ['1', '2'] }, 'empty keys combine like other duplicate keys');
+
+        st.deepEqual(qs.parse('a=1&=2', { allowEmptyKeys: true }), { a: '1', '': '2' }, 'empty key alongside normal keys');
+
+        st.deepEqual(qs.parse('=1&=2'), {}, 'default is to skip empty keys');
+
+        st.deepEqual(qs.parse('=1&=2', { allowEmptyKeys: false }), {}, 'allowEmptyKeys: false skips empty keys');
+
+        st.end();
+    });
+
+    t.test('throws when allowEmptyKeys is not of type boolean', function (st) {
+        v.nonBooleans.filter(function (value) { return typeof value !== 'undefined'; }).forEach(function (invalidOption) {
+            st['throws'](
+                function () { qs.parse('=1', { allowEmptyKeys: invalidOption }); },
+                TypeError,
+                'throws on invalid option: ' + inspect(invalidOption)
+            );
+        });
+
+        st.end();
+    });
 });
 
 test('`duplicates` option', function (t) {

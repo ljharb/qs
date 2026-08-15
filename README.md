@@ -191,6 +191,12 @@ var withEmptyArrays = qs.parse('foo[]&bar=baz', { allowEmptyArrays: true });
 assert.deepEqual(withEmptyArrays, { foo: [], bar: 'baz' });
 ```
 
+Option `allowEmptyKeys` can be used to keep empty string keys in the parsed object
+```javascript
+var withEmptyKeys = qs.parse('=1&=2', { allowEmptyKeys: true });
+assert.deepEqual(withEmptyKeys, { '': ['1', '2'] });
+```
+
 Option `duplicates` can be used to change the behavior when duplicate keys are encountered
 ```javascript
 assert.deepEqual(qs.parse('foo=bar&foo=baz'), { foo: ['bar', 'baz'] });
