@@ -378,12 +378,12 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
             'comma => comma'
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma', commaRoundTrip: true }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
             'comma round trip => comma'
         );
         st.equal(
@@ -531,10 +531,10 @@ test('stringify()', function (t) {
 
         st.test('array with multiple items with a comma inside', function (s2t) {
             s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { encodeValuesOnly: true, arrayFormat: 'comma' }), 'a=c%2Cd,e');
-            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a=c%2Cd%2Ce');
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a=c%2Cd,e');
 
             s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { encodeValuesOnly: true, arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd,e');
-            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd%2Ce');
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd,e');
 
             s2t.end();
         });
@@ -563,7 +563,7 @@ test('stringify()', function (t) {
 
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'indices' }), 'a%5B0%5D=%2C&a%5B1%5D=&a%5B2%5D=c%2Cd%25');
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'brackets' }), 'a%5B%5D=%2C&a%5B%5D=&a%5B%5D=c%2Cd%25');
-        st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'comma' }), 'a=%2C%2C%2Cc%2Cd%25');
+        st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'comma' }), 'a=%2C,,c%2Cd%25');
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'repeat' }), 'a=%2C&a=&a=c%2Cd%25');
 
         st.end();
@@ -683,9 +683,13 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true, arrayFormat: 'comma' }),
-            '???',
-            'brackets => brackets',
-            { skip: 'TODO: figure out what this should do' }
+            'a[0][b]=1&a[1]=2&a[2]=3',
+            'comma with non-primitive elements falls back to indices'
+        );
+        st.equal(
+            qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: false, arrayFormat: 'comma' }),
+            'a%5B0%5D%5Bb%5D=1&a%5B1%5D=2&a%5B2%5D=3',
+            'comma with non-primitive elements falls back to indices (encodeValuesOnly false)'
         );
         st.equal(
             qs.stringify({ a: [{ b: 1 }, 2, 3] }, { encodeValuesOnly: true }),
