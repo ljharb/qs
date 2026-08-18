@@ -519,6 +519,31 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('applies the decoder to string values of object input', function (st) {
+        st.deepEqual(qs.parse({ a: 'x+y' }), { a: 'x y' }, 'default decoder turns + into space');
+        st.deepEqual(qs.parse({ a: 'x%20y' }), { a: 'x y' }, 'default decoder turns %20 into space');
+        st.deepEqual(qs.parse({ 'a[b]': 'x+y' }), { a: { b: 'x y' } }, 'decoder applies to nested values');
+        st.end();
+    });
+
+    t.test('applies a custom decoder to string values of object input', function (st) {
+        var decoder = function (str) {
+            return str.split('').reverse().join('');
+        };
+        st.deepEqual(qs.parse({ a: 'abc' }, { decoder: decoder }), { a: 'cba' });
+        st.deepEqual(qs.parse({ a: ['ab', 'cd'] }, { decoder: decoder }), { a: ['ba', 'dc'] }, 'decoder applies to array values');
+        st.end();
+    });
+
+    t.test('does not apply the decoder to non-string values of object input', function (st) {
+        var decoder = function () {
+            throw new Error('decoder should not be called');
+        };
+        st.deepEqual(qs.parse({ a: 42 }, { decoder: decoder }), { a: 42 });
+        st.deepEqual(qs.parse({ a: null }, { decoder: decoder }), { a: null });
+        st.end();
+    });
+
     t.test('parses buffers correctly', function (st) {
         var b = SaferBuffer.from('test');
         st.deepEqual(qs.parse({ a: b }), { a: b });
