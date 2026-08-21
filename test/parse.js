@@ -360,6 +360,11 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses nested bracket group with double brackets (issue #558 regression)', function (st) {
+        characterizeParse(st, 'filters[metadata.imported][conditions][$is][[0]]=import-123', undefined, { filters: { 'metadata.imported': { conditions: { $is: { '[0]': 'import-123' } } } } }, 'double brackets inside a group is treated as literal key');
+        st.end();
+    });
+
     t.test('allows to specify array indices', function (st) {
         st.deepEqual(qs.parse('a[1]=c&a[0]=b&a[2]=d'), { a: ['b', 'c', 'd'] });
         st.deepEqual(qs.parse('a[1]=c&a[0]=b'), { a: ['b', 'c'] });

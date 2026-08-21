@@ -14,7 +14,7 @@
 - [Fix] `stringify`: use configured `delimiter` after `charsetSentinel` (#555)
 - [Fix] `stringify`: apply `formatter` to encoded key under `strictNullHandling` (#554)
 - [Fix] `stringify`: skip null/undefined filter-array entries instead of crashing in `encoder` (#551)
-- [Fix] `parse`: handle nested bracket groups and add regression tests (#530)
+- [Fix] `parse`: handle nested bracket groups by balancing nested `[`/`]` inside bracket groups and add regression tests (#530) — **Note:** this changes parsed output for keys with nested or unbalanced brackets (e.g., `a[b[]]=c` now correctly yields `{a: {'b[]': 'c'}}`); if you relied on the prior lenient splitting, this is a breaking behavioral change (see #558)
 - [readme] fix grammar (#550)
 - [Dev Deps] update `@ljharb/eslint-config`
 - [Tests] add regression tests for keys containing percent-encoded bracket text
