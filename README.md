@@ -519,6 +519,10 @@ You may allow empty array values by setting the `allowEmptyArrays` option to `tr
 ```javascript
 qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true });
 // 'foo[]&bar=baz'
+
+// with arrayFormat: 'comma', an empty array still stringifies with "=" per #525
+qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true, arrayFormat: 'comma' });
+// 'foo=&bar=baz'
 ```
 
 Empty strings and null values will omit the value, but the equals sign (=) remains in place:
