@@ -347,6 +347,8 @@ To restore the legacy behavior (where the primitive is used as a key with value 
 assert.deepEqual(qs.parse('a[b]=c&a=d', { strictMerge: false }), { a: { b: 'c', d: true } });
 ```
 
+> **Note for v7:** `strictMerge` will default to `false` in the next major version (see [#548](https://github.com/ljharb/qs/issues/548)). The legacy `target[source] = true` code path will be removed; only the array-wrapping behavior will remain.
+
 You can also create arrays of objects:
 
 ```javascript
