@@ -49,6 +49,8 @@ assert.deepEqual(qs.parse('foo[bar]=baz'), {
 });
 ```
 
+Note: Keys containing unbalanced brackets (e.g. `a[b` or `a[b][`) are not treated as nested objects; they remain plain keys (see [#513](https://github.com/ljharb/qs/issues/513)).
+
 When using the `plainObjects` option the parsed value is returned as a null object, created via `{ __proto__: null }` and as such you should be aware that prototype methods will not exist on it and a user may set those names to whatever value they like:
 
 ```javascript
