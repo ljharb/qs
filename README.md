@@ -449,6 +449,19 @@ var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, defaultE
 }})
 ```
 
+To exclude a specific key from encoding, return the raw string for that key inside `encoder` (see [#491](https://github.com/ljharb/qs/issues/491)):
+
+```javascript
+var encoded = qs.stringify({ a: 'b', skip: 'hello world' }, {
+    encoder: function (str, defaultEncoder, charset, type) {
+        if (type === 'key' && str === 'skip') return str;
+        if (type === 'value' && str === 'hello world') return str;
+        return defaultEncoder(str, defaultEncoder, charset);
+    }
+});
+// 'a=b&skip=hello world'
+```
+
 The type argument is also provided to the decoder:
 
 ```javascript
