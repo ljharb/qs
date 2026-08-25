@@ -515,6 +515,8 @@ qs.stringify({ "name.obj": { "first": "John", "last": "Doe" } }, { allowDots: tr
 // 'name%252Eobj.first=John&name%252Eobj.last=Doe'
 ```
 
+Note: `allowDots` only affects how object keys are serialized (e.g. `a.b=c` vs `a[b]=c`); it does not change the `arrayFormat` for array values. For example, `qs.stringify({ a: ['b', 'c'] }, { allowDots: true, arrayFormat: 'comma' })` still produces `a=b,c` (or `a[0]=b&a[1]=c` with `indices`), not dot-joined arrays (see [#516](https://github.com/ljharb/qs/issues/516)).
+
 You may allow empty array values by setting the `allowEmptyArrays` option to `true`:
 ```javascript
 qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true });
