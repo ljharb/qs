@@ -529,6 +529,8 @@ assert.equal(qs.stringify({ a: '' }), 'a=');
 
 Key with no values (such as an empty object or array) will return nothing:
 
+Note: empty arrays and objects are omitted by default (they produce `''`). To keep empty array keys as `foo[]`, use `allowEmptyArrays: true` — e.g. `qs.stringify({ foo: [], bar: 'baz' }, { allowEmptyArrays: true })` → `'foo[]&bar=baz'` (see [#431](https://github.com/ljharb/qs/issues/431)).
+
 ```javascript
 assert.equal(qs.stringify({ a: [] }), '');
 assert.equal(qs.stringify({ a: {} }), '');
