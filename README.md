@@ -14,6 +14,8 @@
 
 A querystring parsing and stringifying library with some added security.
 
+> **ESM/CJS import**: `qs` ships CJS (`main`) and ESM (`module`) via `exports`. Use `import qs from 'qs'` (ESM) or `const qs = require('qs')` (CJS). If your bundler resolves `qs` to a nested file (e.g. `qs/lib/parse`) you may get a partial build that fails to load in production — always import the package entry (see [#475](https://github.com/ljharb/qs/issues/475)).
+
 Lead Maintainer: [Jordan Harband](https://github.com/ljharb)
 
 The **qs** module was originally created and maintained by [TJ Holowaychuk](https://github.com/visionmedia/node-querystring).
