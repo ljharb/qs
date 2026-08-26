@@ -491,6 +491,8 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
 // 'a=b,c'
 ```
 
+Note: when stringifying an array of objects, always use `arrayFormat: 'indices'` (the default) to preserve indices — e.g. `qs.stringify({ a: [{ b: 'c' }, { b: 'd' }] })` → `'a[0][b]=c&a[1][b]=d'` — otherwise `brackets` or `repeat` drops indices and cannot round-trip (see [#422](https://github.com/ljharb/qs/issues/422)).
+
 Note: when using `arrayFormat` set to `'comma'`, you can also pass the `commaRoundTrip` option set to `true` or `false`, to append `[]` on single-item arrays, so that they can round trip through a parse.
 
 When objects are stringified, by default they use bracket notation:
