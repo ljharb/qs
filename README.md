@@ -4,7 +4,7 @@
 
 # qs <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
-[![github actions][actions-image]][actions-url]
+[![GitHub Actions][actions-image]][actions-url]
 [![coverage][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
