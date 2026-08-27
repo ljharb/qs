@@ -135,7 +135,7 @@ var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
-If you want an error to be thrown whenever the a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+If you want an error to be thrown whenever a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
 ```javascript
 try {
     qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
