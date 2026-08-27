@@ -56,7 +56,7 @@ var nullObject = qs.parse('a[hasOwnProperty]=b', { plainObjects: true });
 assert.deepEqual(nullObject, { a: { hasOwnProperty: 'b' } });
 ```
 
-By default parameters that would overwrite properties on the object prototype are ignored, if you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties.
+By default, parameters that would overwrite properties on the object prototype are ignored. If you wish to keep the data from those fields either use `plainObjects` as mentioned above, or set `allowPrototypes` to `true` which will allow user input to overwrite those properties.
 *WARNING* It is generally a bad idea to enable this option as it can cause problems when attempting to use the properties that have been overwritten.
 Always be careful with this option.
 
