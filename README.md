@@ -135,7 +135,7 @@ var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
-If you want an error to be thrown whenever a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+If you want an error to be thrown whenever a limit is exceeded (e.g., `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
 ```javascript
 try {
     qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
@@ -212,7 +212,7 @@ assert.deepEqual(oldCharset, { a: '§' });
 ```
 
 Some services add an initial `utf8=✓` value to forms so that old Internet Explorer versions are more likely to submit the form as utf-8.
-Additionally, the server can check the value against wrong encodings of the checkmark character and detect that a query string or `application/x-www-form-urlencoded` body was *not* sent as utf-8, eg. if the form had an `accept-charset` parameter or the containing page had a different character set.
+Additionally, the server can check the value against wrong encodings of the checkmark character and detect that a query string or `application/x-www-form-urlencoded` body was *not* sent as utf-8, e.g., if the form had an `accept-charset` parameter or the containing page had a different character set.
 
 **qs** supports this mechanism via the `charsetSentinel` option.
 If specified, the `utf8` parameter will be omitted from the returned object.
