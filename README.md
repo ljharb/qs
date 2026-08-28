@@ -354,7 +354,7 @@ var arraysOfObjects = qs.parse('a[][b]=c');
 assert.deepEqual(arraysOfObjects, { a: [{ b: 'c' }] });
 ```
 
-Some people use comma to join array, **qs** can parse it:
+Some people use commas to join arrays, **qs** can parse it:
 ```javascript
 var arraysOfObjects = qs.parse('a=b,c', { comma: true })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
