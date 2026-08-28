@@ -733,7 +733,7 @@ assert.deepEqual(obj, { a: 'こんにちは！' });
 ### RFC 3986 and RFC 1738 space encoding
 
 RFC3986 used as default option and encodes ' ' to *%20* which is backward compatible.
-In the same time, output can be stringified as per RFC1738 with ' ' equal to '+'.
+At the same time, output can be stringified as per RFC1738 with ' ' equal to '+'.
 
 ```
 assert.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
