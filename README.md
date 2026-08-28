@@ -359,7 +359,7 @@ Some people use comma to join array, **qs** can parse it:
 var arraysOfObjects = qs.parse('a=b,c', { comma: true })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
-(_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
+_(this cannot convert nested objects, such as `a={b:1},{c:d}`)_
 
 ### Parsing primitive/scalar values (numbers, booleans, null, etc)
 
