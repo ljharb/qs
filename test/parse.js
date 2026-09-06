@@ -69,6 +69,31 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('allowDots does not rewrite dots already inside brackets (issue #617)', function (st) {
+        st.deepEqual(
+            qs.parse('outer[a.b]=1', { allowDots: false }),
+            { outer: { 'a.b': '1' } },
+            'baseline without allowDots keeps a.b as a single key'
+        );
+        st.deepEqual(
+            qs.parse('outer[a.b]=1', { allowDots: true }),
+            { outer: { 'a.b': '1' } },
+            'allowDots must not turn outer[a.b] into outer[a[b]]'
+        );
+        st.deepEqual(
+            qs.parse('outer[a.b].c=1', { allowDots: true }),
+            { outer: { 'a.b': { c: '1' } } },
+            'dots after a closed bracket group still expand'
+        );
+        st.deepEqual(
+            qs.parse('a.b[c.d]=1', { allowDots: true }),
+            { a: { b: { 'c.d': '1' } } },
+            'parent dots expand; dots inside the bracket stay literal'
+        );
+
+        st.end();
+    });
+
     t.test('decode dot keys correctly', function (st) {
         st.deepEqual(
             qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: false, decodeDotInKeys: false }),
