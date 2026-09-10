@@ -106,6 +106,41 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('with strictMerge, repeated conflicts append instead of nesting a new wrapper', function (s2t) {
+            var opts = { strictMerge: true };
+            var wrapped = utils.merge({ foo: 'bar' }, 'baz', opts);
+            s2t.deepEqual(wrapped, [{ foo: 'bar' }, 'baz'], 'first conflict wraps in an array');
+
+            var withObject = utils.merge(wrapped, { qux: 'quux' }, opts);
+            s2t.deepEqual(
+                withObject,
+                { 0: { foo: 'bar' }, 1: 'baz', qux: 'quux' },
+                'merging an object converts the wrapper to an object'
+            );
+
+            var second = utils.merge(withObject, 'corge', opts);
+            s2t.deepEqual(
+                second,
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'corge', qux: 'quux' },
+                'a second conflict appends at the next index'
+            );
+
+            var third = utils.merge(second, 'grault', opts);
+            s2t.deepEqual(
+                third,
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'corge', 3: 'grault', qux: 'quux' },
+                'a third conflict appends again, so nesting depth stays constant'
+            );
+
+            s2t.end();
+        });
+
+        st.test('with strictMerge, a caller-supplied array is still wrapped, not appended to', function (s2t) {
+            var merged = utils.merge({ 0: 'a', 1: 'b' }, 'c', { strictMerge: true });
+            s2t.deepEqual(merged, [{ 0: 'a', 1: 'b' }, 'c'], 'an unmarked object with numeric keys is wrapped');
+            s2t.end();
+        });
+
         st.test('merges overflow object into primitive', function (s2t) {
             // Create an overflow object via combine: 2 elements (indices 0-1) with limit 0
             var overflow = utils.combine(['a'], 'b', 0, false);
