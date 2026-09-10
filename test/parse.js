@@ -62,6 +62,13 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('comma: `[]=` in a value does not wrap the value in an extra array', function (st) {
+        st.deepEqual(qs.parse('a[b]=1,2,3[]=x', { comma: true }), { a: { b: ['1', '2', '3[]=x'] } });
+        st.deepEqual(qs.parse('a[b]=1,2[]=3', { comma: true }), { a: { b: ['1', '2[]=3'] } });
+        st.deepEqual(qs.parse('a[]=1,2,3', { comma: true }), { a: [['1', '2', '3']] });
+        st.end();
+    });
+
     t.test('allows enabling dot notation', function (st) {
         st.deepEqual(qs.parse('a.b=c'), { 'a.b': 'c' });
         st.deepEqual(qs.parse('a.b=c', { allowDots: true }), { a: { b: 'c' } });
@@ -1802,6 +1809,28 @@ test('`duplicates` option', function (t) {
             qs.parse('a=1&a=2&b[]=1&b[]=2', { duplicates: 'first' }),
             { a: '1', b: ['1', '2'] },
             'duplicates first: unbracketed takes first, bracketed combines'
+        );
+
+        st.end();
+    });
+
+    t.test('`[]=` in a value does not force combining', function (st) {
+        st.deepEqual(
+            qs.parse('a[b]=1&a[b]=2[]=3', { duplicates: 'last' }),
+            { a: { b: '2[]=3' } },
+            'duplicates last: `[]=` in the value is not a bracketed key'
+        );
+
+        st.deepEqual(
+            qs.parse('a[b]=1&a[b]=2[]=3', { duplicates: 'first' }),
+            { a: { b: '1' } },
+            'duplicates first: `[]=` in the value is not a bracketed key'
+        );
+
+        st.deepEqual(
+            qs.parse('a[b]=1&a[b]=2[]=3', { duplicates: 'combine' }),
+            { a: { b: ['1', '2[]=3'] } },
+            'duplicates combine: still combines'
         );
 
         st.end();
