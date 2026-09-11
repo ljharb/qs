@@ -27,6 +27,36 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('a[>=]=23'), { a: { '>=': '23' } });
         st.deepEqual(qs.parse('a[<=>]==23'), { a: { '<=>': '=23' } });
         st.deepEqual(qs.parse('a[==]=23'), { a: { '==': '23' } });
+        st.end();
+    });
+
+    t.test('currently parses a `]=` with no open bracket group leniently by moving the split', function (st) {
+        // The `]=` shortcut above exists so that a bracket group's *contents* may
+        // contain '='. `indexOf(']=')` scans the whole part, so on a part where no
+        // group ever opened it moves the key/value split into the value instead.
+        //
+        // These pin today's output rather than endorse it, in the same spirit as
+        // the issue #558 blocks below: so that a change to where the split lands
+        // cannot ship unnoticed. It shipped unnoticed once already, in 6.12.2 --
+        // `role=guest%5D=admin` parsed one way through 6.12.1 and another from
+        // 6.12.2 on, and nothing in this suite pinned it.
+        //
+        // Under a bracket-depth scanner these become, and these assertions should
+        // be updated to match in the same commit that lands it:
+        //     'a=b[c]=d'                -> { a: 'b[c]=d' }
+        //     'q=%5B1%5D=2'             -> { q: '[1]=2' }
+        //     'role=guest%5Bx%5Dy%5D=z' -> { role: 'guest[x]y]=z' }
+        // which is what `new URLSearchParams` and `node:querystring` return for
+        // all three today.
+        characterizeParse(st, 'a=b[c]=d', undefined, { 'a=b': { c: 'd' } }, 'literal brackets, no group opened');
+        characterizeParse(st, 'q=%5B1%5D=2', undefined, { 'q=': ['2'] }, 'encoded brackets collapse to an array');
+        characterizeParse(st, 'role=guest%5Bx%5Dy%5D=z', undefined, { 'role=guest': { x: 'z' } }, 'group opens after the first `]=`');
+        characterizeParse(st, 'role=guest%5D=admin', undefined, { 'role=guest]': 'admin' }, 'the 6.12.2 change, pinned');
+
+        st.end();
+    });
+
+    t.test('parses a simple string, continued', function (st) {
         st.deepEqual(qs.parse('foo', { strictNullHandling: true }), { foo: null });
         st.deepEqual(qs.parse('foo'), { foo: '' });
         st.deepEqual(qs.parse('foo='), { foo: '' });
