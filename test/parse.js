@@ -969,6 +969,22 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('strictMerge conflicts do not overwrite indexed values already at that path', function (st) {
+        st.deepEqual(
+            qs.parse('a[z]=o&a=p&a[y]=q&a[2]=keep&[a]=r'),
+            { a: { 0: { z: 'o' }, 1: 'p', 2: 'keep', 3: 'r', y: 'q' } },
+            'an indexed key merged into the container is kept'
+        );
+
+        st.deepEqual(
+            qs.parse('a[z]=o&a=p&a[2]=keep&a[y]=q&[a]=r'),
+            { a: { 0: { z: 'o' }, 1: 'p', 2: 'keep', 3: 'r', y: 'q' } },
+            'an indexed key that extended the container while it was an array is kept'
+        );
+
+        st.end();
+    });
+
     t.test('dunder proto is ignored', function (st) {
         var payload = 'categories[__proto__]=login&categories[__proto__]&categories[length]=42';
         var result = qs.parse(payload, { allowPrototypes: true });
@@ -1465,6 +1481,27 @@ test('parse()', function (t) {
                 qs.parse('a[0]=x&a[]=y', { arrayLimit: 1 }),
                 { a: { 0: 'x', 1: 'y' } },
                 'mixed index and bracket notation converts like duplicate-bracket combine'
+            );
+
+            sst.end();
+        });
+
+        st.test('enforces arrayLimit when a strictMerge conflict appends to its container', function (sst) {
+            var aliased = 'a[z]=o&a=p&a[y]=q&[a]=r';
+            sst['throws'](
+                function () { qs.parse(aliased, { arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'a third conflicting value throws once the container would exceed arrayLimit'
+            );
+            sst.deepEqual(
+                qs.parse(aliased, { arrayLimit: 3, throwOnLimitExceeded: true }),
+                { a: { 0: { z: 'o' }, 1: 'p', 2: 'r', y: 'q' } },
+                'appends while the container stays within arrayLimit'
+            );
+            sst.deepEqual(
+                qs.parse(aliased, { arrayLimit: 2 }),
+                { a: { 0: { z: 'o' }, 1: 'p', 2: 'r', y: 'q' } },
+                'appends without throwing when throwOnLimitExceeded is not set'
             );
 
             sst.end();

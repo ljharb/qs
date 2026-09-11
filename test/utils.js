@@ -141,6 +141,62 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('with strictMerge, throws instead of appending a conflict past arrayLimit with throwOnLimitExceeded', function (s2t) {
+            var appendConflict = function (options) {
+                var wrapped = utils.merge({ foo: 'bar' }, 'baz', { strictMerge: true });
+                var container = utils.merge(wrapped, { qux: 'quux' }, { strictMerge: true });
+                return utils.merge(container, 'corge', options);
+            };
+
+            s2t['throws'](
+                function () { appendConflict({ strictMerge: true, arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'appending to a two-element container past arrayLimit throws'
+            );
+            s2t['throws'](
+                function () { appendConflict({ strictMerge: true, arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'uses the plural message when arrayLimit is not 1'
+            );
+            s2t.deepEqual(
+                appendConflict({ strictMerge: true, arrayLimit: 3, throwOnLimitExceeded: true }),
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'corge', qux: 'quux' },
+                'appends while the container stays within arrayLimit'
+            );
+            s2t.deepEqual(
+                appendConflict({ strictMerge: true, arrayLimit: 1 }),
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'corge', qux: 'quux' },
+                'still appends past arrayLimit without throwOnLimitExceeded, since the container is already an object'
+            );
+
+            s2t.end();
+        });
+
+        st.test('with strictMerge, a conflict appends after numeric keys already in its container', function (s2t) {
+            var opts = { strictMerge: true };
+
+            var container = utils.merge(utils.merge({ foo: 'bar' }, 'baz', opts), { qux: 'quux' }, opts);
+            var withIndex = utils.merge(container, { 2: 'keep' }, opts);
+            s2t.deepEqual(
+                utils.merge(withIndex, 'corge', opts),
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'keep', 3: 'corge', qux: 'quux' },
+                'a numeric key merged into the container is not overwritten'
+            );
+
+            var sparse = [];
+            sparse[2] = 'keep';
+            var extended = utils.merge(utils.merge({ foo: 'bar' }, 'baz', opts), sparse, opts);
+            s2t.deepEqual(extended, [{ foo: 'bar' }, 'baz', 'keep'], 'an indexed value extends the container while it is an array');
+            var converted = utils.merge(extended, { qux: 'quux' }, opts);
+            s2t.deepEqual(
+                utils.merge(converted, 'corge', opts),
+                { 0: { foo: 'bar' }, 1: 'baz', 2: 'keep', 3: 'corge', qux: 'quux' },
+                'converting the container to an object keeps its last index'
+            );
+
+            s2t.end();
+        });
+
         st.test('merges overflow object into primitive', function (s2t) {
             // Create an overflow object via combine: 2 elements (indices 0-1) with limit 0
             var overflow = utils.combine(['a'], 'b', 0, false);
