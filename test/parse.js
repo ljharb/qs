@@ -985,6 +985,22 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('strictMerge conflicts do not overwrite values once the container overflows', function (st) {
+        st.deepEqual(
+            qs.parse('a[z]=v0&a=v1&a[y]=v2&[a]=v3&[a]x=v4&a[2]=v5&[a]x1=v6', { arrayLimit: 2 }),
+            { a: { 0: { z: 'v0' }, 1: 'v1', 2: ['v3', 'v5'], 3: 'v4', 4: 'v6', y: 'v2' } },
+            'a conflict appended after the container overflowed keeps every value'
+        );
+
+        st.deepEqual(
+            qs.parse('a[2]=v1&a=v5&a=v7&[a]x=v9', { parseArrays: false, arrayLimit: 1 }),
+            { a: { 0: 'v5', 1: 'v7', 2: 'v1', 3: 'v9' } },
+            'an index the container already holds is not reused'
+        );
+
+        st.end();
+    });
+
     t.test('dunder proto is ignored', function (st) {
         var payload = 'categories[__proto__]=login&categories[__proto__]&categories[length]=42';
         var result = qs.parse(payload, { allowPrototypes: true });

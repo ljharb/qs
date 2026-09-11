@@ -231,6 +231,21 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('seeds an overflow container index from the keys it already holds', function (s2t) {
+            var overflow = utils.combine(['a'], 'b', 0, false);
+            s2t.ok(utils.isOverflow(overflow), 'the source is an overflow object');
+
+            var merged = utils.merge({ 2: 'keep', z: 'zz' }, overflow);
+            s2t.ok(utils.isOverflow(merged), 'the result is marked as overflow');
+            s2t.deepEqual(
+                utils.merge(merged, 'c'),
+                { 0: 'a', 1: 'b', 2: 'keep', 3: 'c', z: 'zz' },
+                'the next value lands after the highest numeric key the container already held'
+            );
+
+            s2t.end();
+        });
+
         st.test('merges overflow object into primitive', function (s2t) {
             // Create an overflow object via combine: 2 elements (indices 0-1) with limit 0
             var overflow = utils.combine(['a'], 'b', 0, false);
