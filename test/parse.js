@@ -389,6 +389,14 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('currently moves the key/value split to a later `]=` when the first `=` comes before any bracket group', function (st) {
+        characterizeParse(st, 'a=b[c]=d', undefined, { 'a=b': { c: 'd' } }, 'literal brackets after the first `=`');
+        characterizeParse(st, 'q=%5B1%5D=2', undefined, { 'q=': ['2'] }, 'encoded brackets collapse to an array');
+        characterizeParse(st, 'role=guest%5Bx%5Dy%5D=z', undefined, { 'role=guest': { x: 'z' } }, 'group opens after the first `=`, and the text after it is dropped');
+        characterizeParse(st, 'role=guest%5D=admin', undefined, { 'role=guest]': 'admin' }, 'encoded `]=` with no bracket group at all');
+        st.end();
+    });
+
     t.test('allows to specify array indices', function (st) {
         st.deepEqual(qs.parse('a[1]=c&a[0]=b&a[2]=d'), { a: ['b', 'c', 'd'] });
         st.deepEqual(qs.parse('a[1]=c&a[0]=b'), { a: ['b', 'c'] });
