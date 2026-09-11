@@ -197,6 +197,40 @@ test('merge()', function (t) {
             s2t.end();
         });
 
+        st.test('enforces arrayLimit on the two-element array built for colliding values', function (s2t) {
+            s2t['throws'](
+                function () { utils.merge({ foo: 'bar' }, 'baz', { strictMerge: true, arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'a strictMerge conflict throws at arrayLimit 1'
+            );
+            s2t['throws'](
+                function () { utils.merge('a', 'b', { arrayLimit: 0, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 0 elements allowed in an array.'),
+                'two colliding primitives throw at arrayLimit 0'
+            );
+
+            var conflict = utils.merge({ foo: 'bar' }, 'baz', { strictMerge: true, arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(conflict), 'without throwOnLimitExceeded, a strictMerge conflict converts to an overflow object');
+            s2t.deepEqual(conflict, { 0: { foo: 'bar' }, 1: 'baz' }, 'holding both values');
+
+            var pair = utils.merge('a', 'b', { arrayLimit: 1 });
+            s2t.ok(utils.isOverflow(pair), 'without throwOnLimitExceeded, two colliding primitives convert to an overflow object');
+            s2t.deepEqual(pair, { 0: 'a', 1: 'b' }, 'holding both values');
+
+            s2t.deepEqual(
+                utils.merge({ foo: 'bar' }, 'baz', { strictMerge: true, arrayLimit: 2, throwOnLimitExceeded: true }),
+                [{ foo: 'bar' }, 'baz'],
+                'a strictMerge conflict within arrayLimit is still an array'
+            );
+            s2t.deepEqual(
+                utils.merge('a', 'b', { arrayLimit: 2, throwOnLimitExceeded: true }),
+                ['a', 'b'],
+                'two colliding primitives within arrayLimit are still an array'
+            );
+
+            s2t.end();
+        });
+
         st.test('merges overflow object into primitive', function (s2t) {
             // Create an overflow object via combine: 2 elements (indices 0-1) with limit 0
             var overflow = utils.combine(['a'], 'b', 0, false);

@@ -1507,6 +1507,36 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('enforces arrayLimit when differently spelled keys collide', function (sst) {
+            sst['throws'](
+                function () { qs.parse('[a]=x&a=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'two primitives throw, as `a=x&a=y` does'
+            );
+            sst['throws'](
+                function () { qs.parse('a[b]=x&a=y', { arrayLimit: 1, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 1 element allowed in an array.'),
+                'an object and a primitive throw under strictMerge'
+            );
+            sst.deepEqual(
+                qs.parse('[a]=x&a=y', { arrayLimit: 1 }),
+                { a: { 0: 'x', 1: 'y' } },
+                'without throwOnLimitExceeded, two primitives convert to an object, as `a=x&a=y` does'
+            );
+            sst.deepEqual(
+                qs.parse('a[b]=x&a=y', { arrayLimit: 1 }),
+                { a: { 0: { b: 'x' }, 1: 'y' } },
+                'and so do an object and a primitive'
+            );
+            sst.deepEqual(
+                qs.parse('a[b]=x&a=y', { arrayLimit: 2, throwOnLimitExceeded: true }),
+                { a: [{ b: 'x' }, 'y'] },
+                'a collision within arrayLimit is still an array'
+            );
+
+            sst.end();
+        });
+
         st.test('does not throw when cumulative comma combine stays within arrayLimit', function (sst) {
             var result = qs.parse('a=1,2,3&a=4', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
             sst.deepEqual(result, { a: ['1', '2', '3', '4'] }, 'combined array within limit is preserved');
