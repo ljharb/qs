@@ -137,7 +137,7 @@ var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
-If you want an error to be thrown whenever the a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+If you want an error to be thrown whenever a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
 ```javascript
 try {
     qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
@@ -149,7 +149,7 @@ try {
 
 When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `parameterLimit` and ignore the rest without throwing an error.
 
-Note that `parameterLimit` only bounds the number of `&`-delimited parameters; it does not limit how many values a single parameter expands into. In particular, when `comma: true` is enabled, a single parameter's value is split on commas into arbitrarily many elements, which `parameterLimit` does not constrain. To bound the total element count from untrusted input, set `throwOnLimitExceeded: true` (see `arrayLimit` below), and always bound the input size at the transport layer (e.g. an HTTP body-size limit).
+Note that `parameterLimit` only bounds the number of `&`-delimited parameters; it does not limit how many values a single parameter expands into. In particular, when `comma: true` is enabled, a single parameter's value is split on commas into arbitrarily many elements, which `parameterLimit` does not constrain. Setting `throwOnLimitExceeded: true` (see `arrayLimit` below) makes **qs** reject a query string with more than `parameterLimit` parameters, one that uses an array index of `arrayLimit` or greater, or one that would produce any array longer than `arrayLimit`, including an array produced by comma splitting. `arrayLimit` applies to each array separately, including each parameter's comma-split value, so the total number of values across all parameters can still reach `parameterLimit` times `arrayLimit`, which is 20,000 at the default limits; always bound the input size at the transport layer as well (e.g. an HTTP body-size limit).
 
 To bypass the leading question mark, use `ignoreQueryPrefix`:
 
@@ -321,7 +321,7 @@ try {
 
 When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `arrayLimit` and if the limit is exceeded, the array will instead be converted to an object with the index as the key.
 
-Note that `arrayLimit` is a *representation* threshold that controls when a numerically-indexed collection switches from an array to an object — it is **not** a hard cap on the total number of elements parsed. With the default `throwOnLimitExceeded: false`, exceeding `arrayLimit` never rejects or truncates input; it only changes the container type, and the resulting object still holds every element (so its size stays proportional to the input). This conversion is itself a safeguard: it avoids allocating a huge sparse array for input like `a[999999999]`. If you need a hard limit that rejects oversized input from untrusted sources, set `throwOnLimitExceeded: true`.
+Note that `arrayLimit` is a *representation* threshold that controls when a numerically-indexed collection switches from an array to an object; it is **not** a hard cap on the total number of elements parsed. With the default `throwOnLimitExceeded: false`, exceeding `arrayLimit` never rejects or truncates input; it only changes the container type, and the resulting object still holds every element (so its size stays proportional to the input). This conversion is itself a safeguard: it avoids allocating a huge sparse array for input like `a[999999999]`. If you need a hard limit that rejects oversized arrays in untrusted query strings, set `throwOnLimitExceeded: true`. `throwOnLimitExceeded` still limits each array separately, not the total: with `comma: true`, each comma-separated group under `a[]=` counts as one element of the outer array, and can itself hold up to `arrayLimit` elements.
 
 To prevent array syntax (`a[]`, `a[0]`) from being parsed as arrays, set `parseArrays` to `false`.
 Note that duplicate keys (e.g. `a=b&a=c`) may still produce arrays when `duplicates` is `'combine'` (the default).
@@ -364,6 +364,15 @@ var arraysOfObjects = qs.parse('a=b,c', { comma: true })
 assert.deepEqual(arraysOfObjects, { a: ['b', 'c'] })
 ```
 (_this cannot convert nested objects, such as `a={b:1},{c:d}`_)
+
+With `[]` or index notation, the values from each comma-separated group stay together as one element of the array, while repeated plain keys flatten into one array:
+```javascript
+var nestedGroups = qs.parse('a[]=b,c&a[]=d', { comma: true });
+assert.deepEqual(nestedGroups, { a: [['b', 'c'], 'd'] });
+
+var flatGroups = qs.parse('a=b,c&a=d', { comma: true });
+assert.deepEqual(flatGroups, { a: ['b', 'c', 'd'] });
+```
 
 ### Parsing primitive/scalar values (numbers, booleans, null, etc)
 

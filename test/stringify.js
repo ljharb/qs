@@ -217,7 +217,7 @@ test('stringify()', function (t) {
     // nested keys, not just the literal dots inside a key, which breaks the stringify -> parse
     // round-trip. These assertions pin that behavior so it cannot change silently: the fix in
     // https://github.com/ljharb/qs/pull/564 changes every output below, so landing that fix MUST
-    // update this test (that is the point — it forces the behavior change to be explicit).
+    // update this test (that is the point - it forces the behavior change to be explicit).
     t.test('[characterization] encodeDotInKeys currently over-encodes structural separator dots (pre-#564)', function (st) {
         st.equal(
             qs.stringify({ a: { b: { c: 'd' } } }, { allowDots: true, encodeDotInKeys: true }),
