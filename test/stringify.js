@@ -499,6 +499,41 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('should encode the key of an empty array when allowEmptyArrays is set', function (st) {
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true }),
+            'a%20b[]',
+            'default (RFC3986) percent-encodes the space in the key'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, format: 'RFC1738' }),
+            'a+b[]',
+            'RFC1738 encodes the space in the key as a plus'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, encodeValuesOnly: true }),
+            'a b[]',
+            'encodeValuesOnly leaves the key unencoded'
+        );
+        st.equal(
+            qs.stringify({ 'a b': [] }, { allowEmptyArrays: true, encode: false }),
+            'a b[]',
+            'encode: false leaves the key unencoded'
+        );
+
+        st.ok(
+            'a b' in qs.parse(qs.stringify({ 'a b': [] }, { allowEmptyArrays: true }), { allowEmptyArrays: true }),
+            'the encoded key round-trips back to the original'
+        );
+        st.equal(
+            qs.stringify({ 'a b': ['x'] }, { allowEmptyArrays: true, arrayFormat: 'brackets' }),
+            'a%20b%5B%5D=x',
+            'the same key with a value encodes the key prefix identically'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies an array value with one item vs multiple items', function (st) {
         st.test('non-array item', function (s2t) {
             s2t.equal(qs.stringify({ a: 'c' }, { encodeValuesOnly: true, arrayFormat: 'indices' }), 'a=c');
