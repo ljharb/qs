@@ -73,6 +73,18 @@ test('parse()', function (t) {
         st.deepEqual(qs.parse('a.b=c'), { 'a.b': 'c' });
         st.deepEqual(qs.parse('a.b=c', { allowDots: true }), { a: { b: 'c' } });
 
+        // a literal dot inside a bracket segment must not be rewritten by allowDots (#617)
+        st.deepEqual(
+            qs.parse('outer[a.b]=1', { allowDots: true }),
+            { outer: { 'a.b': '1' } },
+            'a dot inside brackets stays part of the key when allowDots is true'
+        );
+        st.deepEqual(
+            qs.parse('outer[a.b]=1', { allowDots: true }),
+            qs.parse('outer[a.b]=1', { allowDots: false }),
+            'allowDots does not change how a bracket segment containing a dot is parsed'
+        );
+
         st.end();
     });
 
