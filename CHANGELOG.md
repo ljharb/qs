@@ -11,7 +11,7 @@
 - [Fix] `parse`: only treat `[]` as array syntax when it ends the key
 - [Perf] `decode`: skip decoders when there is no percent sign (#583)
 - [Robustness] `utils`: `merge`: apply `arrayLimit` to the two-element array built for colliding values
-- [Robustness] `parse`: bound the nesting added by repeated `strictMerge` conflicts
+- [Robustness] `parse`: bound the nesting added by repeated `strictMerge` conflicts (credit @Yeaseen)
 - [Docs] document that `qs` and flat parsers disagree about parameter names
 - [Docs] clarify that `throwOnLimitExceeded` limits each array, not the total number of values
 - [Docs] clarify 6.14.1/6.15.2 parse bracket behavior change (#567, #568)
