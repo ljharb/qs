@@ -581,6 +581,50 @@ test('decode', function (t) {
         'decodes a string in iso-8859-1'
     );
 
+    t.test('strings with no percent sign', function (st) {
+        st.equal(utils.decode(''), '', 'empty string');
+        st.equal(utils.decode('abc'), 'abc', 'returns a plain string unchanged');
+        st.equal(utils.decode('abc', null, 'iso-8859-1'), 'abc', 'returns a plain string unchanged in iso-8859-1');
+        st.equal(utils.decode('a++b+'), 'a  b ', 'decodes every + to a space');
+        st.equal(utils.decode('a++b+', null, 'iso-8859-1'), 'a  b ', 'decodes every + to a space in iso-8859-1');
+        st.equal(utils.decode('\uD800x\uDC00'), '\uD800x\uDC00', 'leaves lone surrogates unchanged');
+        st.equal(utils.decode('😀+'), '😀 ', 'leaves surrogate pairs unchanged');
+        st.equal(utils.decode('a=b&c'), 'a=b&c', 'leaves delimiters unchanged');
+
+        st.end();
+    });
+
+    t.test('strings with a percent sign', function (st) {
+        st.equal(utils.decode('a+%20b'), 'a  b', 'decodes both + and an escape');
+        st.equal(utils.decode('%E9+x', null, 'iso-8859-1'), 'é x', 'decodes both + and an escape in iso-8859-1');
+        st.equal(utils.decode('a+%'), 'a %', 'decodes + even when the escape is malformed');
+        st.equal(utils.decode('a+%E0%A4%A'), 'a %E0%A4%A', 'decodes + even when the escape is truncated');
+
+        st.end();
+    });
+
+    t.test('non-strings', function (st) {
+        forEach(v.nullPrimitives, function (nullish) {
+            st['throws'](
+                function () { utils.decode(nullish); },
+                TypeError,
+                inspect(nullish) + ' is not a string'
+            );
+        });
+        st['throws'](
+            function () { utils.decode(['a']); },
+            TypeError,
+            'an array is not a string'
+        );
+
+        /* eslint no-new-wrappers: 0 */
+        st.equal(utils.decode(new String('ab')), 'ab', 'a boxed string decodes to a primitive');
+        st.equal(utils.decode(new String('a+b')), 'a b', 'a boxed string with + decodes to a primitive');
+        st.equal(utils.decode(new String('a%20b')), 'a b', 'a boxed string with an escape decodes to a primitive');
+
+        st.end();
+    });
+
     t.end();
 });
 
