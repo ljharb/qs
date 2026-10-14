@@ -604,6 +604,53 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes comma array values with the same encoder arguments as other values, with encodeValuesOnly', function (st) {
+        var commaValuesOnly = { arrayFormat: 'comma', encodeValuesOnly: true };
+
+        st.equal(
+            qs.stringify({ a: ['é', 'x'], b: 'é' }, utils.assign({ charset: 'iso-8859-1' }, commaValuesOnly)),
+            'a=%E9,x&b=%E9',
+            'respects charset iso-8859-1'
+        );
+        st.deepEqual(
+            qs.parse(qs.stringify({ a: ['é', 'x'] }, utils.assign({ charset: 'iso-8859-1' }, commaValuesOnly)), { charset: 'iso-8859-1', comma: true }),
+            { a: ['é', 'x'] },
+            'round-trips in iso-8859-1'
+        );
+        st.equal(
+            qs.stringify({ a: ['☺'] }, utils.assign({ charset: 'iso-8859-1' }, commaValuesOnly)),
+            'a=%26%239786%3B',
+            'encodes unrepresentable chars as numeric entities in iso-8859-1'
+        );
+        st.equal(
+            qs.stringify({ a: ['(x)', 'y z'], b: '(x)' }, utils.assign({ format: qs.formats.RFC1738 }, commaValuesOnly)),
+            'a=(x),y+z&b=(x)',
+            'respects format RFC1738'
+        );
+
+        var calls = [];
+        st.equal(
+            qs.stringify({ a: ['b', 'c'] }, utils.assign({
+                encoder: function (str, defaultEncoder, charset, kind, format) {
+                    calls[calls.length] = [str, typeof defaultEncoder, charset, kind, format];
+                    return defaultEncoder(str, defaultEncoder, charset, kind, format).toUpperCase();
+                }
+            }, commaValuesOnly)),
+            'a=B,C',
+            'a custom encoder can call defaultEncoder'
+        );
+        st.deepEqual(
+            calls,
+            [
+                ['b', 'function', 'utf-8', 'value', qs.formats.RFC3986],
+                ['c', 'function', 'utf-8', 'value', qs.formats.RFC3986]
+            ],
+            'a custom encoder receives defaultEncoder, charset, kind, and format'
+        );
+
+        st.end();
+    });
+
     t.test('stringifies comma and empty non-array values', function (st) {
         st.equal(qs.stringify({ a: ',', b: '', c: 'c,d%' }, { encode: false, arrayFormat: 'indices' }), 'a=,&b=&c=c,d%');
         st.equal(qs.stringify({ a: ',', b: '', c: 'c,d%' }, { encode: false, arrayFormat: 'brackets' }), 'a=,&b=&c=c,d%');
