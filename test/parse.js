@@ -782,6 +782,38 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('does not mutate an object input', function (st) {
+        var arr = ['x'];
+        st.deepEqual(qs.parse({ a: arr, 'a[]': 'y' }), { a: ['x', 'y'] }, 'appends to a copy of an input array');
+        st.deepEqual(arr, ['x'], 'the input array is unchanged');
+
+        var nested = { b: ['x'] };
+        st.deepEqual(qs.parse({ a: nested, 'a[b][]': 'y' }), { a: { b: ['x', 'y'] } }, 'appends to a copy of a nested input array');
+        st.deepEqual(nested, { b: ['x'] }, 'the nested input array is unchanged');
+
+        var obj = { b: 'c' };
+        st.deepEqual(qs.parse({ a: obj, 'a[d]': 'e' }), { a: { b: 'c', d: 'e' } }, 'merges into a copy of an input object');
+        st.deepEqual(obj, { b: 'c' }, 'the input object is unchanged');
+
+        var sparse = { b: [1, undefined, 2] };
+        st.deepEqual(qs.parse({ a: sparse }), { a: { b: [1, 2] } }, 'compacts a copy of an input array');
+        st.deepEqual(sparse, { b: [1, undefined, 2] }, 'the input array is not compacted');
+
+        var nullProto = { __proto__: null, b: 'c' };
+        st.equal(Object.getPrototypeOf(qs.parse({ a: nullProto }).a), null, 'a null-prototype input object stays null-prototype');
+
+        var date = new Date(0);
+        st.equal(qs.parse({ a: date }).a, date, 'a non-plain object is not copied');
+
+        var cyclic = { b: 'c' };
+        cyclic.self = cyclic;
+        var result = qs.parse({ a: cyclic });
+        st.notEqual(result.a, cyclic, 'a cyclic input object is copied');
+        st.equal(result.a.self, result.a, 'the copy keeps the cycle');
+
+        st.end();
+    });
+
     t.test('does not blow up when Buffer global is missing', function (st) {
         var restore = mockProperty(global, 'Buffer', { 'delete': true });
 
