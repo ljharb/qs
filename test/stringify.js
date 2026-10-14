@@ -394,6 +394,41 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('ignores inherited array format names', function (st) {
+        var array = { a: ['b', 'c'] };
+        var indices = 'a%5B0%5D=b&a%5B1%5D=c';
+        var repeat = 'a=b&a=c';
+
+        st.equal(qs.stringify(array, { arrayFormat: 'unsupported' }), indices, 'unknown format falls back to `indices`');
+
+        var names = [
+            'constructor',
+            'toString',
+            '__proto__',
+            'valueOf',
+            'hasOwnProperty',
+            'isPrototypeOf',
+            'propertyIsEnumerable',
+            'toLocaleString'
+        ];
+        for (var i = 0; i < names.length; i++) {
+            var name = names[i];
+            st.equal(qs.stringify(array, { arrayFormat: name }), indices, '`' + name + '` falls back to `indices`');
+            st.equal(
+                qs.stringify(array, { arrayFormat: name, indices: true }),
+                indices,
+                '`' + name + '` with `indices: true` falls back to `indices`'
+            );
+            st.equal(
+                qs.stringify(array, { arrayFormat: name, indices: false }),
+                repeat,
+                '`' + name + '` with `indices: false` falls back to `repeat`'
+            );
+        }
+
+        st.end();
+    });
+
     t.test('`skipNulls` option', function (st) {
         st.equal(
             qs.stringify({ a: 'b', c: null }, { skipNulls: true }),
