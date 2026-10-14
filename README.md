@@ -87,6 +87,21 @@ assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
 
 Since v6.14.1 and v6.15.2, `parse` interprets nested bracket groups more consistently. Query strings with unbalanced `[`/`]` can produce different results than in 6.15.1; see [#558](https://github.com/ljharb/qs/issues/558).
 
+Because of that bracket grammar,
+**qs** does not agree with `URLSearchParams`,
+`node:querystring`, or any other flat parser about what the "name" of a parameter is,
+and it never has.
+`URLSearchParams` reads `'foo[bar]=baz'` as one flat name `foo[bar]`;
+**qs** reads it as the path `foo.bar`.
+Text that **qs**'s grammar cannot place,
+such as the `extra` in `'foo[bar]extra=baz'`,
+is currently dropped, so several distinct flat names can resolve to the same **qs** path
+(see [#619](https://github.com/ljharb/qs/issues/619)).
+
+So validating, authorizing, filtering,
+or signing a query string with one parser and then consuming it with another is unsafe: a deny list or signature computed over `URLSearchParams` names does not constrain what **qs** will produce from the same string.
+Parse the input once, with **qs**, and apply your checks to the resulting object.
+
 By default, when nesting objects **qs** will only parse up to 5 children deep.
 This means if you attempt to parse a string like `'a[b][c][d][e][f][g][h][i]=j'` your resulting object will be:
 
