@@ -65,7 +65,7 @@
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.10.2",
+        "tape": "^5.10.3",
         "unassertify": "^3.0.1"
     },
     "scripts": {
