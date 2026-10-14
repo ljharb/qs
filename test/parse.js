@@ -84,6 +84,16 @@ test('parse()', function (t) {
             qs.parse('outer[a.b]=1', { allowDots: false }),
             'allowDots does not change how a bracket segment containing a dot is parsed'
         );
+        st.deepEqual(
+            qs.parse('a].b=c', { allowDots: true }),
+            { 'a]': { b: 'c' } },
+            'a stray close bracket does not stop a later dot from being converted'
+        );
+        st.deepEqual(
+            qs.parse('a]].b[c.d]=e', { allowDots: true }),
+            { 'a]]': { b: { 'c.d': 'e' } } },
+            'stray close brackets do not unbalance a later bracket segment'
+        );
 
         st.end();
     });
