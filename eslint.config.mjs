@@ -1,4 +1,5 @@
 import ljharbConfig from '@ljharb/eslint-config/flat';
+import latest from '@ljharb/eslint-config/flat/node/latest';
 
 export default [
     {
@@ -54,4 +55,9 @@ export default [
             'no-throw-literal': 'off',
         },
     },
+
+	...latest.map((x) => ({
+		files: ["README.md/**"],
+		...x
+	})),
 ];
