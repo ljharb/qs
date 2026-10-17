@@ -769,6 +769,15 @@ assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 ```
 
+To produce the same output as the [WHATWG `application/x-www-form-urlencoded` serializer](https://url.spec.whatwg.org/#concept-urlencoded-serializer) (what `URLSearchParams` and HTML form submission use), use the `WHATWG` format.
+Like RFC1738 it encodes ' ' as '+'; it also leaves `*` unencoded, but percent-encodes `~`, `(`, and `)`:
+
+```javascript
+assert.equal(qs.stringify({ a: 'b c~*()' }, { format: 'WHATWG' }), 'a=b+c%7E*%28%29');
+```
+
+_(Note: with `charset: 'iso-8859-1'`, every format uses the same `escape`-based encoding; only the space handling differs.)_
+
 ## Security
 
 Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.

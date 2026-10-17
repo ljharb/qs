@@ -1576,6 +1576,48 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('WHATWG serialization', function (st) {
+        st.equal(qs.formats.WHATWG, 'WHATWG', 'is exported');
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.WHATWG }), 'a=b+c');
+        st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.WHATWG }), 'a+b=c+d');
+        st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.WHATWG }), 'a+b=a+b');
+
+        st.equal(qs.stringify({ a: '~' }, { format: qs.formats.WHATWG }), 'a=%7E', 'encodes `~`');
+        st.equal(qs.stringify({ a: '*' }, { format: qs.formats.WHATWG }), 'a=*', 'does not encode `*`');
+        st.equal(qs.stringify({ 'foo(ref)': 'bar' }, { format: qs.formats.WHATWG }), 'foo%28ref%29=bar', 'encodes parentheses');
+        st.equal(qs.stringify({ a: '-._' }, { format: qs.formats.WHATWG }), 'a=-._');
+        st.equal(qs.stringify({ a: '+&=' }, { format: qs.formats.WHATWG }), 'a=%2B%26%3D');
+        st.equal(qs.stringify({ a: { b: 'c d' } }, { format: qs.formats.WHATWG }), 'a%5Bb%5D=c+d');
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.WHATWG, encode: false }), 'a=b c', 'encode: false leaves the value alone');
+
+        st.end();
+    });
+
+    t.test('WHATWG serialization matches URLSearchParams', { skip: typeof URLSearchParams !== 'function' }, function (st) {
+        var chars = [];
+        for (var c = 0; c < 0x80; c++) {
+            chars[chars.length] = String.fromCharCode(c);
+        }
+        chars.push('\u00e9', '\u20ac', '\uFFFF', '\uD83D\uDCA9', 'a b~c*d(e)f');
+
+        for (var i = 0; i < chars.length; i++) {
+            var key = {};
+            key[chars[i]] = 'v';
+            st.equal(
+                qs.stringify({ k: chars[i] }, { format: qs.formats.WHATWG }),
+                new URLSearchParams([['k', chars[i]]]).toString(),
+                'value ' + JSON.stringify(chars[i])
+            );
+            st.equal(
+                qs.stringify(key, { format: qs.formats.WHATWG }),
+                new URLSearchParams([[chars[i], 'v']]).toString(),
+                'key ' + JSON.stringify(chars[i])
+            );
+        }
+
+        st.end();
+    });
+
     t.test('Backward compatibility to RFC 3986', function (st) {
         st.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
         st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }), 'a%20b=a%20b');
