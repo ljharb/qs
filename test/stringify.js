@@ -24,6 +24,28 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies lone surrogates as U+FFFD', function (st) {
+        st.equal(qs.stringify({ a: '\uD800x' }), 'a=%EF%BF%BDx', 'lone high surrogate does not swallow the next character');
+        st.equal(qs.stringify({ a: '\uDC00x' }), 'a=%EF%BF%BDx', 'lone low surrogate does not swallow the next character');
+        st.equal(qs.stringify({ '\uD800': 'b' }), '%EF%BF%BD=b', 'lone surrogate in a key');
+        st.deepEqual(qs.parse(qs.stringify({ a: 'x\uD800y' })), { a: 'x\uFFFDy' }, 'parses back with U+FFFD in place of the lone surrogate');
+        st.equal(qs.stringify({ '\uDC00': 'b' }), '%EF%BF%BD=b', 'lone low surrogate in a key');
+        st.equal(qs.stringify({ a: { 'b\uD800': 'c' } }), 'a%5Bb%EF%BF%BD%5D=c', 'lone surrogate in a nested key does not swallow the closing bracket');
+        st.equal(qs.stringify({ a: '\uD800 x' }, { format: 'RFC1738' }), 'a=%EF%BF%BD+x', 'lone surrogate does not swallow a space in RFC1738');
+        st.equal(
+            qs.stringify({ 'a\uD800': { b: 'c' } }, { allowDots: true, encodeDotInKeys: true }),
+            'a%EF%BF%BD.b=c',
+            'lone surrogate does not swallow a dot separator'
+        );
+        st.equal(qs.stringify({ a: ['x\uD800', 'y'] }, { arrayFormat: 'comma' }), 'a=x%EF%BF%BD%2Cy', 'lone surrogate does not swallow a comma');
+        st.equal(
+            qs.stringify({ a: ['x\uD800', 'y'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=x%EF%BF%BD,y',
+            'lone surrogate at the end of a comma-joined element encodes as U+FFFD'
+        );
+        st.end();
+    });
+
     t.test('stringifies falsy values', function (st) {
         st.equal(qs.stringify(undefined), '');
         st.equal(qs.stringify(null), '');

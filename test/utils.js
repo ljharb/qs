@@ -742,12 +742,23 @@ test('encode', function (t) {
         loneExpected += 'a';
     }
     loneBoundary += '\uD83DX';
-    loneExpected += '%F0%9F%91%98';
+    loneExpected += '%EF%BF%BDX';
 
     t.equal(
         utils.encode(loneBoundary),
         loneExpected,
         'a lone high surrogate at a chunk boundary encodes the same as mid-chunk'
+    );
+
+    t.equal(
+        utils.encode(loneBoundary.slice(0, 1023) + '\uDC00X'),
+        loneExpected.slice(0, 1023) + '%EF%BF%BDX',
+        'a lone low surrogate at a chunk boundary does not consume the next character'
+    );
+    t.equal(
+        utils.encode(loneBoundary.slice(0, 1024)),
+        loneExpected.slice(0, 1023) + '%EF%BF%BD',
+        'a lone high surrogate ending a string of exactly one chunk encodes as U+FFFD'
     );
 
     t.equal(
@@ -771,8 +782,33 @@ test('encode', function (t) {
 
     t.equal(
         utils.encode('\uD83D \uDCA9'),
-        '%F0%9F%90%A0%F0%BA%90%80',
-        'encodes lone surrogates'
+        '%EF%BF%BD%20%EF%BF%BD',
+        'encodes lone surrogates as U+FFFD, without consuming the next character'
+    );
+    t.equal(
+        utils.encode('\uDCA9\uD83D'),
+        '%EF%BF%BD%EF%BF%BD',
+        'encodes a reversed surrogate pair as two U+FFFD'
+    );
+    t.equal(
+        utils.encode('x\uD83D'),
+        'x%EF%BF%BD',
+        'encodes a trailing lone high surrogate as U+FFFD'
+    );
+    t.equal(
+        utils.encode('\uD83D\uD83D\uDCA9'),
+        '%EF%BF%BD%F0%9F%92%A9',
+        'a lone high surrogate does not prevent the following pair from encoding'
+    );
+    t.equal(
+        utils.encode('\uD83D\uE000'),
+        '%EF%BF%BD%EE%80%80',
+        'a high surrogate followed by a code unit above the low surrogate range is not combined'
+    );
+    t.equal(
+        utils.encode('\uDC00\uDC00'),
+        '%EF%BF%BD%EF%BF%BD',
+        'a low surrogate followed by a low surrogate is not combined'
     );
 
     t.end();
