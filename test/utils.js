@@ -742,7 +742,7 @@ test('encode', function (t) {
         loneExpected += 'a';
     }
     loneBoundary += '\uD83DX';
-    loneExpected += '%F0%9F%91%98';
+    loneExpected += '%EF%BF%BDX';
 
     t.equal(
         utils.encode(loneBoundary),
@@ -771,8 +771,23 @@ test('encode', function (t) {
 
     t.equal(
         utils.encode('\uD83D \uDCA9'),
-        '%F0%9F%90%A0%F0%BA%90%80',
-        'encodes lone surrogates'
+        '%EF%BF%BD%20%EF%BF%BD',
+        'encodes lone surrogates as U+FFFD, without consuming the next character'
+    );
+    t.equal(
+        utils.encode('\uDCA9\uD83D'),
+        '%EF%BF%BD%EF%BF%BD',
+        'encodes a reversed surrogate pair as two U+FFFD'
+    );
+    t.equal(
+        utils.encode('x\uD83D'),
+        'x%EF%BF%BD',
+        'encodes a trailing lone high surrogate as U+FFFD'
+    );
+    t.equal(
+        utils.encode('\uD83D\uD83D\uDCA9'),
+        '%EF%BF%BD%F0%9F%92%A9',
+        'a lone high surrogate does not prevent the following pair from encoding'
     );
 
     t.end();
