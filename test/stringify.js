@@ -24,6 +24,14 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('stringifies lone surrogates as U+FFFD', function (st) {
+        st.equal(qs.stringify({ a: '\uD800x' }), 'a=%EF%BF%BDx', 'lone high surrogate does not swallow the next character');
+        st.equal(qs.stringify({ a: '\uDC00x' }), 'a=%EF%BF%BDx', 'lone low surrogate does not swallow the next character');
+        st.equal(qs.stringify({ '\uD800': 'b' }), '%EF%BF%BD=b', 'lone surrogate in a key');
+        st.deepEqual(qs.parse(qs.stringify({ a: 'x\uD800y' })), { a: 'x\uFFFDy' }, 'round-trips as U+FFFD');
+        st.end();
+    });
+
     t.test('stringifies falsy values', function (st) {
         st.equal(qs.stringify(undefined), '');
         st.equal(qs.stringify(null), '');
