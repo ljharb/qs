@@ -772,7 +772,8 @@ var obj = qs.parse('a=%82%B1%82%F1%82%C9%82%BF%82%CD%81I', { decoder: decoder })
 assert.deepEqual(obj, { a: 'こんにちは！' });
 ```
 
-### RFC 3986 and RFC 1738 space encoding
+<a name="rfc-3986-and-rfc-1738-space-encoding"></a>
+### Encoding formats: RFC 3986, RFC 1738, and WHATWG
 
 RFC3986 used as default option and encodes ' ' to *%20* which is backward compatible.
 In the same time, output can be stringified as per RFC1738 with ' ' equal to '+'.
@@ -782,6 +783,16 @@ assert.equal(qs.stringify({ a: 'b c' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC3986' }), 'a=b%20c');
 assert.equal(qs.stringify({ a: 'b c' }, { format : 'RFC1738' }), 'a=b+c');
 ```
+
+To percent-encode keys and values the same way as the [WHATWG `application/x-www-form-urlencoded` serializer](https://url.spec.whatwg.org/#concept-urlencoded-serializer) (what `URLSearchParams` and HTML form submission use), use the `WHATWG` format.
+Like RFC1738 it encodes ' ' as '+'; it also leaves `*` unencoded, but percent-encodes `~`, `(`, and `)`.
+It only affects encoding; how `null`, dates, arrays, and objects are serialized is unchanged:
+
+```javascript
+assert.equal(qs.stringify({ a: 'b c~*()' }, { format: 'WHATWG' }), 'a=b+c%7E*%28%29');
+```
+
+_(Note: the `WHATWG` format matches `URLSearchParams` encoding only with the default `utf-8` charset, and only when keys are encoded too, so not with `encodeValuesOnly`. With `charset: 'iso-8859-1'`, every format uses the same `escape`-based encoding, which leaves characters like `@` and `/` unencoded; only the space handling differs)_
 
 ## Security
 

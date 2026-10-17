@@ -791,6 +791,12 @@ test('encode', function (t) {
     // todo RFC1738 format
 
     t.equal(
+        utils.encode('~*()', null, null, null, 'WHATWG'),
+        '%7E*%28%29',
+        'encodes `~` and parens, but not `*`, in WHATWG'
+    );
+
+    t.equal(
         utils.encode('Āက豈'),
         '%C4%80%E1%80%80%EF%A4%80',
         'encodes multibyte chars'

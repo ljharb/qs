@@ -5,6 +5,7 @@ var qs = require('../');
 var utils = require('../lib/utils');
 var iconv = require('iconv-lite');
 var SaferBuffer = require('safer-buffer').Buffer;
+var url = require('url');
 var hasSymbols = require('has-symbols');
 var mockProperty = require('mock-property');
 var emptyTestCases = require('./empty-keys-cases').emptyTestCases;
@@ -1596,6 +1597,82 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
         st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.RFC3986 }), 'a%20b=a%20b');
         st.equal(qs.stringify({ 'a~*': '~*()' }, { format: qs.formats.RFC3986 }), 'a~%2A=~%2A%28%29', 'leaves `~` unencoded, and encodes `*` and parens');
+
+        st.end();
+    });
+
+    t.test('WHATWG serialization', function (st) {
+        st.equal(qs.formats.WHATWG, 'WHATWG', 'is exported');
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.WHATWG }), 'a=b+c');
+        st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.WHATWG }), 'a+b=c+d');
+        st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.WHATWG }), 'a+b=a+b');
+
+        st.equal(qs.stringify({ a: '~' }, { format: qs.formats.WHATWG }), 'a=%7E', 'encodes `~`');
+        st.equal(qs.stringify({ a: '*' }, { format: qs.formats.WHATWG }), 'a=*', 'does not encode `*`');
+        st.equal(qs.stringify({ 'foo(ref)': 'bar' }, { format: qs.formats.WHATWG }), 'foo%28ref%29=bar', 'encodes parentheses');
+        st.equal(qs.stringify({ a: '-._' }, { format: qs.formats.WHATWG }), 'a=-._');
+        st.equal(qs.stringify({ a: '+&=' }, { format: qs.formats.WHATWG }), 'a=%2B%26%3D');
+        st.equal(qs.stringify({ a: { b: 'c d' } }, { format: qs.formats.WHATWG }), 'a%5Bb%5D=c+d');
+        st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.WHATWG, encode: false }), 'a=b c', 'encode: false leaves the value alone');
+
+        st.equal(
+            qs.stringify({ 'a~b*': { 'c d': '~* ' } }, { format: qs.formats.WHATWG, encodeValuesOnly: true }),
+            'a~b*[c d]=%7E*+',
+            'encodeValuesOnly: leaves keys alone'
+        );
+        st.equal(
+            qs.stringify({ a: '~*\u00e9 ' }, { format: qs.formats.WHATWG, charset: 'iso-8859-1' }),
+            'a=%7E*%E9+',
+            'charset iso-8859-1'
+        );
+        st.equal(
+            qs.stringify({ a: '~* ' }, {
+                format: qs.formats.WHATWG,
+                encoder: function (str, defaultEncoder, charset, type, format) {
+                    return defaultEncoder(str, defaultEncoder, charset, type, format);
+                }
+            }),
+            'a=%7E*+',
+            'an encoder wrapping the default encoder'
+        );
+        st.equal(
+            qs.stringify({ a: ['~ x', '*'] }, { format: qs.formats.WHATWG, arrayFormat: 'comma' }),
+            'a=%7E+x%2C*',
+            'arrayFormat comma'
+        );
+
+        st.end();
+    });
+
+    var USP = typeof URLSearchParams === 'function' ? URLSearchParams : url.URLSearchParams;
+
+    t.test('WHATWG serialization matches URLSearchParams', { skip: typeof USP !== 'function' }, function (st) {
+        var chars = [];
+        for (var c = 0; c < 0x80; c++) {
+            chars[chars.length] = String.fromCharCode(c);
+        }
+        chars.push('\u00e9', '\u20ac', '\uFFFF', '\uD83D\uDCA9', 'a b~c*d(e)f', '\uD800', '\uDC00', 'x\uDC00y');
+
+        for (var i = 0; i < chars.length; i++) {
+            var key = {};
+            key[chars[i]] = 'v';
+            st.equal(
+                qs.stringify({ k: chars[i] }, { format: qs.formats.WHATWG }),
+                new USP([['k', chars[i]]]).toString(),
+                'value ' + JSON.stringify(chars[i])
+            );
+            st.equal(
+                qs.stringify(key, { format: qs.formats.WHATWG }),
+                new USP([[chars[i], 'v']]).toString(),
+                'key ' + JSON.stringify(chars[i])
+            );
+        }
+
+        st.equal(
+            qs.stringify({ a: { 'b~': 'c d' } }, { format: qs.formats.WHATWG }),
+            new USP([['a[b~]', 'c d']]).toString(),
+            'nested key'
+        );
 
         st.end();
     });
