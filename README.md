@@ -477,6 +477,20 @@ var encoded = qs.stringify({ a: { b: 'c' } }, { encoder: function (str, defaultE
 }})
 ```
 
+The encoder also receives the `format` option as a fifth argument.
+An encoder that wraps `defaultEncoder` should pass all of its arguments through,
+since the default encoding depends on `format` (for example, RFC1738 leaves parentheses unencoded):
+
+```javascript
+var wrapped = qs.stringify({ a: 'b(c)' }, {
+    format: 'RFC1738',
+    encoder: function (str, defaultEncoder, charset, type, format) {
+        return defaultEncoder(str, defaultEncoder, charset, type, format);
+    }
+});
+assert.equal(wrapped, 'a=b(c)');
+```
+
 The type argument is also provided to the decoder:
 
 ```javascript
