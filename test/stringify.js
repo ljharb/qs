@@ -1586,6 +1586,7 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.RFC1738 }), 'a+b=a+b');
 
         st.equal(qs.stringify({ 'foo(ref)': 'bar' }, { format: qs.formats.RFC1738 }), 'foo(ref)=bar');
+        st.equal(qs.stringify({ 'a~*': '~*()' }, { format: qs.formats.RFC1738 }), 'a~%2A=~%2A()', 'leaves `~` unencoded and encodes `*`');
 
         st.end();
     });
@@ -1594,6 +1595,7 @@ test('stringify()', function (t) {
         st.equal(qs.stringify({ a: 'b c' }, { format: qs.formats.RFC3986 }), 'a=b%20c');
         st.equal(qs.stringify({ 'a b': 'c d' }, { format: qs.formats.RFC3986 }), 'a%20b=c%20d');
         st.equal(qs.stringify({ 'a b': SaferBuffer.from('a b') }, { format: qs.formats.RFC3986 }), 'a%20b=a%20b');
+        st.equal(qs.stringify({ 'a~*': '~*()' }, { format: qs.formats.RFC3986 }), 'a~%2A=~%2A%28%29', 'leaves `~` unencoded, and encodes `*` and parens');
 
         st.end();
     });

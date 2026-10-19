@@ -772,6 +772,22 @@ test('encode', function (t) {
         'does not encode parens in RFC1738'
     );
 
+    t.equal(
+        utils.encode('~*()'),
+        '~%2A%28%29',
+        'leaves `~` unencoded, and encodes `*` and parens, by default'
+    );
+    t.equal(
+        utils.encode('~*()', null, null, null, 'RFC3986'),
+        '~%2A%28%29',
+        'leaves `~` unencoded, and encodes `*` and parens, in RFC3986'
+    );
+    t.equal(
+        utils.encode('~*() ', null, null, null, 'RFC1738'),
+        '~%2A()%20',
+        'leaves `~` and parens unencoded, and encodes `*` and spaces, in RFC1738'
+    );
+
     // todo RFC1738 format
 
     t.equal(
