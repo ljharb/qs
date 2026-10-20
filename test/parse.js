@@ -1460,6 +1460,28 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('zero and negative arrayLimit with comma', function (sst) {
+            forEach([0, -1], function (arrayLimit) {
+                var options = { arrayLimit: arrayLimit, comma: true };
+                var throwOptions = { arrayLimit: arrayLimit, comma: true, throwOnLimitExceeded: true };
+                var label = 'arrayLimit ' + arrayLimit;
+
+                sst.deepEqual(qs.parse('a=b', options), { a: 'b' }, label + ': a value without commas is unaffected');
+                sst.deepEqual(qs.parse('a=b,c', options), { a: { 0: 'b', 1: 'c' } }, label + ': a comma value becomes an object');
+                sst.deepEqual(qs.parse('a[]=b,c', options), { a: { 0: ['b', 'c'] } }, label + ': a bracket array holding a comma group becomes an object');
+                sst.deepEqual(qs.parse('a[0]=b,c', options), { a: { 0: { 0: 'b', 1: 'c' } } }, label + ': an indexed comma group becomes an object');
+
+                var error = arrayLimit === 0
+                    ? new RangeError('Array limit exceeded. Only 0 elements allowed in an array.')
+                    : RangeError;
+                sst['throws'](function () { qs.parse('a=b,c', throwOptions); }, error, label + ': throws on a comma value');
+                sst['throws'](function () { qs.parse('a[]=b,c', throwOptions); }, error, label + ': throws on a comma group under `[]=`');
+                sst['throws'](function () { qs.parse('a[0]=b,c', throwOptions); }, error, label + ': throws on an indexed comma group');
+            });
+
+            sst.end();
+        });
+
         st.test('converts array to object if length is greater than limit', function (sst) {
             var result = qs.parse('a[1]=1&a[2]=2&a[3]=3&a[4]=4&a[5]=5&a[6]=6', { arrayLimit: 5 });
 
@@ -1649,6 +1671,21 @@ test('parse()', function (t) {
         st.test('does not throw when cumulative comma combine stays within arrayLimit', function (sst) {
             var result = qs.parse('a=1,2,3&a=4', { comma: true, arrayLimit: 5, throwOnLimitExceeded: true });
             sst.deepEqual(result, { a: ['1', '2', '3', '4'] }, 'combined array within limit is preserved');
+            sst.end();
+        });
+
+        st.test('throws when a comma array at arrayLimit is combined with one more value', function (sst) {
+            var error = new RangeError('Array limit exceeded. Only 2 elements allowed in an array.');
+            sst['throws'](
+                function () { qs.parse('a=x,y&a=z', { comma: true, arrayLimit: 2, throwOnLimitExceeded: true }); },
+                error,
+                'a plain value appended to a full comma array'
+            );
+            sst['throws'](
+                function () { qs.parse('a=x&a=y,z', { comma: true, arrayLimit: 2, throwOnLimitExceeded: true }); },
+                error,
+                'a comma value appended to a plain value'
+            );
             sst.end();
         });
 
