@@ -1689,6 +1689,20 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('does not throw when a duplicate of a full comma array is discarded or replaces it', function (sst) {
+            sst.deepEqual(
+                qs.parse('a=x,y&a=z', { comma: true, arrayLimit: 2, throwOnLimitExceeded: true, duplicates: 'first' }),
+                { a: ['x', 'y'] },
+                'duplicates: first keeps the full array'
+            );
+            sst.deepEqual(
+                qs.parse('a=x,y&a=z', { comma: true, arrayLimit: 2, throwOnLimitExceeded: true, duplicates: 'last' }),
+                { a: 'z' },
+                'duplicates: last replaces the full array'
+            );
+            sst.end();
+        });
+
         st.test('silently combines to an overflow object when throwOnLimitExceeded is not set', function (sst) {
             var result = qs.parse('a=1,2,3&a=4,5,6', { comma: true, arrayLimit: 5 });
             sst.deepEqual(result, { a: { 0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6' } }, 'converts to object without throwing');
