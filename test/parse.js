@@ -1441,6 +1441,18 @@ test('parse()', function (t) {
                     label + ': an empty array has no elements to exceed the limit'
                 );
                 sst.deepEqual(qs.parse({ a: ['b'] }, options), { a: ['b'] }, label + ': an array value in object input is left as-is');
+                sst.deepEqual(qs.parse({ 'a[b]': ['x'] }, options), { a: { b: ['x'] } }, label + ': an array value under a nested key in object input is left as-is');
+                sst.deepEqual(qs.parse('a.b=c', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, allowDots: true }), { a: { b: 'c' } }, label + ': dotted keys');
+                sst.deepEqual(
+                    qs.parse('a=b&a=c', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, duplicates: 'first' }),
+                    { a: 'b' },
+                    label + ': keeping the first duplicate does not create an array'
+                );
+                sst.deepEqual(
+                    qs.parse('a[]=b', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, parseArrays: false }),
+                    { a: { 0: 'b' } },
+                    label + ': array syntax with parseArrays false does not create an array'
+                );
             });
             sst.end();
         });
