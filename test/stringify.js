@@ -322,6 +322,24 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('allowEmptyArrays keys that need no encoding', function (st) {
+        st.equal(qs.stringify({ foo: [] }, { allowEmptyArrays: true, format: 'RFC1738' }), 'foo[]', 'a top-level key in RFC1738');
+        st.equal(
+            qs.stringify({ a: { b: [] }, c: 'd e' }, { allowEmptyArrays: true, encodeValuesOnly: true }),
+            'a[b][]&c=d%20e',
+            'a nested key with encodeValuesOnly'
+        );
+        st.equal(qs.stringify({ a: { b: [] } }, { allowEmptyArrays: true, encode: false }), 'a[b][]', 'a nested key with encode: false');
+        st.equal(qs.stringify({ a: { b: [] } }, { allowEmptyArrays: true, allowDots: true }), 'a.b[]', 'a nested key with allowDots');
+        st.equal(
+            qs.stringify({ a: { b: [] } }, { allowEmptyArrays: true, allowDots: true, format: 'RFC1738' }),
+            'a.b[]',
+            'a nested key with allowDots in RFC1738'
+        );
+
+        st.end();
+    });
+
     t.test('allowEmptyArrays + strictNullHandling', function (st) {
         st.equal(
             qs.stringify(
