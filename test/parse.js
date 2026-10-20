@@ -1255,6 +1255,22 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('interprets numeric entities in each value, but not in keys', function (st) {
+        var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',x', options), { a: '☺,x' }, 'a value with commas stays one string without `comma`');
+        st.deepEqual(qs.parse('a' + urlEncodedNumSmiley + '=x', options), { 'a&#9786;': 'x' }, 'keys are not interpreted');
+        st.deepEqual(qs.parse('a[]=' + urlEncodedNumSmiley + '&a[]=x', options), { a: ['☺', 'x'] }, 'bracket array values');
+        st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + '&a=x', options), { a: ['☺', 'x'] }, 'repeated key values');
+        st.deepEqual(qs.parse('a[b]=' + urlEncodedNumSmiley, options), { a: { b: '☺' } }, 'nested key values');
+        st.deepEqual(
+            qs.parse('utf8=%26%2310003%3B&a=' + urlEncodedNumSmiley, { charsetSentinel: true, interpretNumericEntities: true }),
+            { a: '☺' },
+            'an iso-8859-1 charset sentinel enables interpretation'
+        );
+        st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',x', { charset: 'iso-8859-1', comma: true }), { a: ['&#9786;', 'x'] }, '`comma` splits without `interpretNumericEntities`');
+        st.end();
+    });
+
     t.test('handles a custom decoder returning `null`, in the `iso-8859-1` charset, when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=&bar=' + urlEncodedNumSmiley, {
             charset: 'iso-8859-1',
