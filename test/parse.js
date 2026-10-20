@@ -1422,6 +1422,29 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('zero and negative arrayLimit allow non-array values', function (sst) {
+            forEach([0, -1], function (arrayLimit) {
+                var options = { arrayLimit: arrayLimit, throwOnLimitExceeded: true };
+                var label = 'arrayLimit ' + arrayLimit;
+                sst.deepEqual(qs.parse('a=b&c[d]=e', options), { a: 'b', c: { d: 'e' } }, label + ': query string fields');
+                sst.deepEqual(qs.parse('a=b', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, comma: true }), { a: 'b' }, label + ': a value without commas when comma is enabled');
+                sst.deepEqual(qs.parse({ a: 'b', 'c[d]': 'e' }, options), { a: 'b', c: { d: 'e' } }, label + ': object input fields');
+                sst.deepEqual(qs.parse({ a: [] }, options), { a: [] }, label + ': an empty input array has no elements');
+                sst.deepEqual(
+                    qs.parse('a=b&a=c', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, duplicates: 'last' }),
+                    { a: 'c' },
+                    label + ': replacing a duplicate does not create an array'
+                );
+                sst.deepEqual(
+                    qs.parse('a[]=', { arrayLimit: arrayLimit, throwOnLimitExceeded: true, allowEmptyArrays: true }),
+                    { a: [] },
+                    label + ': an empty array has no elements to exceed the limit'
+                );
+                sst.deepEqual(qs.parse({ a: ['b'] }, options), { a: ['b'] }, label + ': an array value in object input is left as-is');
+            });
+            sst.end();
+        });
+
         st.test('does not throw when at limit', function (sst) {
             // 3 elements = limit of 3, should not throw
             var result = qs.parse('a[]=1&a[]=2&a[]=3', { arrayLimit: 3, throwOnLimitExceeded: true });
