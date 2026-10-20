@@ -1306,12 +1306,67 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('interpretNumericEntities with comma:true and iso charset does not crash', function (st) {
+    t.test('interpretNumericEntities preserves comma arrays in iso charset', function (st) {
         st.deepEqual(
             qs.parse('b&a[]=1,' + urlEncodedNumSmiley, { comma: true, charset: 'iso-8859-1', interpretNumericEntities: true }),
-            { b: '', a: ['1,☺'] }
+            { b: '', a: [['1', '☺']] }
         );
 
+        st.end();
+    });
+
+    t.test('interprets numeric entities per comma-separated value', function (st) {
+        var options = { comma: true, charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.deepEqual(qs.parse('a=b,c', options), { a: ['b', 'c'] });
+        st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',%26%239786%3B', options), { a: ['☺', '☺'] });
+        st.deepEqual(qs.parse('a=%26%2344%3B,b%2Cc', options), { a: [',', 'b,c'] });
+        st.deepEqual(qs.parse('a=,b,', options), { a: ['', 'b', ''] });
+        st.deepEqual(qs.parse('a=b,c&a=d,e', options), { a: ['b', 'c', 'd', 'e'] });
+        st.deepEqual(qs.parse('a[]=b,c&a[]=d,e', options), { a: [['b', 'c'], ['d', 'e']] });
+        st.deepEqual(qs.parse('a[0]=b,c', options), { a: [['b', 'c']] });
+        st.deepEqual(qs.parse('utf8=%26%2310003%3B&a=b,' + urlEncodedNumSmiley, {
+            comma: true,
+            charsetSentinel: true,
+            interpretNumericEntities: true
+        }), { a: ['b', '☺'] });
+        st.deepEqual(qs.parse('a=b,c,d', {
+            comma: true,
+            charset: 'iso-8859-1',
+            interpretNumericEntities: true,
+            arrayLimit: 2
+        }), { a: { 0: 'b', 1: 'c', 2: 'd' } });
+        st['throws'](function () {
+            qs.parse('a=b,c,d', {
+                comma: true,
+                charset: 'iso-8859-1',
+                interpretNumericEntities: true,
+                arrayLimit: 2,
+                throwOnLimitExceeded: true
+            });
+        }, RangeError);
+        st.end();
+    });
+
+    t.test('preserves falsy decoder results inside comma arrays', function (st) {
+        st.deepEqual(qs.parse('a=null,0,false,' + urlEncodedNumSmiley, {
+            comma: true,
+            charset: 'iso-8859-1',
+            interpretNumericEntities: true,
+            decoder: function (str, defaultDecoder, charset, type) {
+                if (type === 'value') {
+                    if (str === 'null') {
+                        return null;
+                    }
+                    if (str === '0') {
+                        return 0;
+                    }
+                    if (str === 'false') {
+                        return false;
+                    }
+                }
+                return defaultDecoder(str, defaultDecoder, charset, type);
+            }
+        }), { a: [null, 0, false, '☺'] });
         st.end();
     });
 
