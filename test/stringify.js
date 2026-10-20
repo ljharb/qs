@@ -1337,6 +1337,34 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('applies sort to nested keys selected by filter=array', function (st) {
+        var asc = function (a, b) { return a.localeCompare(b); };
+        var desc = function (a, b) { return b.localeCompare(a); };
+
+        st.equal(
+            qs.stringify({ a: { c: 1, b: 2 }, z: 3 }, { filter: ['z', 'a', 'c', 'b'], sort: asc, encode: false }),
+            'a[b]=2&a[c]=1&z=3',
+            'nested keys are sorted, not left in filter order'
+        );
+        st.equal(
+            qs.stringify({ a: { c: 1, b: 2 }, z: 3 }, { filter: ['z', 'b', 'a', 'c'], sort: desc, encode: false }),
+            'z=3&a[c]=1&a[b]=2',
+            'nested keys follow a descending sort'
+        );
+        st.equal(
+            qs.stringify({ a: [{ y: 1, x: 2 }] }, { filter: ['a', '0', 'y', 'x'], sort: asc, encode: false }),
+            'a[0][x]=2&a[0][y]=1',
+            'keys of objects nested in arrays are sorted'
+        );
+        st.equal(
+            qs.stringify({ a: { c: 1, b: 2 }, z: 3 }, { filter: ['z', 'a', 'c', 'b'], encode: false }),
+            'z=3&a[c]=1&a[b]=2',
+            'without sort, keys keep filter order at every level'
+        );
+
+        st.end();
+    });
+
     t.test('supports custom representations when filter=function', function (st) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
