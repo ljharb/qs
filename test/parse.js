@@ -1,6 +1,7 @@
 'use strict';
 
 var test = require('tape');
+var forEach = require('for-each');
 var hasPropertyDescriptors = require('has-property-descriptors')();
 var iconv = require('iconv-lite');
 var mockProperty = require('mock-property');
@@ -1426,6 +1427,36 @@ test('parse()', function (t) {
             var result = qs.parse('a[]=1&a[]=2&a[]=3', { arrayLimit: 3, throwOnLimitExceeded: true });
             sst.ok(Array.isArray(result.a), 'result is an array');
             sst.deepEqual(result.a, ['1', '2', '3'], 'all values present');
+            sst.end();
+        });
+
+        st.test('zero and negative arrayLimit', function (sst) {
+            forEach([0, -1], function (arrayLimit) {
+                var options = { arrayLimit: arrayLimit };
+                var throwOptions = { arrayLimit: arrayLimit, throwOnLimitExceeded: true };
+                var label = 'arrayLimit ' + arrayLimit;
+
+                sst.deepEqual(qs.parse('a=b&c[d]=e', options), { a: 'b', c: { d: 'e' } }, label + ': scalar and object fields are unaffected');
+                sst.deepEqual(qs.parse('a[]=b', options), { a: { 0: 'b' } }, label + ': a bracket array becomes an object');
+                sst.deepEqual(qs.parse('a[]=b&a[]=c', options), { a: { 0: 'b', 1: 'c' } }, label + ': a multi-element bracket array becomes an object');
+                sst.deepEqual(qs.parse('a[0]=b', options), { a: { 0: 'b' } }, label + ': an indexed array becomes an object');
+                sst.deepEqual(qs.parse('a=b&a=c', options), { a: { 0: 'b', 1: 'c' } }, label + ': combined duplicates become an object');
+                sst.deepEqual(qs.parse('a[]=', options), { a: { 0: '' } }, label + ': an empty-string element still counts as an element');
+                sst.deepEqual(qs.parse('a[]=', { arrayLimit: arrayLimit, allowEmptyArrays: true }), { a: [] }, label + ': an empty array has no elements');
+                sst.deepEqual(qs.parse({ 'a[]': 'b' }, options), { a: { 0: 'b' } }, label + ': a bracket key in object input becomes an object');
+                sst.deepEqual(qs.parse({ a: ['b'] }, options), { a: ['b'] }, label + ': an array value in object input is left as-is');
+                sst.deepEqual(qs.parse({ a: [] }, options), { a: [] }, label + ': an empty array value in object input is left as-is');
+
+                var error = arrayLimit === 0
+                    ? new RangeError('Array limit exceeded. Only 0 elements allowed in an array.')
+                    : RangeError;
+                sst['throws'](function () { qs.parse('a[]=b', throwOptions); }, error, label + ': throws on a bracket array');
+                sst['throws'](function () { qs.parse('a[0]=b', throwOptions); }, error, label + ': throws on an indexed array');
+                sst['throws'](function () { qs.parse('a=b&a=c', throwOptions); }, error, label + ': throws on combined duplicates');
+                sst['throws'](function () { qs.parse('a[]=', throwOptions); }, error, label + ': throws on an empty-string element');
+                sst['throws'](function () { qs.parse({ 'a[]': 'b' }, throwOptions); }, error, label + ': throws on a bracket key in object input');
+            });
+
             sst.end();
         });
 
