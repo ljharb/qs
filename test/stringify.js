@@ -1382,6 +1382,22 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('does not mutate filter array when sorting', function (st) {
+        var filter = ['i', 'a'];
+        st.equal(
+            qs.stringify({ i: 1, a: 2 }, { filter: filter, sort: function (a, b) { return a.localeCompare(b); } }),
+            'a=2&i=1'
+        );
+        st.deepEqual(filter, ['i', 'a'], 'sorting does not mutate the filter array');
+        st.equal(
+            qs.stringify({ i: { i: 1, a: 2 }, a: 3 }, { filter: filter, sort: function (a, b) { return a.localeCompare(b); } }),
+            'a=3&i%5Ba%5D=2&i%5Bi%5D=1',
+            'sorting applies to nested objects'
+        );
+        st.deepEqual(filter, ['i', 'a'], 'recursive sorting does not mutate the filter array');
+        st.end();
+    });
+
     t.test('skips null/undefined entries in filter=array', function (st) {
         st.doesNotThrow(
             function () { qs.stringify({ a: 'b', undefined: 'x' }, { filter: ['a', undefined] }); },
