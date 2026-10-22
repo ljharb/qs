@@ -99,6 +99,21 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('decode dot keys with case-insensitive percent escapes', function (st) {
+        var input = 'name%252eobj.first%252ename=John&name%252Eobj.last%252Ename=Doe';
+        st.deepEqual(
+            qs.parse(input, { decodeDotInKeys: true }),
+            { 'name.obj': { 'first.name': 'John', 'last.name': 'Doe' } },
+            'lowercase and uppercase escapes decode in both parent and child keys'
+        );
+        st.deepEqual(
+            qs.parse(input, { allowDots: true, decodeDotInKeys: false }),
+            { 'name%2eobj': { 'first%2ename': 'John' }, 'name%2Eobj': { 'last%2Ename': 'Doe' } },
+            'escaped dots remain unchanged when decoding is disabled'
+        );
+        st.end();
+    });
+
     t.test('decode dot keys correctly', function (st) {
         st.deepEqual(
             qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { allowDots: false, decodeDotInKeys: false }),
