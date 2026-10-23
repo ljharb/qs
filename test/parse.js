@@ -1155,6 +1155,67 @@ test('parse()', function (t) {
         st.end();
     });
 
+    var withOwnProto = function (value) {
+        var obj = {};
+        Object.defineProperty(obj, '__proto__', {
+            configurable: true,
+            enumerable: true,
+            value: value,
+            writable: true
+        });
+        return obj;
+    };
+    // node < 0.12 reads an own `__proto__` data property as `Object.prototype`, so it can not be copied by value
+    var ownProtoIsReadable = withOwnProto(1).__proto__ === 1; // eslint-disable-line no-proto
+
+    t.test('object-valued input with only an own `__proto__` does not mutate sub-object [[Prototype]]', function (st) {
+        // `JSON.parse` in node < 0.12 sets the [[Prototype]] instead of creating an own `__proto__`
+        var out = qs.parse({ user: withOwnProto({ isAdmin: true }) });
+
+        st.equal(out.user.isAdmin, undefined, 'attacker-controlled inherited property is not exposed');
+        st.equal(Object.getPrototypeOf(out.user), Object.prototype, 'sub-object [[Prototype]] is unchanged');
+        st.equal(Object.prototype.isAdmin, undefined, 'Object.prototype is not polluted');
+
+        var sibling = withOwnProto({ isAdmin: true });
+        sibling.name = 'alice';
+        var withSibling = qs.parse({ user: sibling });
+
+        st.equal(withSibling.user.name, 'alice', 'sibling key is preserved');
+        st.equal(withSibling.user.isAdmin, undefined, 'a sibling key does not hide an inherited property');
+        st.equal(Object.getPrototypeOf(withSibling.user), Object.prototype, 'a sibling key does not change [[Prototype]]');
+
+        st.end();
+    });
+
+    t.test('object-valued input keeps an own `__proto__` as a data property', { skip: !ownProtoIsReadable }, function (st) {
+        var descriptor = function (value) {
+            return {
+                configurable: true,
+                enumerable: true,
+                value: value,
+                writable: true
+            };
+        };
+
+        st.deepEqual(
+            Object.getOwnPropertyDescriptor(qs.parse({ user: withOwnProto({ isAdmin: true }) }).user, '__proto__'),
+            descriptor({ isAdmin: true }),
+            'an object value is stored as a data property'
+        );
+        st.deepEqual(
+            Object.getOwnPropertyDescriptor(qs.parse({ user: withOwnProto('admin') }).user, '__proto__'),
+            descriptor('admin'),
+            'a primitive value is stored as a data property'
+        );
+        st.deepEqual(
+            Object.getOwnPropertyDescriptor(qs.parse({ 'user[name]': 'alice', user: withOwnProto({ isAdmin: true }) }).user, '__proto__'),
+            descriptor({ isAdmin: true }),
+            'it survives a merge with a bracket key'
+        );
+
+        st.end();
+    });
+
     t.test('can return null objects', { skip: !hasProto }, function (st) {
         var expected = {
             __proto__: null,
