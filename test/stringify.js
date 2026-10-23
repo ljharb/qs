@@ -1439,6 +1439,25 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('does not reorder the caller\'s filter array when sorting', function (st) {
+        var filter = ['z', 'a', 'c', 'b'];
+        var asc = function (a, b) { return a.localeCompare(b); };
+
+        st.equal(
+            qs.stringify({ a: { c: 1, b: 2 }, z: 3 }, { filter: filter, sort: asc, encode: false }),
+            'a[b]=2&a[c]=1&z=3',
+            'keys are sorted at every level'
+        );
+        st.deepEqual(filter, ['z', 'a', 'c', 'b'], 'filter array is not mutated');
+        st.equal(
+            qs.stringify({ a: { c: 1, b: 2 }, z: 3 }, { filter: filter, encode: false }),
+            'z=3&a[c]=1&a[b]=2',
+            'reusing the filter without sort keeps its own order'
+        );
+
+        st.end();
+    });
+
     t.test('supports custom representations when filter=function', function (st) {
         var calls = 0;
         var obj = { a: 'b', c: 'd', e: { f: new Date(1257894000000) } };
