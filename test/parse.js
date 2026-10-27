@@ -276,6 +276,21 @@ test('parse()', function (t) {
 
     t.test('allows prototype keys when depth = 0 and allowPrototypes is true', function (st) {
         st.deepEqual(qs.parse('toString=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' });
+        st.deepEqual(qs.parse('[toString]=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' });
+        st.end();
+    });
+
+    t.test('keeps bracket-wrapped prototype keys when depth = 0 and plainObjects is true', function (st) {
+        var result = qs.parse('[toString]=foo', { depth: 0, plainObjects: true });
+        st.deepEqual(result, { __proto__: null, toString: 'foo' });
+        st.equal(Object.getPrototypeOf(result), null);
+        st.end();
+    });
+
+    t.test('strips one wrapping bracket pair from the key when depth = 0', function (st) {
+        st.deepEqual(qs.parse('[a]=b', { depth: 0 }), { a: 'b' });
+        st.deepEqual(qs.parse('[[toString]]=foo', { depth: 0 }), { '[toString]': 'foo' }, 'only the outer pair is stripped');
+        st.deepEqual(qs.parse('x[toString]=foo', { depth: 0 }), { 'x[toString]': 'foo' }, 'a key with a parent stays literal');
         st.end();
     });
 
