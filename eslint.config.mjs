@@ -1,4 +1,5 @@
 import ljharbConfig from '@ljharb/eslint-config/flat';
+import latest from '@ljharb/eslint-config/flat/node/latest';
 
 export default [
     {
@@ -53,5 +54,10 @@ export default [
             'no-extend-native': 'off',
             'no-throw-literal': 'off',
         },
+    },
+
+    {
+        extends: latest,
+        files: ['README.md/**'],
     },
 ];
