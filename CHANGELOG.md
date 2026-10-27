@@ -21,6 +21,12 @@
 - [Tests] `parse`: pin the behavior of a zero or negative `arrayLimit`
 - [Tests] `utils`/`stringify`: pin `~`, `*`, and parens encoding in RFC3986 and RFC1738
 
+## **6.16.2**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [meta] use double quotes for better OS support
+- [Dev Deps] update `evalmd`, `npmignore`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.16.1**
 - [Fix] `parse`: do not mutate an object input
 - [Fix] `stringify`: stop re-encoding structural separator dots when `encodeDotInKeys` is set (#564)
@@ -60,6 +66,12 @@
 - [Dev Deps] update `@ljharb/eslint-config`, `eslint`
 - [Dev Deps] update `eslint`, `evalmd`
 
+## **6.15.4**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [meta] use double quotes for better OS support
+- [Dev Deps] update `@ljharb/eslint-config`, `evalmd`, `npmignore`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.15.3**
 - [Fix] `parse`: enforce `throwOnLimitExceeded` for cumulative array growth via `combine`/`merge`
 - [Fix] `utils`: respect encoding of surrogate pairs across chunks (#559)
@@ -90,6 +102,13 @@
 ## **6.15.0**
 - [New] `parse`: add `strictMerge` option to wrap object/primitive conflicts in an array (#425, #122)
 - [Fix] `duplicates` option should not apply to bracket notation keys (#514)
+
+## **6.14.3**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [meta] use double quotes for better OS support
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `mock-property`, `npmignore`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
 
 ## **6.14.2**
 - [Fix] `parse`: mark overflow objects for indexed notation exceeding `arrayLimit` (#546)
@@ -123,6 +142,13 @@
 - [Dev Deps] update `es-value-fixtures`, `has-bigints`, `has-proto`, `has-symbols`
 - [Tests] increase coverage
 
+## **6.13.4**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [meta] use double quotes for better OS support
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.13.3**
 [Fix] fix regressions from robustness refactor
 [actions] update reusable workflows
@@ -149,6 +175,13 @@
 ## **6.13.0**
 - [New] `parse`: add `strictDepth` option (#511)
 - [Tests] use `npm audit` instead of `aud`
+
+## **6.12.6**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [meta] use `npm audit` instead of `aud`
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
 
 ## **6.12.5**
 - [Fix] fix regressions from robustness refactor
