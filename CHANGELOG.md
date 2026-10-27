@@ -1,26 +1,33 @@
+## **6.16.2**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (234d505, #571)
+- [meta] use `npm audit` instead of `aud`
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.16.1**
- - [Fix] `parse`: do not mutate an object input
- - [Fix] `stringify`: stop re-encoding structural separator dots when `encodeDotInKeys` is set (#564)
- - [Fix] `stringify`: `arrayFormat: 'comma'`: pass the full encoder arguments with `encodeValuesOnly`
- - [Fix] `utils`: encode `+` as `%2B` in iso-8859-1 mode so values round-trip (#565)
- - [Fix] parse: only convert top-level dots to brackets when allowDots is on (#621)
- - [Fix] `stringify`: ignore inherited array format names (#622)
- - [Fix] `stringify`: `arrayFormat: 'comma'`: do not throw on elements with no callable `toString`
- - [Fix] `utils`: `merge`: seed an overflow container's index from its own keys, not just the source
- - [Fix] `utils`: `merge`: keep a `strictMerge` conflict container's index and `arrayLimit` correct
- - [Fix] `parse`: only treat `[]` as array syntax when it ends the key
- - [Perf] `decode`: skip decoders when there is no percent sign (#583)
- - [Robustness] `utils`: `merge`: apply `arrayLimit` to the two-element array built for colliding values
- - [Robustness] `parse`: bound the nesting added by repeated `strictMerge` conflicts
- - [Docs] document that `qs` and flat parsers disagree about parameter names
- - [Docs] clarify that `throwOnLimitExceeded` limits each array, not the total number of values
- - [Docs] clarify 6.14.1/6.15.2 parse bracket behavior change (#567, #568)
- - [meta] fix changelog indents
- - [actions] set least-privilege `cache-mode`
- - [Tests] `utils`: `decode`: add missing cases
- - [Tests] `parse`: characterize the `]=` split when an `=` precedes any bracket group (#620)
- - [Tests] `parse`: `allowDots`: cover stray close brackets before a dot
- - [Dev Deps] update `@ljharb/eslint-config`, `eslint`, `tape`
+- [Fix] `parse`: do not mutate an object input
+- [Fix] `stringify`: stop re-encoding structural separator dots when `encodeDotInKeys` is set (#564)
+- [Fix] `stringify`: `arrayFormat: 'comma'`: pass the full encoder arguments with `encodeValuesOnly`
+- [Fix] `utils`: encode `+` as `%2B` in iso-8859-1 mode so values round-trip (#565)
+- [Fix] parse: only convert top-level dots to brackets when allowDots is on (#621)
+- [Fix] `stringify`: ignore inherited array format names (#622)
+- [Fix] `stringify`: `arrayFormat: 'comma'`: do not throw on elements with no callable `toString`
+- [Fix] `utils`: `merge`: seed an overflow container's index from its own keys, not just the source
+- [Fix] `utils`: `merge`: keep a `strictMerge` conflict container's index and `arrayLimit` correct
+- [Fix] `parse`: only treat `[]` as array syntax when it ends the key
+- [Perf] `decode`: skip decoders when there is no percent sign (#583)
+- [Robustness] `utils`: `merge`: apply `arrayLimit` to the two-element array built for colliding values
+- [Robustness] `parse`: bound the nesting added by repeated `strictMerge` conflicts
+- [Docs] document that `qs` and flat parsers disagree about parameter names
+- [Docs] clarify that `throwOnLimitExceeded` limits each array, not the total number of values
+- [Docs] clarify 6.14.1/6.15.2 parse bracket behavior change (#567, #568)
+- [meta] fix changelog indents
+- [actions] set least-privilege `cache-mode`
+- [Tests] `utils`: `decode`: add missing cases
+- [Tests] `parse`: characterize the `]=` split when an `=` precedes any bracket group (#620)
+- [Tests] `parse`: `allowDots`: cover stray close brackets before a dot
+- [Dev Deps] update `@ljharb/eslint-config`, `eslint`, `tape`
 
 ## **6.16.0**
 - [New] `stringify`: add a `depth` option to bound recursion depth (default `Infinity`)
