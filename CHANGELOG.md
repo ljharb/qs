@@ -1,3 +1,10 @@
+## **6.14.3**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (234d505, #571)
+- [meta] use `npm audit` instead of `aud`
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.14.2**
 - [Fix] `parse`: mark overflow objects for indexed notation exceeding `arrayLimit` (#546)
 - [Fix] `arrayLimit` means max count, not max index, in `combine`/`merge`/`parseArrayValue`
