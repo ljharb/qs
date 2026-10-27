@@ -73,7 +73,7 @@
         "pretest": "npm run --silent readme && npm run --silent lint",
         "test": "npm run tests-only",
         "tests-only": "nyc tape 'test/**/*.js'",
-        "posttest": "npx npm@'>=10.2' audit --production",
+        "posttest": "npx npm@\">= 10.2\" audit --production",
         "readme": "evalmd README.md",
         "postlint": "eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
         "lint": "eslint --ext=js,mjs .",
