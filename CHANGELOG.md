@@ -1,3 +1,26 @@
+## **6.17.0**
+- [New] `stringify`: add `WHATWG` format (#623)
+- [Fix] `stringify`: do not sort the caller's `filter` array in place (#637)
+- [Fix] `parse`: copy an own `__proto__` key as data (#636)
+- [Fix] `parse`: decode percent-encoded dots case-insensitively (#635)
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (#561)
+- [Fix] `parse`: preserve comma arrays when interpreting numeric entities (#630)
+- [Fix] `parse`: allow scalar fields with a zero array limit (#627)
+- [Fix] `parse`: do not count an existing comma array toward `arrayLimit` when `duplicates` discards or replaces it
+- [Fix] `utils`: `encode`: encode lone surrogates as U+FFFD instead of consuming the next code unit (#624)
+- [eslint] fix indentation
+- [readme] document the encoder's `format` argument
+- [meta] add changelog acknowledgement
+- [meta] fix changelog indents
+- [Dev Deps] update `eslint`, `evalmd`, `npmignore`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+- [Tests] `stringify`: pin `sort` order for nested keys selected by an array `filter`
+- [Tests] `parse`: cover `interpretNumericEntities` across value shapes, keys, and the charset sentinel
+- [Tests] `parse`: cover more input that builds no array at a zero or negative `arrayLimit`
+- [Tests] `parse`: cover `comma` with a zero or negative `arrayLimit`, and combining a full comma array
+- [Tests] `parse`: pin the behavior of a zero or negative `arrayLimit`
+- [Tests] `utils`/`stringify`: pin `~`, `*`, and parens encoding in RFC3986 and RFC1738
+
 ## **6.16.1**
 - [Fix] `parse`: do not mutate an object input
 - [Fix] `stringify`: stop re-encoding structural separator dots when `encodeDotInKeys` is set (#564)
