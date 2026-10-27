@@ -1,3 +1,10 @@
+## **6.15.4**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (234d505, #571)
+- [meta] use `npm audit` instead of `aud`
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.15.3**
 - [Fix] `parse`: enforce `throwOnLimitExceeded` for cumulative array growth via `combine`/`merge`
 - [Fix] `utils`: respect encoding of surrogate pairs across chunks (#559)
