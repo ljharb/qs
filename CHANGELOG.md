@@ -1,3 +1,10 @@
+## **6.12.6**
+- [Fix] `stringify`: encode keys when `allowEmptyArrays` is set (234d505, #571)
+- [meta] use `npm audit` instead of `aud`
+- [Deps] update `side-channel`
+- [Dev Deps] update `@ljharb/eslint-config`, `es-value-fixtures`, `eslint`, `evalmd`, `for-each`, `has-symbols`, `mock-property`, `npmignore`, `object-inspect`, `tape`
+- [Tests] `stringify`: pin `allowEmptyArrays` output for keys that need no encoding
+
 ## **6.12.5**
 - [Fix] fix regressions from robustness refactor
 - [actions] update reusable workflows
