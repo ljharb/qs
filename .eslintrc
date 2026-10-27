@@ -34,5 +34,10 @@
                 "no-throw-literal": 0,
             },
         },
+
+        {
+            "files": "README.md/**",
+            "extends": "@ljharb/eslint-config/node/latest",
+        },
     ],
 }
