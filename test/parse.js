@@ -274,6 +274,17 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('ignores bracket-wrapped prototype keys when depth = 0 and allowPrototypes is false', function (st) {
+        st.deepEqual(qs.parse('[toString]=foo', { depth: 0 }), {}, 'the stored key is the bracket content');
+        st.deepEqual(qs.parse('[hasOwnProperty]=bar', { depth: 0 }), {});
+        st.deepEqual(qs.parse('%5BhasOwnProperty%5D=bar', { depth: 0 }), {}, 'percent-encoded brackets');
+        st.deepEqual(qs.parse('[toString]=foo&a=b', { depth: 0 }), { a: 'b' });
+        st.deepEqual(qs.parse('[toString]=foo', { depth: false }), {}, 'depth: false');
+        st.deepEqual(qs.parse('.toString=foo', { depth: 0, allowDots: true }), {}, 'a leading dot becomes a bracket group');
+        st.deepEqual(qs.parse('[a]=b&[toString]=foo', { depth: 0 }), { a: 'b' }, 'other bracket-wrapped keys still strip their brackets');
+        st.end();
+    });
+
     t.test('allows prototype keys when depth = 0 and allowPrototypes is true', function (st) {
         st.deepEqual(qs.parse('toString=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' });
         st.deepEqual(qs.parse('[toString]=foo', { depth: 0, allowPrototypes: true }), { toString: 'foo' });
