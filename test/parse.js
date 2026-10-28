@@ -1825,6 +1825,27 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('counts the elements of a sparse indexed array on merge, not its holes', function (sst) {
+            sst.deepEqual(qs.parse('a[]=new&a[19]=19&a[0]=0'), { a: ['new', '19', '0'] }, 'an array merged into a sparse array');
+            sst.deepEqual(qs.parse('a[]=new&a[19]=19&a[0]=0', { throwOnLimitExceeded: true }), { a: ['new', '19', '0'] }, 'and it does not throw');
+            sst.deepEqual(qs.parse('a[0]=w&a[19]=x&a[]=y'), { a: ['w', 'x', 'y'] }, 'a bracket value appended after a high index');
+            sst.deepEqual(qs.parse('a[19]=x&a=y'), { a: ['x', 'y'] }, 'a scalar merged into a sparse array');
+            sst.deepEqual(qs.parse('a[19]=x&a=y', { throwOnLimitExceeded: true }), { a: ['x', 'y'] }, 'and it does not throw');
+
+            sst.deepEqual(
+                qs.parse('a[1]=x&a[]=y&a[]=z', { arrayLimit: 2 }),
+                { a: { 0: 'y', 1: 'x', 2: 'z' } },
+                'more elements than arrayLimit still converts when the array has holes'
+            );
+            sst['throws'](
+                function () { qs.parse('a[1]=x&a[]=y&a[]=z', { arrayLimit: 2, throwOnLimitExceeded: true }); },
+                new RangeError('Array limit exceeded. Only 2 elements allowed in an array.'),
+                'and throws with throwOnLimitExceeded'
+            );
+
+            sst.end();
+        });
+
         st.test('enforces arrayLimit when a strictMerge conflict appends to its container', function (sst) {
             var aliased = 'a[z]=o&a=p&a[y]=q&[a]=r';
             sst['throws'](
