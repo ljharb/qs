@@ -1370,6 +1370,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('interprets numeric entities above U+FFFF as surrogate pairs', function (st) {
+        var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.deepEqual(qs.parse('foo=%26%23128512%3B', options), { foo: '\uD83D\uDE00' }, 'U+1F600, which a browser submits as `&#128512;` from an iso-8859-1 form');
+        st.deepEqual(qs.parse('foo=%26%2365536%3B', options), { foo: '\uD800\uDC00' }, 'U+10000');
+        st.deepEqual(qs.parse('foo=%26%231114111%3B', options), { foo: '\uDBFF\uDFFF' }, 'U+10FFFF');
+        st.deepEqual(qs.parse('foo=%26%2365535%3B', options), { foo: '\uFFFF' }, 'U+FFFF is still one code unit');
+        st.end();
+    });
+
     t.test('interprets numeric entities in each value, but not in keys', function (st) {
         var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
         st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',x', options), { a: '☺,x' }, 'a value with commas stays one string without `comma`');
