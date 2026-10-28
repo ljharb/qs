@@ -85,7 +85,9 @@ assert.deepEqual(qs.parse('foo[bar][baz]=foobarbaz'), {
 });
 ```
 
-Since v6.14.1 and v6.15.2, `parse` interprets nested bracket groups more consistently. Query strings with unbalanced `[`/`]` can produce different results than in 6.15.1; see [#558](https://github.com/ljharb/qs/issues/558).
+Since v6.14.1 and v6.15.2, `parse` interprets nested bracket groups more consistently.
+Query strings with unbalanced `[`/`]` can produce different results than in 6.15.1;
+see [#558](https://github.com/ljharb/qs/issues/558).
 
 Because of that bracket grammar,
 **qs** does not agree with `URLSearchParams`,
@@ -132,6 +134,15 @@ var deep = qs.parse('a[b][c][d][e][f][g][h][i]=j', { depth: 1 });
 assert.deepEqual(deep, { a: { b: { '[c][d][e][f][g][h][i]': 'j' } } });
 ```
 
+Setting `depth` to `0` or `false` turns off nesting,
+so keys are never split into nested objects or arrays,
+whether or not their brackets are percent-encoded:
+
+```javascript
+assert.deepEqual(qs.parse('a[b][c]=d', { depth: 0 }), { 'a[b][c]': 'd' });
+assert.deepEqual(qs.parse('a%5Bb%5D=c', { depth: false }), { 'a[b]': 'c' });
+```
+
 You can configure **qs** to throw an error when parsing nested input beyond this depth using the `strictDepth` option (defaulted to false):
 
 ```javascript
@@ -143,16 +154,22 @@ try {
 }
 ```
 
-The depth limit helps mitigate abuse when **qs** is used to parse user input, and it is recommended to keep it a reasonably small number. The strictDepth option adds a layer of protection by throwing an error when the limit is exceeded, allowing you to catch and handle such cases.
+The depth limit helps mitigate abuse when **qs** is used to parse user input,
+and it is recommended to keep it a reasonably small number.
+The strictDepth option adds a layer of protection by throwing an error when the limit is exceeded,
+allowing you to catch and handle such cases.
 
-For similar reasons, by default **qs** will only parse up to 1000 parameters. This can be overridden by passing a `parameterLimit` option:
+For similar reasons, by default **qs** will only parse up to 1000 parameters.
+This can be overridden by passing a `parameterLimit` option:
 
 ```javascript
 var limited = qs.parse('a=b&c=d', { parameterLimit: 1 });
 assert.deepEqual(limited, { a: 'b' });
 ```
 
-If you want an error to be thrown whenever a limit is exceeded (eg, `parameterLimit`, `arrayLimit`), set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+If you want an error to be thrown whenever a limit is exceeded (eg, `parameterLimit`, `arrayLimit`),
+set the `throwOnLimitExceeded` option to `true`.
+This option will generate a descriptive error if the query string exceeds a configured limit.
 ```javascript
 try {
     qs.parse('a=1&b=2&c=3&d=4', { parameterLimit: 3, throwOnLimitExceeded: true });
@@ -164,7 +181,10 @@ try {
 
 When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `parameterLimit` and ignore the rest without throwing an error.
 
-Note that `parameterLimit` only bounds the number of `&`-delimited parameters; it does not limit how many values a single parameter expands into. In particular, when `comma: true` is enabled, a single parameter's value is split on commas into arbitrarily many elements, which `parameterLimit` does not constrain. Setting `throwOnLimitExceeded: true` (see `arrayLimit` below) makes **qs** reject a query string with more than `parameterLimit` parameters, one that uses an array index of `arrayLimit` or greater, or one that would produce any array longer than `arrayLimit`, including an array produced by comma splitting. `arrayLimit` applies to each array separately, including each parameter's comma-split value, so the total number of values across all parameters can still reach `parameterLimit` times `arrayLimit`, which is 20,000 at the default limits; always bound the input size at the transport layer as well (e.g. an HTTP body-size limit).
+Note that `parameterLimit` only bounds the number of `&`-delimited parameters; it does not limit how many values a single parameter expands into.
+In particular, when `comma: true` is enabled, a single parameter's value is split on commas into arbitrarily many elements, which `parameterLimit` does not constrain.
+Setting `throwOnLimitExceeded: true` (see `arrayLimit` below) makes **qs** reject a query string with more than `parameterLimit` parameters, one that uses an array index of `arrayLimit` or greater, or one that would produce any array longer than `arrayLimit`, including an array produced by comma splitting.
+`arrayLimit` applies to each array separately, including each parameter's comma-split value, so the total number of values across all parameters can still reach `parameterLimit` times `arrayLimit`, which is 20,000 at the default limits; always bound the input size at the transport layer as well (e.g. an HTTP body-size limit).
 
 To bypass the leading question mark, use `ignoreQueryPrefix`:
 
@@ -324,7 +344,8 @@ var withArrayLimit = qs.parse('a[1]=b', { arrayLimit: 0 });
 assert.deepEqual(withArrayLimit, { a: { '1': 'b' } });
 ```
 
-If you want to throw an error whenever the array limit is exceeded, set the `throwOnLimitExceeded` option to `true`. This option will generate a descriptive error if the query string exceeds a configured limit.
+If you want to throw an error whenever the array limit is exceeded, set the `throwOnLimitExceeded` option to `true`.
+This option will generate a descriptive error if the query string exceeds a configured limit.
 ```javascript
 try {
     qs.parse('a[1]=b', { arrayLimit: 0, throwOnLimitExceeded: true });
@@ -336,7 +357,11 @@ try {
 
 When `throwOnLimitExceeded` is set to `false` (default), **qs** will parse up to the specified `arrayLimit` and if the limit is exceeded, the array will instead be converted to an object with the index as the key.
 
-Note that `arrayLimit` is a *representation* threshold that controls when a numerically-indexed collection switches from an array to an object; it is **not** a hard cap on the total number of elements parsed. With the default `throwOnLimitExceeded: false`, exceeding `arrayLimit` never rejects or truncates input; it only changes the container type, and the resulting object still holds every element (so its size stays proportional to the input). This conversion is itself a safeguard: it avoids allocating a huge sparse array for input like `a[999999999]`. If you need a hard limit that rejects oversized arrays in untrusted query strings, set `throwOnLimitExceeded: true`. `throwOnLimitExceeded` still limits each array separately, not the total: with `comma: true`, each comma-separated group under `a[]=` counts as one element of the outer array, and can itself hold up to `arrayLimit` elements.
+Note that `arrayLimit` is a *representation* threshold that controls when a numerically-indexed collection switches from an array to an object; it is **not** a hard cap on the total number of elements parsed.
+With the default `throwOnLimitExceeded: false`, exceeding `arrayLimit` never rejects or truncates input; it only changes the container type, and the resulting object still holds every element (so its size stays proportional to the input).
+This conversion is itself a safeguard: it avoids allocating a huge sparse array for input like `a[999999999]`.
+If you need a hard limit that rejects oversized arrays in untrusted query strings, set `throwOnLimitExceeded: true`.
+`throwOnLimitExceeded` still limits each array separately, not the total: with `comma: true`, each comma-separated group under `a[]=` counts as one element of the outer array, and can itself hold up to `arrayLimit` elements.
 
 To prevent array syntax (`a[]`, `a[0]`) from being parsed as arrays, set `parseArrays` to `false`.
 Note that duplicate keys (e.g. `a=b&a=c`) may still produce arrays when `duplicates` is `'combine'` (the default).
@@ -408,7 +433,8 @@ If you wish to auto-convert values which look like numbers, booleans, and other 
 qs.stringify(object, [options]);
 ```
 
-When stringifying, **qs** by default URI encodes output. Objects are stringified as you would expect:
+When stringifying, **qs** by default URI encodes output.
+Objects are stringified as you would expect:
 
 ```javascript
 assert.equal(qs.stringify({ a: 'b' }), 'a=b');
@@ -704,7 +730,8 @@ var equalsInsensitive = qs.parse('a&b=');
 assert.deepEqual(equalsInsensitive, { a: '', b: '' });
 ```
 
-To distinguish between `null` values and empty strings use the `strictNullHandling` flag. In the result string the `null`
+To distinguish between `null` values and empty strings use the `strictNullHandling` flag.
+In the result string the `null`
 values have no `=` sign:
 
 ```javascript
@@ -792,7 +819,8 @@ It only affects encoding; how `null`, dates, arrays, and objects are serialized 
 assert.equal(qs.stringify({ a: 'b c~*()' }, { format: 'WHATWG' }), 'a=b+c%7E*%28%29');
 ```
 
-_(Note: the `WHATWG` format matches `URLSearchParams` encoding only with the default `utf-8` charset, and only when keys are encoded too, so not with `encodeValuesOnly`. With `charset: 'iso-8859-1'`, every format uses the same `escape`-based encoding, which leaves characters like `@` and `/` unencoded; only the space handling differs)_
+_(Note: the `WHATWG` format matches `URLSearchParams` encoding only with the default `utf-8` charset, and only when keys are encoded too, so not with `encodeValuesOnly`.
+With `charset: 'iso-8859-1'`, every format uses the same `escape`-based encoding, which leaves characters like `@` and `/` unencoded; only the space handling differs)_
 
 ## Security
 
