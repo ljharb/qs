@@ -1,3 +1,12 @@
+## **6.17.1**
+- [Fix] `parse`: `interpretNumericEntities`: decode code points above U+FFFF as surrogate pairs (#640)
+- [Fix] `parse`: respect `plainObjects` for `[]` with `parseArrays: false` (#639)
+- [Fix] `utils`: `merge`: count the elements of a sparse array against `arrayLimit`, not its holes
+- [Fix] `parse`: guard bracket-wrapped prototype keys at depth 0 (#638)
+- [Refactor] `parse`: extract wrapping-bracket stripping helper
+- [readme] document that `depth: 0` and `depth: false` keep keys flat
+- [Tests] `parse`: pin depth-0 bracket stripping and prototype keys kept by `allowPrototypes`/`plainObjects`
+
 ## **6.17.0**
 - [New] `stringify`: add `WHATWG` format (#623)
 - [Fix] `stringify`: do not sort the caller's `filter` array in place (#637)
