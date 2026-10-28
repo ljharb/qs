@@ -1265,6 +1265,19 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('returns null objects for empty brackets when parseArrays is false', { skip: !hasProto }, function (st) {
+        st.deepEqual(
+            qs.parse('a[]=b', { parseArrays: false, plainObjects: true }),
+            { __proto__: null, a: { __proto__: null, 0: 'b' } }
+        );
+        st.deepEqual(
+            qs.parse('a[]=b&a[hasOwnProperty]=c', { parseArrays: false, plainObjects: true }),
+            { __proto__: null, a: { __proto__: null, 0: 'b', hasOwnProperty: 'c' } },
+            'prototype keys land on a null object'
+        );
+        st.end();
+    });
+
     t.test('can parse with custom encoding', function (st) {
         st.deepEqual(qs.parse('%8c%a7=%91%e5%8d%e3%95%7b', {
             decoder: function (str) {
