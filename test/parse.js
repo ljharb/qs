@@ -389,11 +389,193 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('preserves unsupported text after bracket groups as literal keys (#619)', function (st) {
+        var keys = [
+            'a[b]tail',
+            'a[b]mid[c]',
+            'a[b]mid[c]tail',
+            '[a]tail[b]',
+            '[0]tail[1]',
+            'a[b[]]tail',
+            'a[b]tail[]'
+        ];
+        for (var i = 0; i < keys.length; ++i) {
+            var expected = {};
+            expected[keys[i]] = 'x';
+            st.deepEqual(qs.parse(keys[i] + '=x'), expected, 'preserves ' + keys[i]);
+        }
+        st.deepEqual(qs.parse('a%5Bb%5Dtail=x'), { 'a[b]tail': 'x' }, 'preserves the decoded key');
+        st.deepEqual(
+            qs.parse('a[b]=z&a[b]tail0=x&a[b]tail1=y'),
+            { a: { b: 'z' }, 'a[b]tail0': 'x', 'a[b]tail1': 'y' },
+            'distinct names do not merge into the same path'
+        );
+        st.end();
+    });
+
+    t.test('handles unmatched closing brackets around literal fallback keys (#619)', function (st) {
+        st.deepEqual(qs.parse('a[b]]tail=x'), { 'a[b]]tail': 'x' }, 'a closing bracket after a completed group is unsupported text');
+        st.deepEqual(qs.parse('a[b]][c]=x'), { 'a[b]][c]': 'x' }, 'an extra closing bracket between groups also uses fallback');
+        st.deepEqual(qs.parse(']a[b]=x'), { ']a': { b: 'x' } }, 'keeps stray closing brackets in the parent');
+        st.deepEqual(qs.parse('a]b=x'), { 'a]b': 'x' }, 'keeps existing flat stray-closing-bracket behavior');
+        st.end();
+    });
+
+    t.test('does not interpret [] inside literal fallback keys (#619)', function (st) {
+        var query = 'a[b]tail[]=x&a[b]tail[]=y';
+        st.deepEqual(qs.parse(query, { duplicates: 'first' }), { 'a[b]tail[]': 'x' }, 'honors duplicates: first');
+        st.deepEqual(qs.parse(query, { duplicates: 'last' }), { 'a[b]tail[]': 'y' }, 'honors duplicates: last');
+        st.deepEqual(qs.parse(query), { 'a[b]tail[]': ['x', 'y'] }, 'still combines duplicates by default');
+        st.deepEqual(
+            qs.parse('a[b]tail[]=x,y&a[b]tail[]=z', { comma: true, duplicates: 'first', arrayLimit: 2, throwOnLimitExceeded: true }),
+            { 'a[b]tail[]': ['x', 'y'] },
+            'does not count a retained comma array as growth when ignoring a later duplicate'
+        );
+        st.deepEqual(
+            qs.parse('a[b]tail[]=x,y&a[b]tail[]=z', { comma: true, duplicates: 'last', arrayLimit: 2, throwOnLimitExceeded: true }),
+            { 'a[b]tail[]': 'z' },
+            'does not count a replaced comma array as growth'
+        );
+        st.deepEqual(qs.parse('a[b]tail[]=x,y', { comma: true }), { 'a[b]tail[]': ['x', 'y'] }, 'does not wrap a comma group in an extra array');
+        st.deepEqual(
+            qs.parse('a.b[c]tail[]=x&a.b[c]tail[]=y', { allowDots: true, duplicates: 'first' }),
+            { 'a.b[c]tail[]': 'x' },
+            'also classifies dot-normalized names before handling duplicates'
+        );
+        st.deepEqual(
+            qs.parse('a[b]tail[]=x,y', { comma: true }),
+            qs.parse({ 'a[b]tail[]': 'x,y' }, { comma: true }),
+            'string and object input agree on comma values'
+        );
+        st.deepEqual(qs.parse('a[]=x&a[]=y', { duplicates: 'first' }), { a: ['x', 'y'] }, 'valid [] notation still appends');
+        st.deepEqual(
+            qs.parse(query, { depth: 0, duplicates: 'first' }),
+            { 'a[b]tail[]': ['x', 'y'] },
+            'does not change depth-zero duplicate handling'
+        );
+        st.end();
+    });
+
+    t.test('matches ordinary object-value limits for literal fallback keys (#619)', function (st) {
+        var values = ['x', 'y'];
+        var input = { 'a[b]tail[]': values };
+        st['throws'](function () {
+            qs.parse({ 'a[]': values }, { arrayLimit: 1, throwOnLimitExceeded: true });
+        }, RangeError, 'ordinary array notation enforces the limit on the resulting array');
+        st.deepEqual(
+            qs.parse({ 'a[]': values }, { arrayLimit: 2, throwOnLimitExceeded: true }),
+            { a: ['x', 'y'] },
+            'ordinary array notation accepts an array at the limit'
+        );
+        var result;
+        st.doesNotThrow(function () {
+            result = qs.parse(input, { arrayLimit: 1, throwOnLimitExceeded: true });
+        }, 'does not add new restrictions on arrays supplied by the caller');
+        st.deepEqual(result, { 'a[b]tail[]': qs.parse({ flat: values }, { arrayLimit: 1, throwOnLimitExceeded: true }).flat });
+        st.deepEqual(
+            qs.parse(input, { arrayLimit: 2, throwOnLimitExceeded: true }),
+            { 'a[b]tail[]': ['x', 'y'] },
+            'also accepts an array at the limit'
+        );
+        st.deepEqual(input, { 'a[b]tail[]': ['x', 'y'] }, 'does not mutate the supplied array');
+        st['throws'](function () {
+            qs.parse({ 'a[b]tail[]': 'x,y' }, { comma: true, arrayLimit: 1, throwOnLimitExceeded: true });
+        }, RangeError, 'enforces limits on comma arrays created from object input');
+        st['throws'](function () {
+            qs.parse('a[b]tail[]=x,y', { comma: true, arrayLimit: 1, throwOnLimitExceeded: true });
+        }, RangeError, 'enforces the same comma limit on string input');
+        st.deepEqual(
+            qs.parse(input, { arrayLimit: 0, throwOnLimitExceeded: true }),
+            { 'a[b]tail[]': ['x', 'y'] },
+            'keeps upstream behavior for caller-supplied arrays at a zero limit'
+        );
+        st.end();
+    });
+
+    t.test('distinguishes supported dot notation from unsupported bracket text (#619)', function (st) {
+        st.deepEqual(qs.parse('a[b]=x'), { a: { b: 'x' } }, 'keeps ordinary brackets');
+        st.deepEqual(qs.parse('a.b[c]=x', { allowDots: true }), { a: { b: { c: 'x' } } }, 'allows dots before brackets');
+        st.deepEqual(qs.parse('a[b].c=x', { allowDots: true }), { a: { b: { c: 'x' } } }, 'allows dots after brackets');
+        st.deepEqual(qs.parse('a[b].[c]=x', { allowDots: true }), { 'a[b].[c]': 'x' }, 'a dot immediately before [ is unsupported text');
+        st.deepEqual(qs.parse('a[b].[c]=x'), { 'a[b].[c]': 'x' }, 'does not discard an inter-group dot without allowDots either');
+        st.deepEqual(qs.parse('a[b].[c]tail=x', { allowDots: true }), { 'a[b].[c]tail': 'x' }, 'preserves the entire name when a suffix also follows');
+        st.deepEqual(qs.parse('a[b.c]=x', { allowDots: true }), { a: { 'b.c': 'x' } }, 'keeps dots inside brackets');
+        st.deepEqual(qs.parse('user.email.=x', { allowDots: true }), { user: { email: 'x' } }, 'keeps the established trailing-dot behavior');
+        st.deepEqual(qs.parse('a[b].=x', { allowDots: true }), { a: { b: 'x' } }, 'allows a trailing dot after a bracket group');
+        st.deepEqual(qs.parse('a[b].=x'), { 'a[b].': 'x' }, 'does not ignore a trailing dot without allowDots');
+        st.deepEqual(qs.parse('a.b[c]tail=x', { allowDots: true }), { 'a.b[c]tail': 'x' }, 'uses the original name for fallback');
+        st.deepEqual(qs.parse('a[b]tail.c=x', { allowDots: true }), { 'a[b]tail.c': 'x' }, 'does not normalize dots in a fallback name');
+        st.deepEqual(qs.parse('a[b].c[d]tail=x', { allowDots: true }), { 'a[b].c[d]tail': 'x' }, 'checks mixed notation in full');
+        st.deepEqual(qs.parse('a[b].c=x'), { 'a[b].c': 'x' }, 'dot notation requires allowDots');
+        st.end();
+    });
+
+    t.test('classifies literal fallback keys before applying positive depth limits (#619)', function (st) {
+        st.deepEqual(qs.parse('a[b][c]tail=x', { depth: 1 }), { 'a[b][c]tail': 'x' }, 'finds text beyond the depth budget');
+        var result;
+        st.doesNotThrow(function () {
+            result = qs.parse('a[b][c]tail=x', { depth: 1, strictDepth: true });
+        }, 'a literal key does not exceed nesting depth');
+        st.deepEqual(result, { 'a[b][c]tail': 'x' });
+        st.doesNotThrow(function () {
+            result = qs.parse('a[b][c][d][e][f][g]tail=x', { strictDepth: true });
+        }, 'also classifies beyond the default depth');
+        st.deepEqual(result, { 'a[b][c][d][e][f][g]tail': 'x' });
+        st['throws'](function () {
+            qs.parse('a[b][c]=x', { depth: 1, strictDepth: true });
+        }, RangeError, 'supported notation still obeys strictDepth');
+        st.deepEqual(qs.parse('a[b][c]=x', { depth: 1 }), { a: { b: { '[c]': 'x' } } }, 'keeps ordinary depth truncation');
+        st.deepEqual(
+            qs.parse('a.b[c]tail=x', { depth: 0, allowDots: true, strictDepth: true }),
+            { 'a[b][c]tail': 'x' },
+            'depth zero keeps its existing dot normalization'
+        );
+        st.deepEqual(
+            qs.parse('a.b[c]tail=x', { depth: false, allowDots: true }),
+            { 'a[b][c]tail': 'x' },
+            'depth false keeps its existing behavior'
+        );
+        st.end();
+    });
+
+    t.test('constructs literal fallback properties safely (#619)', function (st) {
+        var result = qs.parse('constructor[b]tail=x&a[constructor]tail=y&[__proto__]tail[b]=z');
+        st.deepEqual(result, {
+            'constructor[b]tail': 'x',
+            'a[constructor]tail': 'y',
+            '[__proto__]tail[b]': 'z'
+        }, 'prototype-related text in a literal name is ordinary text');
+        st.equal(Object.getPrototypeOf(result), Object.prototype, 'does not change the output prototype');
+        st.deepEqual(qs.parse('constructor=x&a[constructor]=y&__proto__[qs619]=z'), {}, 'still guards actual prototype paths');
+        st.deepEqual(qs.parse('constructor=x', { allowPrototypes: true }), { constructor: 'x' }, 'still honors allowPrototypes');
+        st.deepEqual(qs.parse('__proto__[qs619]=z', { allowPrototypes: true }), {}, 'still blocks __proto__ assignment');
+        st.equal('qs619' in Object.prototype, false, 'does not pollute Object.prototype');
+        var plain = qs.parse('a[b]tail=x', { plainObjects: true });
+        st.equal(Object.getPrototypeOf(plain), null, 'honors plainObjects for literal output');
+        st.equal(plain['a[b]tail'], 'x');
+        st.end();
+    });
+
+    t.test('preserves values and options for literal fallback keys (#619)', function (st) {
+        var input = { 'a.b[c]tail': { d: 'x' } };
+        st.deepEqual(qs.parse(input, { allowDots: true }), input, 'also handles object input');
+        st.deepEqual(input, { 'a.b[c]tail': { d: 'x' } }, 'does not mutate object input');
+        st.deepEqual(qs.parse({ 'a[b]tail': 'x,y' }, { comma: true }), { 'a[b]tail': ['x', 'y'] }, 'keeps object-input comma parsing');
+        st.deepEqual(qs.parse('a[b]tail=x,y', { comma: true }), { 'a[b]tail': ['x', 'y'] }, 'keeps string-input comma parsing');
+        st.deepEqual(qs.parse('a[b]tail=x&a[b]tail=y'), { 'a[b]tail': ['x', 'y'] }, 'combines exact duplicates');
+        st.deepEqual(qs.parse('a[b]tail=x&a[b]tail=y', { duplicates: 'first' }), { 'a[b]tail': 'x' }, 'honors duplicates: first');
+        st.deepEqual(qs.parse('a[b]tail=x&a[b]tail=y', { duplicates: 'last' }), { 'a[b]tail': 'y' }, 'honors duplicates: last');
+        st.deepEqual(qs.parse('a[b]tail', { strictNullHandling: true }), { 'a[b]tail': null }, 'keeps null values');
+        st.deepEqual(qs.parse('a%252Eb[c]tail=x', { decodeDotInKeys: true }), { 'a.b[c]tail': 'x' }, 'honors decodeDotInKeys');
+        st.deepEqual(qs.parse('a%252eb[c]tail=x', { decodeDotInKeys: true }), { 'a.b[c]tail': 'x' }, 'also decodes lowercase dot escapes');
+        st.end();
+    });
+
     t.test('currently parses unbalanced bracket keys after a parent leniently to literal segments (issue #558)', function (st) {
         characterizeParse(st, 'a[bc=v', undefined, { a: { '[bc': 'v' } }, 'unclosed group after a parent');
         characterizeParse(st, 'a[=v', undefined, { a: { '[': 'v' } }, 'bare unclosed bracket after a parent');
         characterizeParse(st, 'a[b][c=v', undefined, { a: { b: { '[c': 'v' } } }, 'unclosed group after a valid one');
-        characterizeParse(st, 'a[b]c[d=v', undefined, { a: { b: { '[d': 'v' } } }, 'unclosed group after text following a valid one');
+        st.deepEqual(qs.parse('a[b]c[d=v'), { 'a[b]c[d': 'v' }, 'unsupported text before an unclosed group uses literal fallback (#619)');
         characterizeParse(st, 'filters[customtags:Env: Prod=v', undefined, { filters: { '[customtags:Env: Prod': 'v' } }, 'the issue #558 reproduction');
         characterizeParse(st, '][a=v', undefined, { ']': { '[a': 'v' } }, 'stray close bracket before an unclosed group');
         characterizeParse(st, 'a][b=v', undefined, { 'a]': { '[b': 'v' } }, 'stray close bracket inside the parent');
@@ -413,9 +595,9 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('lenient unbalanced-bracket handling currently depends on the depth option (issue #558)', function (st) {
-        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 5 }, { a: { b: { d: { '[f': 'v' } } } }, 'consumes groups up to the depth budget then keeps the unclosed remainder literal');
-        characterizeParse(st, 'a[b]c[d]e[f=v', { depth: 1 }, { a: { b: { '[d]e[f': 'v' } } }, 'a lower depth keeps more of the unclosed remainder literal');
+    t.test('unsupported text before unclosed groups stays literal at different depths (#619)', function (st) {
+        st.deepEqual(qs.parse('a[b]c[d]e[f=v', { depth: 5 }), { 'a[b]c[d]e[f': 'v' }, 'preserves the complete key');
+        st.deepEqual(qs.parse('a[b]c[d]e[f=v', { depth: 1 }), { 'a[b]c[d]e[f': 'v' }, 'does not depend on the depth budget');
         characterizeParse(st, 'a[bc=v', { depth: 0 }, { 'a[bc': 'v' }, 'depth 0 keeps the entire key literal');
         st.end();
     });
@@ -425,16 +607,16 @@ test('parse()', function (t) {
         st.end();
     });
 
-    t.test('valid and stray-close bracket keys are unaffected by unbalanced-bracket handling', function (st) {
+    t.test('stray-close keys and unsupported trailing text stay literal', function (st) {
         characterizeParse(st, 'a]b=v', undefined, { 'a]b': 'v' }, 'stray close bracket with no open bracket stays a flat key');
-        characterizeParse(st, 'a[b]extra=v', undefined, { a: { b: 'v' } }, 'text after a balanced group is ignored');
+        st.deepEqual(qs.parse('a[b]extra=v'), { 'a[b]extra': 'v' }, 'text after a balanced group is preserved (#619)');
         st.end();
     });
 
     t.test('currently moves the key/value split to a later `]=` when the first `=` comes before any bracket group', function (st) {
         characterizeParse(st, 'a=b[c]=d', undefined, { 'a=b': { c: 'd' } }, 'literal brackets after the first `=`');
         characterizeParse(st, 'q=%5B1%5D=2', undefined, { 'q=': ['2'] }, 'encoded brackets collapse to an array');
-        characterizeParse(st, 'role=guest%5Bx%5Dy%5D=z', undefined, { 'role=guest': { x: 'z' } }, 'group opens after the first `=`, and the text after it is dropped');
+        st.deepEqual(qs.parse('role=guest%5Bx%5Dy%5D=z'), { 'role=guest[x]y]': 'z' }, 'keeps the existing key/value split and preserves unsupported key text (#619)');
         characterizeParse(st, 'role=guest%5D=admin', undefined, { 'role=guest]': 'admin' }, 'encoded `]=` with no bracket group at all');
         st.end();
     });
@@ -1090,14 +1272,15 @@ test('parse()', function (t) {
     });
 
     t.test('strictMerge conflicts do not overwrite values once the container overflows', function (st) {
+        // Use valid dot/bracket aliases rather than the discarded-text aliases fixed by #619.
         st.deepEqual(
-            qs.parse('a[z]=v0&a=v1&a[y]=v2&[a]=v3&[a]x=v4&a[2]=v5&[a]x1=v6', { arrayLimit: 2 }),
+            qs.parse('a[z]=v0&a=v1&a[y]=v2&[a]=v3&.a=v4&a[2]=v5&[a].=v6', { arrayLimit: 2, allowDots: true }),
             { a: { 0: { z: 'v0' }, 1: 'v1', 2: ['v3', 'v5'], 3: 'v4', 4: 'v6', y: 'v2' } },
             'a conflict appended after the container overflowed keeps every value'
         );
 
         st.deepEqual(
-            qs.parse('a[2]=v1&a=v5&a=v7&[a]x=v9', { parseArrays: false, arrayLimit: 1 }),
+            qs.parse('a[2]=v1&a=v5&a=v7&[a]=v9', { parseArrays: false, arrayLimit: 1 }),
             { a: { 0: 'v5', 1: 'v7', 2: 'v1', 3: 'v9' } },
             'an index the container already holds is not reused'
         );

@@ -95,10 +95,24 @@ Because of that bracket grammar,
 and it never has.
 `URLSearchParams` reads `'foo[bar]=baz'` as one flat name `foo[bar]`;
 **qs** reads it as the path `foo.bar`.
-Text that **qs**'s grammar cannot place,
-such as the `extra` in `'foo[bar]extra=baz'`,
-is currently dropped, so several distinct flat names can resolve to the same **qs** path
-(see [#619](https://github.com/ljharb/qs/issues/619)).
+With a positive `depth`, unsupported text between or after balanced bracket groups
+makes the entire decoded parameter name a literal key (see [#619](https://github.com/ljharb/qs/issues/619)).
+Dots in a literal fallback key are preserved, even with `allowDots: true`:
+
+```javascript
+assert.deepEqual(qs.parse('foo[bar]extra=baz'), { 'foo[bar]extra': 'baz' });
+assert.deepEqual(qs.parse('a[b]mid[c]=x'), { 'a[b]mid[c]': 'x' });
+assert.deepEqual(qs.parse('a.b[c]tail=x', { allowDots: true }), { 'a.b[c]tail': 'x' });
+assert.deepEqual(qs.parse('a[b].[c]=x', { allowDots: true }), { 'a[b].[c]': 'x' });
+```
+
+Supported bracket and dot notation keeps its existing behavior, including ignoring a trailing dot after a nested path when `allowDots` is enabled.
+A dot immediately before `[` is not converted by dot normalization. When it follows a completed bracket group, as in `a[b].[c]`, it triggers literal fallback even with `allowDots: true`; earlier versions silently discarded that dot.
+The complete key is checked before applying a positive depth limit. A literal fallback creates no nesting, so `strictDepth` does not reject it.
+Setting `depth` to `0` or `false` keeps the existing unsplit-key behavior, including dot normalization when `allowDots` is enabled.
+Unclosed bracket groups keep their lenient handling unless unsupported text follows an earlier balanced group.
+An extra closing bracket after a completed group also triggers literal fallback; stray closing brackets in the parent keep their existing behavior.
+Brackets in a literal fallback name have no structural meaning, so a trailing `[]` does not force duplicate values to combine or add another array around comma-separated values.
 
 So validating, authorizing, filtering,
 or signing a query string with one parser and then consuming it with another is unsafe: a deny list or signature computed over `URLSearchParams` names does not constrain what **qs** will produce from the same string.
