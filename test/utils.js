@@ -660,8 +660,19 @@ test('encode', function (t) {
 
     t.equal(
         utils.encode('abc 123 💩', null, 'iso-8859-1'),
-        'abc%20123%20%26%2355357%3B%26%2356489%3B',
+        'abc%20123%20%26%23128169%3B',
         'encodes in iso-8859-1'
+    );
+
+    t.equal(
+        utils.encode('😀 ￿ \uD800􏿿', null, 'iso-8859-1'),
+        '%26%23128512%3B%20%26%2365535%3B%20%26%2365533%3B%26%231114111%3B',
+        'encodes a surrogate pair as one numeric entity of its code point in iso-8859-1'
+    );
+    t.equal(
+        utils.encode('\uD83D \uDCA9\uD83D', null, 'iso-8859-1'),
+        '%26%2365533%3B%20%26%2365533%3B%26%2365533%3B',
+        'encodes lone and reversed surrogates as the U+FFFD numeric entity in iso-8859-1'
     );
 
     var longString = '';

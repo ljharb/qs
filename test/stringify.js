@@ -1921,6 +1921,16 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('encodes a character above U+FFFF as one numeric entity of its code point in iso-8859-1 mode', function (st) {
+        st.equal(qs.stringify({ a: '😀' }, { charset: 'iso-8859-1' }), 'a=%26%23128512%3B');
+        st.deepEqual(
+            qs.parse(qs.stringify({ a: '😀' }, { charset: 'iso-8859-1' }), { charset: 'iso-8859-1', interpretNumericEntities: true }),
+            { a: '😀' },
+            'round-trips with `interpretNumericEntities`'
+        );
+        st.end();
+    });
+
     t.test('encodes a literal `+` as `%2B` in iso-8859-1 mode so it round-trips', function (st) {
         st.equal(qs.stringify({ a: 'b+c' }, { charset: 'iso-8859-1' }), 'a=b%2Bc', 'a `+` in a value is percent-encoded');
         st.equal(qs.stringify({ 'a+b': 'c' }, { charset: 'iso-8859-1' }), 'a%2Bb=c', 'a `+` in a key is percent-encoded');
