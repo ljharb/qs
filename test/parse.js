@@ -1379,6 +1379,20 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('interprets numeric entities above U+10FFFF as U+FFFD', function (st) {
+        var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.deepEqual(qs.parse('foo=%26%231114112%3B', options), { foo: '\uFFFD' }, '0x110000, one past U+10FFFF');
+        st.deepEqual(qs.parse('foo=%26%231114172%3B', options), { foo: '\uFFFD' }, '0x11003C does not wrap around to `<`');
+        st.deepEqual(qs.parse('foo=%26%234294967356%3B', options), { foo: '\uFFFD' }, '2 ** 32 + 60 does not wrap around to `<`');
+        st.deepEqual(qs.parse('foo=%26%2399999999999999999999%3B', options), { foo: '\uFFFD' }, 'a number too large to be exact');
+        st.deepEqual(
+            qs.parse(qs.stringify({ foo: '\uD83D\uDE00' }, { charset: 'iso-8859-1' }), options),
+            { foo: '\uD83D\uDE00' },
+            'surrogate halves, which `stringify` emits for astral characters in iso-8859-1, still decode as before'
+        );
+        st.end();
+    });
+
     t.test('interprets numeric entities in each value, but not in keys', function (st) {
         var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
         st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',x', options), { a: '☺,x' }, 'a value with commas stays one string without `comma`');
