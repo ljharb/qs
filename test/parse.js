@@ -2292,6 +2292,41 @@ test('`duplicates` option', function (t) {
         st.end();
     });
 
+    t.test('folds many duplicates into one array without copying it for each one', function (st) {
+        var calls = 0;
+        var combine = utils.combine;
+        st.teardown(mockProperty(utils, 'combine', {
+            value: function () {
+                calls += 1;
+                return combine.apply(this, arguments);
+            }
+        }));
+
+        var parts = [];
+        var expected = [];
+        for (var i = 0; i < 100; i += 1) {
+            parts[parts.length] = 'a=' + i;
+            expected[expected.length] = String(i);
+        }
+
+        st.deepEqual(qs.parse(parts.join('&'), { arrayLimit: 100 }), { a: expected }, 'keeps every value, in order');
+        st.equal(calls, 1, 'only the first duplicate goes through `utils.combine`');
+
+        st.end();
+    });
+
+    t.test('does not mutate an array returned by the decoder when combining duplicates', function (st) {
+        var shared = ['x'];
+        var decoder = function (str, defaultDecoder, charset, type) {
+            return type === 'value' ? shared : defaultDecoder(str, defaultDecoder, charset);
+        };
+
+        st.deepEqual(qs.parse('a=1&a=2&a=3', { decoder: decoder }), { a: ['x', 'x', 'x'] }, 'each duplicate is spread into the result');
+        st.deepEqual(shared, ['x'], 'the array the decoder returned is unchanged');
+
+        st.end();
+    });
+
     t.test('`[]=` in a value does not force combining', function (st) {
         st.deepEqual(
             qs.parse('a[b]=1&a[b]=2[]=3', { duplicates: 'last' }),
