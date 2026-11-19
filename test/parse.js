@@ -1868,6 +1868,26 @@ test('parse()', function (t) {
             sst.end();
         });
 
+        st.test('does not visit the holes of a sparse indexed array', { skip: !hasPropertyDescriptors }, function (sst) {
+            var holeReads = 0;
+            sst.teardown(mockProperty(Array.prototype, 5, {
+                get: function () {
+                    holeReads += 1;
+                    return void undefined;
+                },
+                set: function () {},
+                nonEnumerable: true
+            }));
+
+            sst.deepEqual(qs.parse('a[0]=x&a[10]=y'), { a: ['x', 'y'] }, 'merging into a sparse array');
+            sst.deepEqual(qs.parse('a[10]=y'), { a: ['y'] }, 'compacting a sparse array');
+            sst.deepEqual(qs.parse('a[10]=y&a[b]=z'), { a: { 10: 'y', b: 'z' } }, 'converting a sparse array to an object');
+            sst.deepEqual(qs.parse('a[19]=x&a[19][b]=y&a[0]=z'), { a: ['z', 'x', { b: 'y' }] }, 'counting a sparse array longer than arrayLimit');
+            sst.equal(holeReads, 0, 'no hole was read');
+
+            sst.end();
+        });
+
         st.test('enforces arrayLimit when a strictMerge conflict appends to its container', function (sst) {
             var aliased = 'a[z]=o&a=p&a[y]=q&[a]=r';
             sst['throws'](
