@@ -43,7 +43,7 @@
         "common-shakeify": "~1.0.0",
         "eclint": "^2.8.1",
         "es-value-fixtures": "^1.7.1",
-        "eslint": "^10.13.0",
+        "eslint": "^10.15.0",
         "evalmd": "^0.1.0",
         "for-each": "^0.3.5",
         "glob": "=10.3.7",
@@ -61,11 +61,11 @@
         "module-deps": "^6.2.3",
         "npmignore": "^0.3.6",
         "nyc": "^10.3.2",
-        "object-inspect": "^1.13.4",
+        "object-inspect": "^1.14.0",
         "qs-iconv": "^1.0.4",
         "safe-publish-latest": "^2.0.0",
         "safer-buffer": "^2.1.2",
-        "tape": "^5.10.3",
+        "tape": "^5.11.0",
         "unassertify": "^3.0.1"
     },
     "scripts": {
