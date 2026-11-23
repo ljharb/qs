@@ -639,7 +639,7 @@ test('encode', function (t) {
 
     t.equal(utils.encode(''), '', 'empty string returns itself');
     t.deepEqual(utils.encode([]), [], 'empty array returns itself');
-    t.deepEqual(utils.encode({ length: 0 }), { length: 0 }, 'empty arraylike returns itself');
+    t.equal(utils.encode({ length: 0 }), '%5Bobject%20Object%5D', 'empty non-array arraylike is coerced and encoded');
 
     t.test('symbols', { skip: !v.hasSymbols }, function (st) {
         st.equal(utils.encode(Symbol('x')), 'Symbol%28x%29', 'symbol is encoded');

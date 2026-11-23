@@ -1172,6 +1172,40 @@ test('stringify()', function (t) {
         st.end();
     });
 
+    t.test('arrayFormat=comma: encodeValuesOnly encodes entries whose `length` is 0', function (st) {
+        var entry = { length: 0, toString: function () { return 'p q&r=s'; } };
+        var output = qs.stringify({ a: ['b', entry, 'c'] }, { arrayFormat: 'comma', encodeValuesOnly: true });
+        st.equal(output, 'a=b,p%20q%26r%3Ds,c', 'arraylike with a custom `toString`');
+        st.deepEqual(qs.parse(output), { a: 'b,p q&r=s,c' }, 'parses back without an injected parameter');
+        st.equal(
+            qs.stringify({ a: ['b', entry, 'c'] }, { arrayFormat: 'comma', encodeValuesOnly: true, format: 'RFC1738' }),
+            'a=b,p+q%26r%3Ds,c',
+            'arraylike with a custom `toString`, RFC1738'
+        );
+
+        var fn = function () {};
+        fn.toString = function () { return 'p q&r=s'; };
+        st.equal(
+            qs.stringify({ a: ['b', fn, 'c'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=b,p%20q%26r%3Ds,c',
+            'function with no parameters'
+        );
+
+        st.equal(
+            qs.stringify(JSON.parse('{ "a": ["b", { "length": 0 }, "c"] }'), { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=b,%5Bobject%20Object%5D,c',
+            'JSON object with `length` 0'
+        );
+
+        st.equal(
+            qs.stringify({ a: ['b', [], 'c'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
+            'a=b,,c',
+            'empty array entry is still empty'
+        );
+
+        st.end();
+    });
+
     t.test('arrayFormat=comma: entries with `Symbol.toPrimitive` are unaffected', { skip: !hasSymbols() || typeof Symbol.toPrimitive !== 'symbol' }, function (st) {
         var entry = { toString: 'x' };
         entry[Symbol.toPrimitive] = function () { return 'p'; };
