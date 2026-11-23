@@ -632,6 +632,36 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('parses many indexed keys under a large arrayLimit', function (st) {
+        var count = 5000;
+        var parts = [];
+        var expected = [];
+        for (var i = 0; i < count; i++) {
+            parts[parts.length] = 'a[' + (count - 1 - i) + ']=' + (count - 1 - i);
+            expected[i] = String(i);
+        }
+
+        st.deepEqual(
+            qs.parse(parts.join('&'), { arrayLimit: count, parameterLimit: count }),
+            { a: expected },
+            'indices given in reverse order build an ordered array'
+        );
+
+        st.deepEqual(
+            qs.parse('a[3]=d&a[1]=b&a[3]=e&a[0]=a', { arrayLimit: 10 }),
+            { a: ['a', 'b', ['d', 'e']] },
+            'a repeated index combines, and sparse entries compact in index order'
+        );
+
+        st.deepEqual(
+            qs.parse('a[2][b]=c&a[2][d]=e&a[0]=x', { arrayLimit: 10 }),
+            { a: ['x', { b: 'c', d: 'e' }] },
+            'objects at the same index merge'
+        );
+
+        st.end();
+    });
+
     t.test('does not throw when a native prototype has an enumerable property', function (st) {
         st.intercept(Object.prototype, 'crash', { value: '' });
         st.intercept(Array.prototype, 'crash', { value: '' });
