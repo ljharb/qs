@@ -2372,6 +2372,14 @@ test('`duplicates` option', function (t) {
         st.end();
     });
 
+    t.test('duplicates does not affect distinct indices or comma-joined values', function (st) {
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { duplicates: 'first' }), { a: ['b', 'c'] }, 'duplicates first: distinct indices');
+        st.deepEqual(qs.parse('a[0]=b&a[1]=c', { duplicates: 'last' }), { a: ['b', 'c'] }, 'duplicates last: distinct indices');
+        st.deepEqual(qs.parse('a=b,c', { duplicates: 'first' }), { a: 'b,c' }, 'duplicates first: comma-joined value');
+        st.deepEqual(qs.parse('a=b,c', { duplicates: 'last' }), { a: 'b,c' }, 'duplicates last: comma-joined value');
+        st.end();
+    });
+
     t.test('`[]=` in a value does not force combining', function (st) {
         st.deepEqual(
             qs.parse('a[b]=1&a[b]=2[]=3', { duplicates: 'last' }),
