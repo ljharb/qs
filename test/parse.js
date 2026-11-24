@@ -1135,6 +1135,56 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('strictMerge combines strings and dotted objects with the same key', function (st) {
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2', { allowDots: true }),
+            { a: ['val1', { b: 'val2' }] },
+            'string + object'
+        );
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1', { allowDots: true }),
+            { a: [{ b: 'val2' }, 'val1'] },
+            'object + string'
+        );
+
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1&a.c=val3', { allowDots: true }),
+            { a: { 0: { b: 'val2' }, 1: 'val1', c: 'val3' } },
+            'object + string + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a.b=val2&a=val1&a=val3', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val3', b: 'val2' } },
+            'object + string + string'
+        );
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2&a=val3', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val3', b: 'val2' } },
+            'string + object + string'
+        );
+
+        st.deepEqual(
+            qs.parse('a=val1&a=val2&a=val3&a.b=val4', { allowDots: true }),
+            { a: { 0: 'val1', 1: 'val2', 2: 'val3', b: 'val4' } },
+            'string + string + string + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a=val1&a.b=val2&a.b=val3', { allowDots: true }),
+            { a: ['val1', { b: ['val2', 'val3'] }] },
+            'string + object + object'
+        );
+
+        st.deepEqual(
+            qs.parse('a.b.c=val3&a.b=val2&a=val1', { allowDots: true }),
+            { a: [{ b: [{ c: 'val3' }, 'val2'] }, 'val1'] },
+            'nested object + object + string'
+        );
+
+        st.end();
+    });
+
     t.test('dunder proto is ignored', function (st) {
         var payload = 'categories[__proto__]=login&categories[__proto__]&categories[length]=42';
         var result = qs.parse(payload, { allowPrototypes: true });
