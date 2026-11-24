@@ -99,6 +99,14 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('other punctuation in keys does not create nesting', function (st) {
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e'), { 'a{b}': 'c', 'a{d}': 'e' }, 'curly braces');
+        st.deepEqual(qs.parse('a{b}=c&a{d}=e', { allowDots: true }), { 'a{b}': 'c', 'a{d}': 'e' }, 'curly braces, with allowDots');
+        st.deepEqual(qs.parse('a/b=c&a/d=e'), { 'a/b': 'c', 'a/d': 'e' }, 'slashes');
+        st.deepEqual(qs.parse('a/b=c&a/d=e', { allowDots: true }), { 'a/b': 'c', 'a/d': 'e' }, 'slashes, with allowDots');
+        st.end();
+    });
+
     t.test('decode dot keys with case-insensitive percent escapes', function (st) {
         var input = 'name%252eobj.first%252ename=John&name%252Eobj.last%252Ename=Doe';
         st.deepEqual(
