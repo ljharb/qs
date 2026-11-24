@@ -38,7 +38,7 @@ test('stringify()', function (t) {
             'a%EF%BF%BD.b=c',
             'lone surrogate does not swallow a dot separator'
         );
-        st.equal(qs.stringify({ a: ['x\uD800', 'y'] }, { arrayFormat: 'comma' }), 'a=x%EF%BF%BD%2Cy', 'lone surrogate does not swallow a comma');
+        st.equal(qs.stringify({ a: ['x\uD800', 'y'] }, { arrayFormat: 'comma' }), 'a=x%EF%BF%BD,y', 'lone surrogate does not swallow a comma');
         st.equal(
             qs.stringify({ a: ['x\uD800', 'y'] }, { arrayFormat: 'comma', encodeValuesOnly: true }),
             'a=x%EF%BF%BD,y',
@@ -432,12 +432,12 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma' }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
             'comma => comma'
         );
         st.equal(
             qs.stringify({ a: ['b', 'c', 'd'] }, { arrayFormat: 'comma', commaRoundTrip: true }),
-            'a=b%2Cc%2Cd',
+            'a=b,c,d',
             'comma round trip => comma'
         );
         st.equal(
@@ -694,10 +694,51 @@ test('stringify()', function (t) {
 
         st.test('array with multiple items with a comma inside', function (s2t) {
             s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { encodeValuesOnly: true, arrayFormat: 'comma' }), 'a=c%2Cd,e');
-            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a=c%2Cd%2Ce');
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a=c%2Cd,e');
 
             s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { encodeValuesOnly: true, arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd,e');
-            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd%2Ce');
+            s2t.equal(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma', commaRoundTrip: true }), 'a=c%2Cd,e');
+
+            s2t.end();
+        });
+
+        st.test('the separator is a literal comma, and each item and the key are encoded', function (s2t) {
+            s2t.equal(qs.stringify({ 'a b': ['c,d', 'e'] }, { arrayFormat: 'comma' }), 'a%20b=c%2Cd,e', 'key is encoded');
+            s2t.equal(qs.stringify({ a: { b: ['c', 'd'] } }, { arrayFormat: 'comma' }), 'a%5Bb%5D=c,d', 'nested key is encoded');
+            s2t.equal(qs.stringify({ a: ['b c', 'd,e'] }, { arrayFormat: 'comma', format: 'RFC1738' }), 'a=b+c,d%2Ce', 'RFC1738');
+            s2t.equal(qs.stringify({ a: ['b c', 'd,e'] }, { arrayFormat: 'comma', format: 'RFC3986' }), 'a=b%20c,d%2Ce', 'RFC3986');
+
+            s2t.deepEqual(
+                qs.parse(qs.stringify({ a: ['c,d', 'e'] }, { arrayFormat: 'comma' }), { comma: true }),
+                { a: ['c,d', 'e'] },
+                'round trips through parse'
+            );
+
+            s2t.end();
+        });
+
+        st.test('a custom encoder is called on each item', function (s2t) {
+            var calls = [];
+            var encoder = function (str, defaultEncoder, charset, type, format) {
+                calls[calls.length] = [str, type];
+                return defaultEncoder(str, defaultEncoder, charset, type, format);
+            };
+
+            s2t.equal(qs.stringify({ a: ['b,c', 'd'] }, { arrayFormat: 'comma', encoder: encoder }), 'a=b%2Cc,d');
+            s2t.deepEqual(calls, [['b,c', 'value'], ['d', 'value'], ['a', 'key']]);
+
+            s2t.end();
+        });
+
+        st.test('a value a filter returns in place of the joined items is still encoded', function (s2t) {
+            var replaceWith = function (replacement) {
+                return function (prefix, value) {
+                    return prefix === 'a' && typeof value === 'string' ? replacement : value;
+                };
+            };
+
+            s2t.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma', filter: replaceWith('d&e=f') }), 'a=d%26e%3Df', 'string');
+            s2t.equal(qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma', filter: replaceWith({ x: 'd&e=f' }) }), 'a%5Bx%5D=d%26e%3Df', 'object');
 
             s2t.end();
         });
@@ -726,7 +767,7 @@ test('stringify()', function (t) {
 
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'indices' }), 'a%5B0%5D=%2C&a%5B1%5D=&a%5B2%5D=c%2Cd%25');
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'brackets' }), 'a%5B%5D=%2C&a%5B%5D=&a%5B%5D=c%2Cd%25');
-        st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'comma' }), 'a=%2C%2C%2Cc%2Cd%25');
+        st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'comma' }), 'a=%2C,,c%2Cd%25');
         st.equal(qs.stringify({ a: [',', '', 'c,d%'] }, { encode: true, encodeValuesOnly: false, arrayFormat: 'repeat' }), 'a=%2C&a=&a=c%2Cd%25');
 
         st.end();
@@ -1077,7 +1118,7 @@ test('stringify()', function (t) {
 
     t.test('arrayFormat=comma: does not crash on entries with no callable `toString`', function (st) {
         var json = JSON.parse('{ "a": ["b", { "toString": "x" }, "c"] }');
-        st.equal(qs.stringify(json, { arrayFormat: 'comma' }), 'a=b%2C%5Bobject%20Object%5D%2Cc', 'JSON own `toString`');
+        st.equal(qs.stringify(json, { arrayFormat: 'comma' }), 'a=b,%5Bobject%20Object%5D,c', 'JSON own `toString`');
         st.equal(qs.stringify(json, { arrayFormat: 'comma', encode: false }), 'a=b,[object Object],c', 'with encode: false');
         st.equal(
             qs.stringify(json, { arrayFormat: 'comma', encodeValuesOnly: true }),
@@ -1553,7 +1594,7 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: [date, 'x'] }, { filter: identity, arrayFormat: 'comma' }),
-            'a=' + iso + '%2Cx',
+            'a=' + iso + ',x',
             'Dates inside a comma array are serialized through a filter, not stringified as locale text'
         );
         st.equal(
@@ -1792,7 +1833,7 @@ test('stringify()', function (t) {
         );
         st.equal(
             qs.stringify({ a: ['~ x', '*'] }, { format: qs.formats.WHATWG, arrayFormat: 'comma' }),
-            'a=%7E+x%2C*',
+            'a=%7E+x,*',
             'arrayFormat comma'
         );
 

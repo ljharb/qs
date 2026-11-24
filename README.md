@@ -561,6 +561,14 @@ qs.stringify({ a: ['b', 'c'] }, { arrayFormat: 'comma' })
 
 Note: when using `arrayFormat` set to `'comma'`, you can also pass the `commaRoundTrip` option set to `true` or `false`, to append `[]` on single-item arrays, so that they can round trip through a parse.
 
+With `arrayFormat` set to `'comma'`, each item is encoded on its own and the items are joined with a literal comma, in every `format`, so that items containing commas can round trip through a parse with `comma: true`:
+
+```javascript
+var commaItems = qs.stringify({ a: ['b,c', 'd'] }, { arrayFormat: 'comma' });
+assert.equal(commaItems, 'a=b%2Cc,d');
+assert.deepEqual(qs.parse(commaItems, { comma: true }), { a: ['b,c', 'd'] });
+```
+
 When objects are stringified, by default they use bracket notation:
 
 ```javascript
