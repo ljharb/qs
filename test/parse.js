@@ -2452,6 +2452,24 @@ test('`duplicates` option', function (t) {
         st.end();
     });
 
+    t.test('mixing plain and bracket notation', function (st) {
+        st.deepEqual(qs.parse('a[]=1&a=2', { duplicates: 'combine' }), { a: ['1', '2'] }, 'duplicates combine: `[]` then plain combine');
+        st.deepEqual(qs.parse('a=1&a[b]=2', { duplicates: 'combine' }), { a: ['1', { b: '2' }] }, 'duplicates combine: plain then brackets combine');
+        st.deepEqual(
+            qs.parse('a.b=1&a=2', { allowDots: true, duplicates: 'combine' }),
+            { a: [{ b: '1' }, '2'] },
+            'duplicates combine: dots then plain combine'
+        );
+
+        st.deepEqual(qs.parse('a[b]=1&a=2', { depth: 0, duplicates: 'first' }), { 'a[b]': '1', a: '2' }, 'duplicates first, depth 0: keys are literal and distinct');
+        st.deepEqual(qs.parse('a[b]=1&a=2', { depth: 0, duplicates: 'last' }), { 'a[b]': '1', a: '2' }, 'duplicates last, depth 0: keys are literal and distinct');
+
+        st.deepEqual(qs.parse('[]=1&=2', { duplicates: 'first' }), { 0: '1' }, 'duplicates first: an ignored empty key does not affect `[]`');
+        st.deepEqual(qs.parse('[]=1&=2', { duplicates: 'last' }), { 0: '1' }, 'duplicates last: an ignored empty key does not affect `[]`');
+
+        st.end();
+    });
+
     t.end();
 });
 
