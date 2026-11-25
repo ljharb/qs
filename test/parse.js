@@ -2494,6 +2494,24 @@ test('`duplicates` option', function (t) {
         st.end();
     });
 
+    t.test('duplicates first: switching notation ignores every later group', function (st) {
+        var options = { duplicates: 'first' };
+        st.deepEqual(qs.parse('a[]=1&a[]=2&a=3', options), { a: ['1', '2'] }, '`[]` then plain');
+        st.deepEqual(qs.parse('a[0]=1&a[1]=2&a=3', options), { a: ['1', '2'] }, 'indices then plain');
+        st.deepEqual(qs.parse('a=1&a[]=2&a[]=3', options), { a: '1' }, 'plain then `[]`');
+        st.deepEqual(qs.parse('a=1&a[0]=2&a[1]=3', options), { a: '1' }, 'plain then indices');
+        st.deepEqual(qs.parse('a[]=1&a=2&a[]=3', options), { a: ['1'] }, '`[]`, plain, `[]`');
+        st.deepEqual(qs.parse('a[0]=1&a=2&a[1]=3', options), { a: ['1'] }, 'indices, plain, indices');
+        st.deepEqual(qs.parse('a[]=1&a=2&b=f&a[]=3', options), { a: ['1'], b: 'f' }, 'another key in between');
+        st.deepEqual(qs.parse('a[b]=1&a[c]=2&a=3', options), { a: { b: '1', c: '2' } }, 'object keys then plain');
+
+        st.deepEqual(qs.parse('a.b=1&a=2', { allowDots: true, duplicates: 'first' }), { a: { b: '1' } }, 'dots then plain');
+        st.deepEqual(qs.parse('a=1&a.b=2', { allowDots: true, duplicates: 'first' }), { a: '1' }, 'plain then dots');
+        st.deepEqual(qs.parse('[x]=1&=2', { allowEmptyKeys: true, duplicates: 'first' }), { '': { x: '1' } }, 'an empty root with allowEmptyKeys');
+
+        st.end();
+    });
+
     t.end();
 });
 
