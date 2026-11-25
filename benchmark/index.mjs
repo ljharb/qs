@@ -1,6 +1,5 @@
 import { spawn, spawnSync } from 'child_process';
 import {
-	mkdirSync,
 	mkdtempSync,
 	rmSync,
 } from 'fs';
@@ -49,6 +48,12 @@ const {
 			description: 'only run the `parse` cases',
 			type: 'boolean',
 		},
+		ref: {
+			description: 'a commitish (SHA, branch, or tag) to benchmark; with no `--tags`, only the given commitishes are benchmarked',
+			multiple: true,
+			placeholder: 'commitish',
+			type: 'string',
+		},
 		since: {
 			default: allTags[0],
 			description: 'the oldest tag to benchmark',
@@ -82,6 +87,16 @@ for (const tag of values.tags ?? []) {
 		errors.push(`unknown tag for \`--tags\`: ${tag}`);
 	}
 }
+for (const ref of values.ref ?? []) {
+	if (spawnSync('git', [
+		'rev-parse',
+		'--verify',
+		'--quiet',
+		`${ref}^{commit}`,
+	], { cwd: root }).status !== 0) {
+		errors.push(`unknown commitish for \`--ref\`: ${ref}`);
+	}
+}
 if (values.parse && values.stringify) {
 	errors.push('`--parse` and `--stringify` are mutually exclusive');
 }
@@ -91,7 +106,11 @@ if (values.concurrency < 1) {
 
 await help();
 
-const tags = values.tags ?? allTags.slice(allTags.indexOf(values.since));
+const tags = [
+	...values.tags ?? (values.ref ? [] : allTags.slice(allTags.indexOf(values.since))),
+	...values.ref ?? [],
+];
+const width = Math.max(10, ...tags.map((tag) => tag.length + 2));
 const runArgs = [
 	'--max-time',
 	String(values['max-time']),
@@ -115,8 +134,8 @@ process.once('SIGINT', () => {
 });
 
 const extract = (ref) => {
-	const dir = path.join(tmpRoot, ref);
-	mkdirSync(dir);
+	// a commitish may contain `/` or other characters, or be `HEAD` itself, so give each extraction its own directory
+	const dir = mkdtempSync(path.join(tmpRoot, `${ref.replace(/[^\w.-]/g, '_')}-`));
 	const tar = spawnSync('tar', [
 		'-x',
 		'-C',
@@ -199,9 +218,9 @@ const relativeSpeed = (tag, prefix) => {
 };
 
 console.log('\nspeed relative to HEAD (geometric mean over the number of cases in parentheses; higher is faster)\n');
-console.log(`${'version'.padEnd(10)}${'parse'.padEnd(16)}stringify`);
+console.log(`${'version'.padEnd(width)}${'parse'.padEnd(16)}stringify`);
 for (const tag of ranTags) {
-	console.log(`${tag.padEnd(10)}${relativeSpeed(tag, 'parse: ').padEnd(16)}${relativeSpeed(tag, 'stringify: ')}`);
+	console.log(`${tag.padEnd(width)}${relativeSpeed(tag, 'parse: ').padEnd(16)}${relativeSpeed(tag, 'stringify: ')}`);
 }
 
 if (values.cases) {
@@ -214,7 +233,7 @@ if (values.cases) {
 		console.log(name);
 		for (const { result, tag } of entries) {
 			const r = ratio(result);
-			console.log(`    ${tag.padEnd(10)}${r ? `${r.toFixed(2)}x` : 'n/a'}`);
+			console.log(`    ${tag.padEnd(width)}${r ? `${r.toFixed(2)}x` : 'n/a'}`);
 		}
 	}
 }
