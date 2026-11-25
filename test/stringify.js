@@ -1392,6 +1392,18 @@ test('stringify()', function (t) {
             'non-cyclic values do not throw'
         );
 
+        var self = { v: 1 };
+        self.self = self;
+        st.equal(
+            qs.stringify({ s: self }, {
+                filter: function (prefix, value) {
+                    return prefix.split('[').length > 2 ? void undefined : value;
+                }
+            }),
+            's%5Bv%5D=1',
+            'a cycle that a filter cuts off does not throw'
+        );
+
         st.end();
     });
 
