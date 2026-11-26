@@ -54,6 +54,11 @@ const {
 			placeholder: 'commitish',
 			type: 'string',
 		},
+		shard: {
+			description: 'only benchmark every `total`th version, starting with the `index`th (1-based), to split a run across machines',
+			placeholder: 'index/total',
+			type: 'string',
+		},
 		since: {
 			default: allTags[0],
 			description: 'the oldest tag to benchmark',
@@ -103,13 +108,17 @@ if (values.parse && values.stringify) {
 if (values.concurrency < 1) {
 	errors.push('`--concurrency` must be at least 1');
 }
+const [shardIndex, shardTotal] = (values.shard ?? '1/1').split('/').map(Number);
+if (!(/^\d+\/\d+$/).test(values.shard ?? '1/1') || shardIndex < 1 || shardIndex > shardTotal) {
+	errors.push(`\`--shard\` must be \`index/total\`, with 1 <= index <= total: ${values.shard}`);
+}
 
 await help();
 
 const tags = [
 	...values.tags ?? (values.ref ? [] : allTags.slice(allTags.indexOf(values.since))),
 	...values.ref ?? [],
-];
+].filter((_, i) => i % shardTotal === shardIndex - 1);
 const width = Math.max(10, ...tags.map((tag) => tag.length + 2));
 const runArgs = [
 	'--max-time',

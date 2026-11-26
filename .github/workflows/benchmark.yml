@@ -6,8 +6,14 @@ permissions:
   contents: read
 
 jobs:
-  benchmark:
+  shard:
+    name: 'shard ${{ matrix.shard }}'
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
       - uses: actions/checkout@v7
@@ -22,4 +28,10 @@ jobs:
         name: 'nvm install lts/* && npm install'
         with:
           node-version: 'lts/*'
-      - run: npm run benchmark -- --max-time 0.01
+      - run: npm run benchmark -- --max-time 0.01 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+  benchmark:
+    needs: [shard]
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
