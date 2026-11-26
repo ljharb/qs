@@ -215,7 +215,7 @@ assert.deepEqual(withDots, { a: { b: 'c' } });
 ```
 
 Option `decodeDotInKeys` can be used to decode dots in keys
-Note: it implies `allowDots`, so `parse` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
+Note: it implies `allowDots` when `allowDots` is not explicitly set; an explicit `allowDots: false` takes precedence and keeps dots in keys.
 
 ```javascript
 var withDots = qs.parse('name%252Eobj.first=John&name%252Eobj.last=Doe', { decodeDotInKeys: true });
@@ -599,7 +599,7 @@ qs.stringify({ a: [{ b: 'c' }, { b: 'd' }] }, { allowDots: true, allowDotsForNum
 ```
 
 You may encode the dot notation in the keys of object with option `encodeDotInKeys` by setting it to `true`:
-Note: it implies `allowDots`, so `stringify` will error if you set `decodeDotInKeys` to `true`, and `allowDots` to `false`.
+Note: it implies `allowDots` when `allowDots` is not explicitly set; an explicit `allowDots: false` takes precedence. Use `encodeDotInKeys` here, not `decodeDotInKeys`, which is the `parse` option.
 Caveat: when `encodeValuesOnly` is `true` as well as `encodeDotInKeys`, only dots in keys and nothing else will be encoded.
 ```javascript
 qs.stringify({ "name.obj": { "first": "John", "last": "Doe" } }, { allowDots: true, encodeDotInKeys: true })
