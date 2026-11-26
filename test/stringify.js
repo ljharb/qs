@@ -2305,6 +2305,17 @@ test('stringifies empty keys', function (t) {
         st.end();
     });
 
+    t.test('brackets already in keys stay structural by default', function (st) {
+        var obj = { 'filter[name]': 'x', 'sort[]': 'a' };
+        st.equal(qs.stringify(obj), 'filter%5Bname%5D=x&sort%5B%5D=a', 'pre-bracketed keys are encoded as brackets');
+        st.equal(qs.stringify(obj, { encodeValuesOnly: true }), 'filter[name]=x&sort[]=a', 'pre-bracketed keys stay raw with encodeValuesOnly');
+        st.deepEqual(qs.parse(qs.stringify(obj)), { filter: { name: 'x' }, sort: ['a'] }, 'pre-bracketed keys parse as nesting');
+        st.equal(qs.stringify({ a: { 'b[c]': 'd' } }), 'a%5Bb%5Bc%5D%5D=d', 'brackets in nested key content are encoded as brackets');
+        st.deepEqual(qs.parse('a%255Bb%255D=c'), { 'a%5Bb%5D': 'c' }, 'double-encoded brackets in a key are decoded only once');
+
+        st.end();
+    });
+
     t.test('limits nesting depth with the `depth` option', function (st) {
         st.equal(
             qs.stringify({ a: { b: { c: 'd' } } }),
