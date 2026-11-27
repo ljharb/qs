@@ -182,6 +182,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('explicit allowDots false takes precedence over decodeDotInKeys', function (st) {
+        st.deepEqual(
+            qs.parse('name%252Eobj.first=John', { allowDots: false, decodeDotInKeys: true }),
+            { 'name.obj.first': 'John' }
+        );
+
+        st.end();
+    });
+
     t.test('throws when decodeDotInKeys is not of type boolean', function (st) {
         st['throws'](
             function () { qs.parse('foo[]&bar=baz', { decodeDotInKeys: 'foobar' }); },
