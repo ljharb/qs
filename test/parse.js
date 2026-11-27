@@ -1275,6 +1275,33 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('a top-level dunder proto key is ignored', function (st) {
+        var result = qs.parse('__proto__=a&b=c');
+        st.deepEqual(result, { b: 'c' });
+        st.equal(Object.getPrototypeOf(result), Object.prototype, 'keeps the default [[Prototype]]');
+
+        var plainResult = qs.parse('__proto__=a&b=c', { plainObjects: true });
+        st.deepEqual(Object.keys(plainResult), ['b'], 'plain objects: no own `__proto__` key');
+        st.equal(Object.getPrototypeOf(plainResult), null, 'plain objects: keeps a null [[Prototype]]');
+
+        var allowedResult = qs.parse('__proto__=a&__proto__=b', { allowPrototypes: true });
+        st.deepEqual(Object.keys(allowedResult), [], 'allowPrototypes: no own `__proto__` key');
+        st.equal(Object.getPrototypeOf(allowedResult), Object.prototype, 'allowPrototypes: keeps the default [[Prototype]]');
+
+        var bothResult = qs.parse('__proto__=a&b=c', { allowPrototypes: true, plainObjects: true });
+        st.deepEqual(Object.keys(bothResult), ['b'], 'allowPrototypes and plain objects: no own `__proto__` key');
+        st.equal(Object.getPrototypeOf(bothResult), null, 'allowPrototypes and plain objects: keeps a null [[Prototype]]');
+
+        st.end();
+    });
+
+    t.test('prototype keys in object input are ignored at depth 0', function (st) {
+        st.deepEqual(qs.parse({ toString: 'x', a: 'b' }, { depth: 0 }), { a: 'b' });
+        st.deepEqual(qs.parse({ toString: 'x', a: 'b' }, { depth: 0, allowPrototypes: true }), { toString: 'x', a: 'b' });
+
+        st.end();
+    });
+
     t.test('object-valued input with own `__proto__` does not mutate sub-object [[Prototype]]', function (st) {
         // JSON.parse creates own data `__proto__` properties (via CreateDataProperty),
         // which would trigger the Object.prototype.__proto__ accessor if merged via `acc[key] = value`.
@@ -1578,6 +1605,19 @@ test('parse()', function (t) {
                 throwOnLimitExceeded: true
             });
         }, RangeError);
+        st.end();
+    });
+
+    t.test('removes `undefined` decoder results from arrays of a key without brackets', function (st) {
+        var options = {
+            decoder: function (str, defaultDecoder, charset, type) {
+                return type === 'value' && str === 'x' ? void undefined : defaultDecoder(str, defaultDecoder, charset);
+            }
+        };
+        st.deepEqual(qs.parse('a=1&a=x&a=2', options), { a: ['1', '2'] }, 'duplicate keys');
+        st.deepEqual(qs.parse('a=1,x,2', utils.assign({ comma: true }, options)), { a: ['1', '2'] }, 'comma');
+        st.deepEqual(qs.parse('a=1&a=x&a=2', utils.assign({ allowSparse: true }, options)), { a: ['1', void undefined, '2'] }, 'allowSparse keeps them');
+
         st.end();
     });
 
