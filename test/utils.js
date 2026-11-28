@@ -15,6 +15,20 @@ test('merge()', function (t) {
 
     t.deepEqual(utils.merge({ a: 'b' }, { a: 'c' }), { a: ['b', 'c'] }, 'merges two objects with the same key');
 
+    t.deepEqual(
+        utils.merge({ a: '1' }, '', { strictMerge: true }),
+        [{ a: '1' }, ''],
+        'merges an empty string into an object instead of dropping it'
+    );
+
+    t.deepEqual(
+        utils.merge({ a: '1' }, null, { strictMerge: true }),
+        [{ a: '1' }, null],
+        'merges null into an object instead of dropping it'
+    );
+
+    t.deepEqual(utils.merge({ a: '1' }, 0, { strictMerge: true }), [{ a: '1' }, 0], 'merges 0 into an object instead of dropping it');
+
     var oneMerged = utils.merge({ foo: 'bar' }, { foo: { first: '123' } });
     t.deepEqual(oneMerged, { foo: ['bar', { first: '123' }] }, 'merges a standalone and an object into an array');
 

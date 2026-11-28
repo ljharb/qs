@@ -2760,6 +2760,40 @@ test('mixed array and object notation', function (t) {
         st.end();
     });
 
+    t.test('empty value is kept when it collides with an object', function (st) {
+        st.deepEqual(
+            qs.parse('m[a]=1&m='),
+            { m: [{ a: '1' }, ''] },
+            'an empty value wraps with the object instead of being dropped (#647)'
+        );
+        st.deepEqual(
+            qs.parse('m=&m[a]=1'),
+            { m: ['', { a: '1' }] },
+            'the empty value first wraps (already worked)'
+        );
+        st.deepEqual(
+            qs.parse('a[b][c]=1&a[b]='),
+            { a: { b: [{ c: '1' }, ''] } },
+            'an empty value wraps with a nested object'
+        );
+        st.deepEqual(
+            qs.parse('a[a]=x&a.a=', { allowDots: true }),
+            { a: { a: ['x', ''] } },
+            'a dotted empty value wraps with the object'
+        );
+        st.deepEqual(
+            qs.parse('m[a]=1&m', { strictNullHandling: true }),
+            { m: [{ a: '1' }, null] },
+            'a null value wraps with the object instead of being dropped'
+        );
+        st.deepEqual(
+            qs.parse({ 'm[a]': '1', m: 0 }),
+            { m: [{ a: '1' }, 0] },
+            'a falsy object-input value wraps with the object instead of being dropped'
+        );
+        st.end();
+    });
+
     t.test('array brackets with plain value - under limit', function (st) {
         st.deepEqual(
             qs.parse('a[]=b&a=c', { arrayLimit: 20 }),
