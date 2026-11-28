@@ -1516,6 +1516,15 @@ test('parse()', function (t) {
         st.end();
     });
 
+    t.test('interprets numeric entities above U+10FFFF as U+FFFD', function (st) {
+        var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.deepEqual(qs.parse('foo=%26%231114112%3B', options), { foo: '\uFFFD' }, '0x110000, one past U+10FFFF');
+        st.deepEqual(qs.parse('foo=%26%231114172%3B', options), { foo: '\uFFFD' }, '0x11003C does not wrap around to `<`');
+        st.deepEqual(qs.parse('foo=%26%234294967356%3B', options), { foo: '\uFFFD' }, '2 ** 32 + 60 does not wrap around to `<`');
+        st.deepEqual(qs.parse('foo=%26%2399999999999999999999%3B', options), { foo: '\uFFFD' }, 'a number too large to be exact');
+        st.end();
+    });
+
     t.test('interprets numeric entities in each value, but not in keys', function (st) {
         var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
         st.deepEqual(qs.parse('a=' + urlEncodedNumSmiley + ',x', options), { a: '☺,x' }, 'a value with commas stays one string without `comma`');
@@ -1564,6 +1573,14 @@ test('parse()', function (t) {
 
     t.test('does not interpret numeric entities when the charset is utf-8, even when `interpretNumericEntities`', function (st) {
         st.deepEqual(qs.parse('foo=' + urlEncodedNumSmiley, { charset: 'utf-8', interpretNumericEntities: true }), { foo: '&#9786;' });
+        st.end();
+    });
+
+    t.test('interprets surrogate-half numeric entities as code units, so iso-8859-1 `stringify` output round-trips', function (st) {
+        var options = { charset: 'iso-8859-1', interpretNumericEntities: true };
+        st.equal(qs.stringify({ foo: '😀' }, { charset: 'iso-8859-1' }), 'foo=%26%2355357%3B%26%2356832%3B', '`stringify` writes U+1F600 as two surrogate-half entities');
+        st.deepEqual(qs.parse('foo=%26%2355357%3B%26%2356832%3B', options), { foo: '😀' }, 'a surrogate pair of entities decodes to U+1F600');
+        st.deepEqual(qs.parse('foo=%26%2355357%3B', options), { foo: '\uD83D' }, 'a lone high surrogate entity decodes to that code unit');
         st.end();
     });
 
